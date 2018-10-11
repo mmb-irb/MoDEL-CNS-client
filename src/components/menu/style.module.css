@@ -1,0 +1,9 @@
+.main {
+  display: flex;
+  align-items: center;
+}
+
+.search {
+  flex: 1;
+  padding: 8px 16px;
+}

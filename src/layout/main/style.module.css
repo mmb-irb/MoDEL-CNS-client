@@ -1,0 +1,24 @@
+.main {
+  flex: 1;
+  max-width: 100%;
+  margin: 1em 0;
+}
+
+@media (min-width: 600px) {
+  .main {
+    max-width: calc(100% - 2em);
+  }
+}
+
+@media (min-width: 960px) {
+  .main {
+    max-width: calc(100% - 10em);
+  }
+}
+
+@media (min-width: 1280px) {
+  .main {
+    max-width: 1100px;
+  }
+}
+
