@@ -1,13 +1,15 @@
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 // import { AutoSizer, Table, Column } from 'react-virtualized';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import {
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
 
 /*
 <AutoSizer>
@@ -39,18 +41,17 @@ export default class Browse extends PureComponent {
   state = { data: null };
 
   async componentDidMount() {
-    const response = await fetch(
-      'http://localhost:1337/localhost:5000/',
-      { headers: { Accept: 'application/json' } },
-    );
+    const response = await fetch('http://localhost:1337/localhost:5000/', {
+      headers: { Accept: 'application/json' },
+    });
     const data = await response.json();
     this.setState({
       data: data.files
         .map(info => info.name)
         .filter(name => /^\w{4}_/.test(name)),
-    })
+    });
   }
-  
+
   render() {
     if (!this.state.data) return null;
     return (
@@ -68,12 +69,10 @@ export default class Browse extends PureComponent {
               {this.state.data.map(datum => (
                 <TableRow key={datum}>
                   <TableCell>
-                    <Link to={`/browse/${datum}/overview`}>
-                      {datum}
-                    </Link>
+                    <Link to={`/browse/${datum}/overview`}>{datum}</Link>
                   </TableCell>
-                  <TableCell></TableCell>
-                  <TableCell></TableCell>
+                  <TableCell />
+                  <TableCell />
                 </TableRow>
               ))}
             </TableBody>
@@ -83,4 +82,3 @@ export default class Browse extends PureComponent {
     );
   }
 }
-

@@ -3,6 +3,9 @@ import { Switch, Route } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 
 import Overview from './overview';
+import Trajectory from './trajectory';
+import RMSD from './rmsd';
+import Rgyr from './rgyr';
 
 const BASE_PATH = 'http://localhost:1337/localhost:5000/';
 
@@ -57,9 +60,11 @@ class Accession extends PureComponent {
                 path="/browse/:accession/trajectory"
                 exact
                 render={props => (
-                  <Overview {...props} ngl={ngl} pdbData={pdbData} />
+                  <Trajectory {...props} ngl={ngl} pdbData={pdbData} />
                 )}
               />
+              <Route path="/browse/:accession/rmsd" exact component={RMSD} />
+              <Route path="/browse/:accession/rgyr" exact component={Rgyr} />
             </Switch>
           </>
         )}
