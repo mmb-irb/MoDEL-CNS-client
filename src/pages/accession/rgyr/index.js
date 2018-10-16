@@ -10,6 +10,8 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  FormControlLabel,
+  Checkbox,
 } from '@material-ui/core';
 
 import style from './style.module.css';
@@ -264,18 +266,16 @@ export default class Rgyr extends PureComponent {
                 Array.from(Object.keys(data))
                   .filter(key => key !== 'time')
                   .map(key => (
-                    <span
+                    <FormControlLabel
                       key={key}
                       data-key={key}
                       onMouseOver={this.#handleMouseOver}
                       onMouseOut={this.#handleMouseOut}
-                    >
-                      <span
-                        className={style['color-block']}
-                        style={{ color: colors[key] }}
-                      />
-                      <span>{niceNames[key]}</span>
-                    </span>
+                      control={
+                        <Checkbox checked style={{ color: colors[key] }} />
+                      }
+                      label={niceNames[key]}
+                    />
                   ))}
             </div>
           </CardContent>

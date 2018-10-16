@@ -17,15 +17,5 @@
 }
 
 .graph-legend > * {
-  margin: 0 1em;
-  display: flex;
-  align-items: center;
-}
-
-.color-block {
-  display: inline-block;
-  margin-right: 0.5ch;
-  width: 1ch;
-  height: 1ch;
-  background-color: currentColor;
+  margin: 0 1em !important;
 }
