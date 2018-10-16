@@ -4,8 +4,9 @@ import Typography from '@material-ui/core/Typography';
 
 import Overview from './overview';
 import Trajectory from './trajectory';
-import RMSD from './rmsd';
+import RMSd from './rmsd';
 import Rgyr from './rgyr';
+import Fluctuation from './fluctuation';
 
 const BASE_PATH = 'http://localhost:1337/localhost:5000/';
 
@@ -63,8 +64,13 @@ class Accession extends PureComponent {
                   <Trajectory {...props} ngl={ngl} pdbData={pdbData} />
                 )}
               />
-              <Route path="/browse/:accession/rmsd" exact component={RMSD} />
+              <Route path="/browse/:accession/rmsd" exact component={RMSd} />
               <Route path="/browse/:accession/rgyr" exact component={Rgyr} />
+              <Route
+                path="/browse/:accession/fluctuation"
+                exact
+                component={Fluctuation}
+              />
             </Switch>
           </>
         )}

@@ -1,0 +1,31 @@
+.card {
+  margin: 1em 0;
+}
+
+.graph-container {
+  height: 50vh;
+}
+
+.graph-container > svg {
+  height: 100%;
+}
+
+.graph-legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 1ch;
+}
+
+.graph-legend > * {
+  margin: 0 1em;
+  display: flex;
+  align-items: center;
+}
+
+.color-block {
+  display: inline-block;
+  margin-right: 0.5ch;
+  width: 1ch;
+  height: 1ch;
+  background-color: currentColor;
+}

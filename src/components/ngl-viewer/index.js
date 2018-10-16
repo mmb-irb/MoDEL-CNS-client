@@ -3,11 +3,11 @@ import T from 'prop-types';
 import { debounce } from 'lodash-es';
 import cn from 'classnames';
 
+import mounted from '../../utils/mounted';
+
 import style from './style.module.css';
 
 const BASE_PATH = 'http://localhost:1337/localhost:5000/';
-
-const mounted = new WeakSet();
 
 class NGLViewer extends PureComponent {
   static propTypes = {
@@ -198,6 +198,7 @@ class NGLViewer extends PureComponent {
     this.#stage.compList[0].trajList[0].trajectory.signals.frameChanged.remove(
       this.#handleFrameChange,
     );
+    this.#handleResize.cancel();
     window.removeEventListener('resize', this.#handleResize);
   }
 }
