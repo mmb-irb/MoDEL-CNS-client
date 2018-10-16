@@ -93,8 +93,16 @@ export default class Rgyr extends PureComponent {
     const y = d3
       .scaleLinear()
       .domain([
-        d3.min(yValues.map(([, value]) => d3.min(value))),
-        d3.max(yValues.map(([, value]) => d3.max(value))),
+        d3.min(
+          yValues.map(([, value]) =>
+            d3.min(value.filter((_, i) => i % PRECISION === 0)),
+          ),
+        ),
+        d3.max(
+          yValues.map(([, value]) =>
+            d3.max(value.filter((_, i) => i % PRECISION === 0)),
+          ),
+        ),
       ])
       .nice()
       .range([height - margin.bottom, margin.top]);
