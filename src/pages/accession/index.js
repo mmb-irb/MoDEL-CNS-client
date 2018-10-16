@@ -48,7 +48,6 @@ class Accession extends PureComponent {
         </Typography>
         {pdbData && (
           <>
-            <Typography variant="h5">{pdbData.title}</Typography>
             <Switch marker="here">
               <Route
                 path="/browse/:accession/overview"

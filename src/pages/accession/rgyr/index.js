@@ -17,7 +17,7 @@ import style from './style.module.css';
 const BASE_PATH = 'http://localhost:1337/localhost:5000/';
 const COMMENT_REGEXP = /^[@#]/;
 const MULTIPLE_SPACES_REGEXP = / +/g;
-const formatter = value => value || d3.format('.4f');
+const formatter = d3.format('.4f');
 
 const rawTextToData = raw => {
   const lines = raw
@@ -32,52 +32,17 @@ const rawTextToData = raw => {
     rgy: new Float32Array(length),
     rgz: new Float32Array(length),
   };
-  const mean = {
-    rg: 0,
-    rgx: 0,
-    rgy: 0,
-    rgz: 0,
-  };
-  const mean2 = {
-    rg: 0,
-    rgx: 0,
-    rgy: 0,
-    rgz: 0,
-  };
-  let i = 0;
-  for (const line of lines) {
-    i++;
+  for (const [index, line] of lines.entries()) {
     const [time, rg, rgx, rgy, rgz] = line
       .split(MULTIPLE_SPACES_REGEXP)
       .map(Number.parseFloat);
-    data.time[i - 1] = time;
-    data.rg[i - 1] = rg;
-    data.rgx[i - 1] = rgx;
-    data.rgy[i - 1] = rgy;
-    data.rgz[i - 1] = rgz;
-    const rgDelta = rg - mean.rg;
-    const rgxDelta = rgx - mean.rgx;
-    const rgyDelta = rgy - mean.rgy;
-    const rgzDelta = rgz - mean.rgz;
-    mean.rg += rgDelta / i;
-    mean.rgx += rgxDelta / i;
-    mean.rgy += rgyDelta / i;
-    mean.rgz += rgzDelta / i;
-    mean2.rg += rgDelta * (rg - mean.rg);
-    mean2.rgx += rgxDelta * (rgx - mean.rgx);
-    mean2.rgy += rgyDelta * (rgy - mean.rgy);
-    mean2.rgz += rgzDelta * (rgz - mean.rgz);
+    data.time[index] = time;
+    data.rg[index] = rg;
+    data.rgx[index] = rgx;
+    data.rgy[index] = rgy;
+    data.rgz[index] = rgz;
   }
-  return {
-    data,
-    mean,
-    stddev: {
-      rg: mean2.rg / (i - 1),
-      rgx: mean2.rgx / (i - 1),
-      rgy: mean2.rgy / (i - 1),
-      rgz: mean2.rgz / (i - 1),
-    },
-  };
+  return { data };
 };
 
 const margin = { top: 20, right: 30, bottom: 40, left: 50 };
@@ -258,8 +223,6 @@ export default class Rgyr extends PureComponent {
                   <TableCell>name</TableCell>
                   <TableCell>mean</TableCell>
                   <TableCell>standard deviation</TableCell>
-                  <TableCell>mean strean</TableCell>
-                  <TableCell>standard deviation stream</TableCell>
                 </TableRow>
               </TableHead>
               {data && (
@@ -275,14 +238,6 @@ export default class Rgyr extends PureComponent {
                         </TableCell>
                         <TableCell>
                           {formatter(d3.deviation(value))}
-                          nm
-                        </TableCell>
-                        <TableCell>
-                          {formatter(this.state.mean[key])}
-                          nm
-                        </TableCell>
-                        <TableCell>
-                          {formatter(this.state.stddev[key])}
                           nm
                         </TableCell>
                       </TableRow>

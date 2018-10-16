@@ -1,0 +1,12 @@
+.card {
+  margin: 1em 0;
+}
+
+.card-content {
+  display: flex;
+  align-items: start;
+}
+
+.chip {
+  margin: 0 0.5ch;
+}

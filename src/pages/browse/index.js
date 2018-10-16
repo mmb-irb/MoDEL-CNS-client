@@ -15,6 +15,7 @@ import {
 
 import Highlight from '../../components/highlight';
 
+import accessionToPDBAccession from '../../utils/accession-to-pdb-accession';
 import mounted from '../../utils/mounted';
 
 /*
@@ -42,12 +43,6 @@ import mounted from '../../utils/mounted';
   )}
 </AutoSizer>
 */
-
-const PDBExtractor = /^[a-z0-9]{4}/i;
-const accessionToPDBAccession = accession => {
-  const [PDBAccession] = accession.match(PDBExtractor) || [];
-  return PDBAccession;
-};
 
 const shouldBeFiltered = (accession, extra, search) => {
   if (!search) return false;
@@ -143,6 +138,7 @@ export default class Browse extends PureComponent {
                           1,
                           2,
                         )}/${PDBAccession}/${PDBAccession}.0_chimera_tm_350_350.png`}
+                        alt={`3D view of the ${PDBAccession} structure`}
                       />
                     </TableCell>
                   </TableRow>
