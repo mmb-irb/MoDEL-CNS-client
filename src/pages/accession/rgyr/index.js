@@ -69,6 +69,12 @@ export default class Rgyr extends PureComponent {
   #axes;
   state = {
     data: null,
+    labels: {
+      rg: true,
+      rgx: true,
+      rgy: true,
+      rgz: true,
+    },
   };
 
   // debounce and schedule this call to avoid redrawing too often unecessarily
@@ -96,14 +102,18 @@ export default class Rgyr extends PureComponent {
       .scaleLinear()
       .domain([
         d3.min(
-          yValues.map(([, value]) =>
-            d3.min(value.filter((_, i) => i % PRECISION === 0)),
-          ),
+          yValues
+            .filter(([key]) => this.state.labels[key])
+            .map(([, value]) =>
+              d3.min(value.filter((_, i) => i % PRECISION === 0)),
+            ),
         ),
         d3.max(
-          yValues.map(([, value]) =>
-            d3.max(value.filter((_, i) => i % PRECISION === 0)),
-          ),
+          yValues
+            .filter(([key]) => this.state.labels[key])
+            .map(([, value]) =>
+              d3.max(value.filter((_, i) => i % PRECISION === 0)),
+            ),
         ),
       ])
       .nice()
@@ -111,8 +121,8 @@ export default class Rgyr extends PureComponent {
     const yAxis = g =>
       g
         .attr('transform', `translate(${margin.left}, 0)`)
-        .call(d3.axisLeft(y).ticks(8, '.1f'))
-        .call(g => g.select('.domain').remove());
+        .transition()
+        .call(d3.axisLeft(y).ticks(8, '.2f'));
 
     const lineFn = d3
       .line()
@@ -122,11 +132,31 @@ export default class Rgyr extends PureComponent {
     // draw axes
     this.#axes.x.call(xAxis);
     this.#axes.y.call(yAxis);
+    this.#axes.yBrush.call(yAxis);
     this.#axes.xLabel.attr(
       'transform',
       `translate(${width / 2}, ${height - 5})`,
     );
     this.#axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
+
+    this.#graph.on('mousemove', () => {
+      this.#axes.yBrush
+        .transition()
+        .attr('opacity', 1)
+        .attr(
+          'transform',
+          `translate(${Math.min(
+            Math.max(margin.left, d3.event.layerX - 25),
+            width - margin.right,
+          )}, 0)`,
+        );
+    });
+    this.#graph.on('mouseleave', () => {
+      this.#axes.yBrush
+        .transition()
+        .attr('opacity', 0)
+        .attr('transform', `translate(${margin.left}, 0)`);
+    });
 
     const lines = this.#graph
       .selectAll('path.rg-data')
@@ -141,6 +171,7 @@ export default class Rgyr extends PureComponent {
       .attr('stroke-linecap', 'round')
       .merge(lines)
       .transition()
+      .attr('opacity', d => (this.state.labels[d] ? 1 : 0))
       .attr('stroke-width', d => (hovered === d ? 3 : 1.5))
       .attr('d', d =>
         lineFn(this.state.data[d].filter((_, i) => i % PRECISION === 0)),
@@ -162,7 +193,7 @@ export default class Rgyr extends PureComponent {
     //   .transition()
     //   .attr('stroke-width', d => (hovered === d ? 3 : 1.5))
     //   .attr('d', d =>
-    //     lineFn(
+    //     lineFn.curve(d3.curveBasis)(
     //       Float32Array.from(
     //         {
     //           length: Math.floor(this.state.data[d].length / PRECISION),
@@ -178,6 +209,16 @@ export default class Rgyr extends PureComponent {
     //     ),
     //   );
   }, 500);
+
+  #handleClick = ({ currentTarget }) => {
+    const { key } = currentTarget.dataset;
+    this.setState(
+      ({ labels }) => ({
+        labels: { ...labels, [key]: !labels[key] },
+      }),
+      () => this.#draw(key),
+    );
+  };
 
   #handleMouseOver = ({ currentTarget }) => {
     this.#draw(currentTarget.dataset.key);
@@ -199,6 +240,7 @@ export default class Rgyr extends PureComponent {
       this.#axes = {
         x: this.#graph.append('g'),
         y: this.#graph.append('g'),
+        yBrush: this.#graph.append('g').attr('opacity', 0),
         yLabel: this.#graph
           .append('text')
           .attr('transform', 'rotate(-90)')
@@ -221,7 +263,7 @@ export default class Rgyr extends PureComponent {
   }
 
   render() {
-    const { data } = this.state;
+    const { data, labels } = this.state;
     return (
       <>
         <Card className={style.card}>
@@ -262,21 +304,19 @@ export default class Rgyr extends PureComponent {
             <Typography variant="h6">Graph</Typography>
             <div className={style['graph-container']} ref={this.#ref} />
             <div className={style['graph-legend']}>
-              {data &&
-                Array.from(Object.keys(data))
-                  .filter(key => key !== 'time')
-                  .map(key => (
-                    <FormControlLabel
-                      key={key}
-                      data-key={key}
-                      onMouseOver={this.#handleMouseOver}
-                      onMouseOut={this.#handleMouseOut}
-                      control={
-                        <Checkbox checked style={{ color: colors[key] }} />
-                      }
-                      label={niceNames[key]}
-                    />
-                  ))}
+              {Object.entries(labels).map(([key, value]) => (
+                <FormControlLabel
+                  key={key}
+                  data-key={key}
+                  onClick={this.#handleClick}
+                  onMouseOver={this.#handleMouseOver}
+                  onMouseOut={this.#handleMouseOut}
+                  control={
+                    <Checkbox checked={value} style={{ color: colors[key] }} />
+                  }
+                  label={niceNames[key]}
+                />
+              ))}
             </div>
           </CardContent>
         </Card>

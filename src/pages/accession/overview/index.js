@@ -5,8 +5,6 @@ import {
   CardActions,
   Button,
   Typography,
-  List,
-  ListItem,
   Chip,
 } from '@material-ui/core';
 import { Language, LibraryBooks } from '@material-ui/icons';
@@ -37,9 +35,20 @@ export default class Overview extends PureComponent {
   }
 
   render() {
-    const PDBAccession = accessionToPDBAccession(
-      this.props.match.params.accession,
-    );
+    const { accession } = this.props.match.params;
+    const PDBAccession = accessionToPDBAccession(accession);
+    let imgSrc;
+    if (accession.endsWith('mb')) {
+      imgSrc = `//cdn.rcsb.org/images/hd/${PDBAccession.substr(
+        1,
+        2,
+      )}/${PDBAccession}/${PDBAccession}.0_chimera_tm_350_350.png`;
+    } else {
+      imgSrc = `https://cdn.rcsb.org/images/rutgers/${PDBAccession.substr(
+        1,
+        2,
+      )}/${PDBAccession}/${PDBAccession}.pdb1-250.jpg`;
+    }
     const { pdbData } = this.state;
     let organisms;
     let keywords;
@@ -55,77 +64,65 @@ export default class Overview extends PureComponent {
     return (
       <Card className={style.card}>
         <CardContent className={style['card-content']}>
-          <div>
-            <Typography variant="h6">PDB information</Typography>
-            {pdbData && (
-              <List>
-                <ListItem>{pdbData.title}</ListItem>
-                <ListItem>
-                  PDB Accession: {pdbData.structureId}
-                  {pdbData.replaces && ` (replaces ${pdbData.replaces})`}
-                </ListItem>
+          <Typography variant="h6">PDB information</Typography>
+          <img src={imgSrc} alt={`3D view of the ${PDBAccession} structure`} />
+          {pdbData && (
+            <div className={style['summary-list']}>
+              <div>{pdbData.title}</div>
+              <div>
+                PDB Accession: {pdbData.structureId}
+                {pdbData.replaces && ` (replaces ${pdbData.replaces})`}
+              </div>
+              <div>
                 {pdbData.status &&
                   pdbData.status !== 'CURRENT' &&
                   `Status: ${pdbData.status}`}
-                <ListItem>
-                  PDB Accession: {pdbData.structureId}
-                  {pdbData.replaces && ` (replaces ${pdbData.replaces})`}
-                </ListItem>
-                <ListItem>
-                  Experimental method: {pdbData.expMethod.toLowerCase()}
-                </ListItem>
-                <ListItem>
-                  Organism
-                  {organisms.length > 1 && 's'}:{' '}
-                  {organisms.map(organism => (
-                    <Chip
-                      key={organism}
-                      label={organism}
-                      variant="outlined"
-                      color="primary"
-                      className={style.chip}
-                    />
-                  ))}
-                </ListItem>
-                <ListItem>
-                  Keyword
-                  {keywords.length > 1 && 's'}:{' '}
-                  {keywords.map(keyword => (
-                    <Chip
-                      key={keyword}
-                      label={keyword}
-                      variant="outlined"
-                      color="primary"
-                      className={style.chip}
-                    />
-                  ))}
-                </ListItem>
-                <ListItem>
-                  Entities: {pdbData.nr_entities} - Residues:{' '}
-                  {pdbData.nr_residues} - Atoms: {pdbData.nr_atoms}
-                </ListItem>
-                <ListItem>
-                  Publication date:{' '}
-                  <time dateTime={publishDate.toISOString()}>
-                    {publishDate.toDateString()}
-                  </time>
-                </ListItem>
-                <ListItem>
-                  Revision date:{' '}
-                  <time dateTime={revisionDate.toISOString()}>
-                    {revisionDate.toDateString()}
-                  </time>
-                </ListItem>
-              </List>
-            )}
-          </div>
-          <img
-            src={`//cdn.rcsb.org/images/hd/${PDBAccession.substr(
-              1,
-              2,
-            )}/${PDBAccession}/${PDBAccession}.0_chimera_tm_350_350.png`}
-            alt={`3D view of the ${PDBAccession} structure`}
-          />
+              </div>
+              <div>Experimental method: {pdbData.expMethod.toLowerCase()}</div>
+              <div>
+                Organism
+                {organisms.length > 1 && 's'}:{' '}
+                {organisms.map(organism => (
+                  <Chip
+                    key={organism}
+                    label={organism}
+                    variant="outlined"
+                    color="primary"
+                    className={style.chip}
+                  />
+                ))}
+              </div>
+              <div>
+                Keyword
+                {keywords.length > 1 && 's'}:{' '}
+                {keywords.map(keyword => (
+                  <Chip
+                    key={keyword}
+                    label={keyword}
+                    variant="outlined"
+                    color="primary"
+                    className={style.chip}
+                  />
+                ))}
+              </div>
+              <div>
+                Entities: {pdbData.nr_entities} - Residues:{' '}
+                {pdbData.nr_residues} - Atoms: {pdbData.nr_atoms}
+              </div>
+              <div>
+                Publication date:{' '}
+                <time dateTime={publishDate.toISOString()}>
+                  {publishDate.toDateString()}
+                </time>
+              </div>
+              <div>
+                Revision date:{' '}
+                <time dateTime={revisionDate.toISOString()}>
+                  {revisionDate.toDateString()}
+                </time>
+              </div>
+            </div>
+          )}
         </CardContent>
         <CardActions>
           <Button

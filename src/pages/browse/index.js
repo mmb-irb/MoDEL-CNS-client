@@ -12,6 +12,7 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
+import { Done } from '@material-ui/icons';
 
 import Highlight from '../../components/highlight';
 
@@ -105,12 +106,25 @@ export default class Browse extends PureComponent {
                 <TableCell>accession</TableCell>
                 <TableCell>PDB accession</TableCell>
                 <TableCell>name</TableCell>
+                <TableCell>membrane</TableCell>
                 <TableCell>preview</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {this.state.data.map(accession => {
                 const PDBAccession = accessionToPDBAccession(accession);
+                let imgSrc;
+                if (accession.endsWith('mb')) {
+                  imgSrc = `//cdn.rcsb.org/images/hd/${PDBAccession.substr(
+                    1,
+                    2,
+                  )}/${PDBAccession}/${PDBAccession}.0_chimera_tm_350_350.png`;
+                } else {
+                  imgSrc = `https://cdn.rcsb.org/images/rutgers/${PDBAccession.substr(
+                    1,
+                    2,
+                  )}/${PDBAccession}/${PDBAccession}.pdb1-250.jpg`;
+                }
                 const extra = pdbData[PDBAccession];
                 if (shouldBeFiltered(accession, extra, search)) return null;
                 return (
@@ -131,13 +145,13 @@ export default class Browse extends PureComponent {
                       </Highlight>
                     </TableCell>
                     <TableCell>
+                      {accession.endsWith('mb') && <Done />}
+                    </TableCell>
+                    <TableCell>
                       <img
                         width="150px"
                         height="150px"
-                        src={`//cdn.rcsb.org/images/hd/${PDBAccession.substr(
-                          1,
-                          2,
-                        )}/${PDBAccession}/${PDBAccession}.0_chimera_tm_350_350.png`}
+                        src={imgSrc}
                         alt={`3D view of the ${PDBAccession} structure`}
                       />
                     </TableCell>

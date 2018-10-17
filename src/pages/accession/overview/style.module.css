@@ -2,11 +2,14 @@
   margin: 1em 0;
 }
 
-.card-content {
-  display: flex;
-  align-items: start;
+.card img {
+  float: right;
 }
 
 .chip {
-  margin: 0 0.5ch;
+  margin: 0.5ch;
+}
+
+.summary-list > div {
+  margin: 1ch 0;
 }

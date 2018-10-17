@@ -57,6 +57,7 @@ class OpacitySlider extends PureComponent {
             vertical: 'top',
             horizontal: 'center',
           }}
+          container={screenfull.element || document.body}
           onClose={this.#handleClose}
         >
           <Paper style={{ padding: '1.5em' }}>

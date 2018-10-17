@@ -26,20 +26,14 @@ class NGLViewer extends PureComponent {
   #trajectory;
 
   // debounce and schedule this call to avoid redrawing too often unecessarily
-  #handleResize = (() => {
-    let scheduled = false;
-    return debounce(async () => {
-      if (scheduled) return;
-      scheduled = true;
-      if (this.#stage && this.#ref.current) {
-        const canvas = this.#ref.current.querySelector('canvas');
-        // need to unset this first when we reduce the size (fullscreen off)
-        if (canvas) canvas.style.height = '';
-        this.#stage.handleResize();
-      }
-      scheduled = false;
-    }, 500);
-  })();
+  #handleResize = debounce(async () => {
+    if (this.#stage && this.#ref.current) {
+      const canvas = this.#ref.current.querySelector('canvas');
+      // need to unset this first when we reduce the size (fullscreen off)
+      if (canvas) canvas.style.height = '';
+      this.#stage.handleResize();
+    }
+  }, 500);
 
   #handleFrameChange = frame => {
     if (this.#stage && this.props.onProgress) {
