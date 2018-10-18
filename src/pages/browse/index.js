@@ -18,6 +18,7 @@ import Highlight from '../../components/highlight';
 
 import accessionToPDBAccession from '../../utils/accession-to-pdb-accession';
 import mounted from '../../utils/mounted';
+import { BASE_PATH } from '../../utils/constants';
 
 /*
 <AutoSizer>
@@ -62,18 +63,22 @@ export default class Browse extends PureComponent {
   async componentDidMount() {
     mounted.add(this);
 
-    const response1 = await fetch('http://localhost:1337/localhost:5000/', {
-      headers: { Accept: 'application/json' },
-    });
-    const wholeData = await response1.json();
-    const data = wholeData.files
-      .map(info => info.name.toLowerCase())
-      .filter(name => /^[a-z0-9]{4}_/.test(name));
+    /* TODO: change block when we have a real server */
+    const response1 = await fetch(BASE_PATH);
+    const wholeData = await response1.text();
+    const re = />([a-z0-9]{4}_[^</]+)\/</gi;
+    const projects = [];
+    let result;
+    while ((result = re.exec(wholeData))) {
+      if (result[1]) projects.push(result[1].toLowerCase());
+    }
+    /* end of block to change */
+
     if (!mounted.has(this)) return;
-    this.setState({ data });
+    this.setState({ data: projects });
 
     const response2 = await fetch(
-      `https://www.rcsb.org/pdb/json/describePDB?structureId=${data
+      `https://www.rcsb.org/pdb/json/describePDB?structureId=${projects
         .map(accessionToPDBAccession)
         .join(',')}`,
       {

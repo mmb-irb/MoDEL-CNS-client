@@ -4,10 +4,9 @@ import { debounce } from 'lodash-es';
 import cn from 'classnames';
 
 import mounted from '../../utils/mounted';
+import { BASE_PATH } from '../../utils/constants';
 
 import style from './style.module.css';
-
-const BASE_PATH = 'http://localhost:1337/localhost:5000/';
 
 class NGLViewer extends PureComponent {
   static propTypes = {
@@ -25,7 +24,6 @@ class NGLViewer extends PureComponent {
   #stage;
   #trajectory;
 
-  // debounce and schedule this call to avoid redrawing too often unecessarily
   #handleResize = debounce(async () => {
     if (this.#stage && this.#ref.current) {
       const canvas = this.#ref.current.querySelector('canvas');

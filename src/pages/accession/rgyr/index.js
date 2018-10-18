@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { debounce } from 'lodash-es';
+import { omit } from 'lodash-es';
 import * as d3 from 'd3';
 import {
   Card,
@@ -14,9 +14,10 @@ import {
   Checkbox,
 } from '@material-ui/core';
 
+import { BASE_PATH } from '../../../utils/constants';
+
 import style from './style.module.css';
 
-const BASE_PATH = 'http://localhost:1337/localhost:5000/';
 const COMMENT_REGEXP = /^[@#]/;
 const MULTIPLE_SPACES_REGEXP = / +/g;
 const formatter = d3.format('.4f');
@@ -77,8 +78,7 @@ export default class Rgyr extends PureComponent {
     },
   };
 
-  // debounce and schedule this call to avoid redrawing too often unecessarily
-  #draw = debounce(hovered => {
+  #draw = hovered => {
     const { clientWidth: width, clientHeight: height } = this.#ref.current;
     this.#graph.attr('width', width).attr('height', height);
 
@@ -88,7 +88,7 @@ export default class Rgyr extends PureComponent {
 
     const x = d3
       .scaleLinear()
-      .domain([0, d3.max(this.state.data.time)])
+      .domain([0, this.state.data.time[this.state.data.time.length - 1]])
       .range([margin.left, width - margin.right]);
     const xAxis = g =>
       g.attr('transform', `translate(0, ${height - margin.bottom})`).call(
@@ -132,7 +132,6 @@ export default class Rgyr extends PureComponent {
     // draw axes
     this.#axes.x.call(xAxis);
     this.#axes.y.call(yAxis);
-    this.#axes.yBrush.call(yAxis);
     this.#axes.xLabel.attr(
       'transform',
       `translate(${width / 2}, ${height - 5})`,
@@ -140,22 +139,82 @@ export default class Rgyr extends PureComponent {
     this.#axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
 
     this.#graph.on('mousemove', () => {
-      this.#axes.yBrush
-        .transition()
-        .attr('opacity', 1)
+      // this.#axes.yBrush
+      //   .attr('opacity', 1)
+      //   .attr(
+      //     'transform',
+      //     `translate(${Math.min(
+      //       Math.max(margin.left, d3.event.layerX - 25),
+      //       width - margin.right,
+      //     )}, 0)`,
+      //   );
+      const closestTime =
+        Math.floor(
+          Math.min(
+            Math.max(0, Math.round(x.invert(d3.event.layerX - 25))),
+            this.state.data.time[this.state.data.time.length - 1],
+          ) / PRECISION,
+        ) * PRECISION;
+      this.#graph
+        .selectAll('g.dot-data circle')
         .attr(
           'transform',
-          `translate(${Math.min(
-            Math.max(margin.left, d3.event.layerX - 25),
-            width - margin.right,
-          )}, 0)`,
-        );
+          d =>
+            `translate(${x(
+              this.state.data.time.filter((_, i) => i % PRECISION === 0)[
+                Math.round(closestTime / PRECISION / this.state.data.time[1])
+              ],
+            )}, ${
+              d === 'time'
+                ? height - margin.bottom
+                : y(
+                    this.state.data[d].filter((_, i) => i % PRECISION === 0)[
+                      Math.round(
+                        closestTime / PRECISION / this.state.data.time[1],
+                      )
+                    ],
+                  )
+            })`,
+        )
+        .attr('opacity', 1);
+      this.#graph
+        .selectAll('g.dot-data text')
+        .attr(
+          'transform',
+          d =>
+            `translate(${x(
+              this.state.data.time.filter((_, i) => i % PRECISION === 0)[
+                Math.round(closestTime / PRECISION / this.state.data.time[1])
+              ],
+            )}, ${
+              d === 'time'
+                ? height - margin.bottom - 7
+                : y(
+                    this.state.data[d].filter((_, i) => i % PRECISION === 0)[
+                      Math.round(
+                        closestTime / PRECISION / this.state.data.time[1],
+                      )
+                    ],
+                  ) - 7
+            })`,
+        )
+        .text(
+          d =>
+            d === 'time'
+              ? closestTime / 100 / this.state.data.time[1]
+              : formatter(
+                  this.state.data[d].filter((_, i) => i % PRECISION === 0)[
+                    Math.round(
+                      closestTime / PRECISION / this.state.data.time[1],
+                    )
+                  ],
+                ),
+        )
+        .attr('opacity', 1);
     });
     this.#graph.on('mouseleave', () => {
-      this.#axes.yBrush
-        .transition()
-        .attr('opacity', 0)
-        .attr('transform', `translate(${margin.left}, 0)`);
+      this.#graph.selectAll('g.dot-data circle').attr('opacity', 0);
+      this.#graph.selectAll('g.dot-data text').attr('opacity', 0);
     });
 
     const lines = this.#graph
@@ -176,6 +235,30 @@ export default class Rgyr extends PureComponent {
       .attr('d', d =>
         lineFn(this.state.data[d].filter((_, i) => i % PRECISION === 0)),
       );
+
+    const dotsGroups = this.#graph
+      .selectAll('g.dot-data')
+      // .data(yValues.map(d => d[0]))
+      .data(Object.keys(this.state.data))
+      .enter()
+      .append('g')
+      .attr('class', 'dot-data');
+    dotsGroups
+      .append('circle')
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('r', 5)
+      .attr('fill', d => colors[d])
+      .attr('opacity', 0);
+    dotsGroups
+      .append('text')
+      .style('text-anchor', 'middle')
+      .style('font-weight', 'bold')
+      .style('paint-order', 'stroke')
+      .attr('fill', d => colors[d])
+      .attr('stroke', 'rgba(255, 255, 255, 0.5)')
+      .attr('stroke-width', 5)
+      .attr('opacity', 0);
 
     // const linesAvg = this.#graph
     //   .selectAll('path.rg-data-avg')
@@ -208,10 +291,13 @@ export default class Rgyr extends PureComponent {
     //       ),
     //     ),
     //   );
-  }, 500);
+  };
 
-  #handleClick = ({ currentTarget }) => {
+  #handleChange = ({ currentTarget }) => {
     const { key } = currentTarget.dataset;
+    if (!key) return;
+    // Keep at least one selected
+    if (!Object.values(omit(this.state.labels, key)).some(Boolean)) return;
     this.setState(
       ({ labels }) => ({
         labels: { ...labels, [key]: !labels[key] },
@@ -220,15 +306,10 @@ export default class Rgyr extends PureComponent {
     );
   };
 
-  #handleMouseOver = ({ currentTarget }) => {
+  #handleMouseOver = ({ currentTarget }) =>
     this.#draw(currentTarget.dataset.key);
-    this.#draw.flush();
-  };
 
-  #handleMouseOut = () => {
-    this.#draw();
-    this.#draw.flush();
-  };
+  #handleMouseOut = () => this.#draw();
 
   async componentDidMount() {
     const { accession } = this.props.match.params;
@@ -240,7 +321,6 @@ export default class Rgyr extends PureComponent {
       this.#axes = {
         x: this.#graph.append('g'),
         y: this.#graph.append('g'),
-        yBrush: this.#graph.append('g').attr('opacity', 0),
         yLabel: this.#graph
           .append('text')
           .attr('transform', 'rotate(-90)')
@@ -258,7 +338,6 @@ export default class Rgyr extends PureComponent {
   }
 
   componentWillUnmount() {
-    this.#draw.cancel();
     window.addEventListener('resize', this.#draw);
   }
 
@@ -308,11 +387,15 @@ export default class Rgyr extends PureComponent {
                 <FormControlLabel
                   key={key}
                   data-key={key}
-                  onClick={this.#handleClick}
+                  onChange={this.#handleChange}
                   onMouseOver={this.#handleMouseOver}
                   onMouseOut={this.#handleMouseOut}
                   control={
-                    <Checkbox checked={value} style={{ color: colors[key] }} />
+                    <Checkbox
+                      checked={value}
+                      style={{ color: colors[key] }}
+                      inputProps={{ 'data-key': key }}
+                    />
                   }
                   label={niceNames[key]}
                 />

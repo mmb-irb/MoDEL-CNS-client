@@ -8,7 +8,7 @@ import RMSd from './rmsd';
 import Rgyr from './rgyr';
 import Fluctuation from './fluctuation';
 
-const BASE_PATH = 'http://localhost:1337/localhost:5000/';
+import { BASE_PATH } from '../../utils/constants';
 
 class Accession extends PureComponent {
   state = {
