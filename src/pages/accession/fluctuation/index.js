@@ -117,15 +117,6 @@ export default class Fluctuation extends PureComponent {
     this.#axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
 
     this.#graph.on('mousemove', () => {
-      // this.#axes.yBrush
-      //   .attr('opacity', 1)
-      //   .attr(
-      //     'transform',
-      //     `translate(${Math.min(
-      //       Math.max(margin.left, d3.event.layerX - 25),
-      //       width - margin.right,
-      //     )}, 0)`,
-      //   );
       const closestAtom = Math.floor(
         Math.min(
           Math.max(0, Math.round(x.invert(d3.event.layerX - 25))),
@@ -155,12 +146,13 @@ export default class Fluctuation extends PureComponent {
                 : y(this.state.data[d][closestAtom]) - 7
             })`,
         )
-        .text(
-          d =>
-            d === 'atom'
-              ? closestAtom
-              : formatter(this.state.data[d][closestAtom]),
-        )
+        .text(d => {
+          if (d !== 'atom') return formatter(this.state.data[d][closestAtom]);
+          const atom = this.props.pdbData.atomMap.get(
+            this.props.pdbData.atomStore.atomTypeId[closestAtom],
+          );
+          return `${closestAtom + 1}: ${atom.atomname} - ${atom.element}`;
+        })
         .attr('opacity', 1);
     });
     this.#graph.on('mouseleave', () => {
@@ -174,16 +166,37 @@ export default class Fluctuation extends PureComponent {
     lines
       .enter()
       .append('path')
-      .attr('class', ([key]) => `rmsf-data ${key}`)
+      .attr('class', key => `rmsf-data ${key}`)
       .attr('fill', 'none')
       .attr('stroke', d => colors[d])
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
+      .attr('opacity', 0)
       .merge(lines)
       .transition()
-      .attr('opacity', d => (this.state.labels[d] ? 1 : 0))
+      // .attr('opacity', d => (this.state.labels[d] ? 1 : 0))
       .attr('stroke-width', d => (hovered === d ? 3 : 1.5))
       .attr('d', d => lineFn(this.state.data[d]));
+
+    const dataPointGroups = this.#graph
+      .selectAll('g.rmsf-data')
+      .data(yValues.map(d => d[0]))
+      .enter()
+      .append('g')
+      .attr('class', ([key]) => `rmsf-data ${key}`);
+    const dataPoints = dataPointGroups.selectAll('circle').data(yValues[0][1]);
+    dataPoints
+      .enter()
+      .append('circle')
+      .attr('r', 1)
+      .attr('fill', colors.rmsf)
+      .style('paint-order', 'stroke')
+      .attr('stroke', 'rgba(0, 0, 0, 0.5)')
+      .attr('stroke-width', 1)
+      .merge(dataPoints)
+      .transition()
+      .attr('cx', (_, i) => x(i))
+      .attr('cy', d => y(d));
 
     const dotsGroups = this.#graph
       .selectAll('g.dot-data')
@@ -208,38 +221,6 @@ export default class Fluctuation extends PureComponent {
       .attr('stroke', 'rgba(255, 255, 255, 0.5)')
       .attr('stroke-width', 5)
       .attr('opacity', 0);
-
-    // const linesAvg = this.#graph
-    //   .selectAll('path.rmsf-data-avg')
-    //   .data(yValues.map(d => d[0]));
-    // linesAvg
-    //   .enter()
-    //   .append('path')
-    //   .attr('class', ([key]) => `rmsf-data-avg ${key}`)
-    //   .attr('fill', 'none')
-    //   .attr('stroke', d => colors[d])
-    //   .attr('opacity', 0.5)
-    //   .attr('stroke-linejoin', 'round')
-    //   .attr('stroke-linecap', 'round')
-    //   .merge(linesAvg)
-    //   .transition()
-    //   .attr('stroke-width', d => (hovered === d ? 3 : 1.5))
-    //   .attr('d', d =>
-    //     lineFn.curve(d3.curveBasis)(
-    //       Float32Array.from(
-    //         {
-    //           length: Math.floor(this.state.data[d].length / PRECISION),
-    //         },
-    //         (_, i) =>
-    //           d3.mean(
-    //             this.state.data[d].slice(
-    //               i * PRECISION,
-    //               i * PRECISION + PRECISION,
-    //             ),
-    //           ),
-    //       ),
-    //     ),
-    //   );
   };
 
   #handleChange = ({ currentTarget }) => {

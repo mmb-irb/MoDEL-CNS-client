@@ -187,9 +187,11 @@ class NGLViewer extends PureComponent {
   componentWillUnmount() {
     mounted.delete(this);
     // remove event listeners
-    this.#stage.compList[0].trajList[0].trajectory.signals.frameChanged.remove(
-      this.#handleFrameChange,
-    );
+    if (this.#stage.compList[0].trajList[0]) {
+      this.#stage.compList[0].trajList[0].trajectory.signals.frameChanged.remove(
+        this.#handleFrameChange,
+      );
+    }
     this.#handleResize.cancel();
     window.removeEventListener('resize', this.#handleResize);
   }

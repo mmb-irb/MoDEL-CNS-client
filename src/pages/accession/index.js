@@ -68,7 +68,9 @@ class Accession extends PureComponent {
               <Route
                 path="/browse/:accession/fluctuation"
                 exact
-                component={Fluctuation}
+                component={props => (
+                  <Fluctuation {...props} pdbData={pdbData} />
+                )}
               />
             </Switch>
           </>

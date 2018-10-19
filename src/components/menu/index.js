@@ -73,30 +73,35 @@ export default () => (
                 to={`/browse/${accession}/overview`}
                 label="overview"
                 value="overview"
+                className={style['tab-link']}
               />
               <Tab
                 component={Link}
                 to={`/browse/${accession}/trajectory`}
                 label="trajectory"
                 value="trajectory"
+                className={style['tab-link']}
               />
               <Tab
                 component={Link}
                 to={`/browse/${accession}/rmsd`}
                 label="rmsd"
                 value="rmsd"
+                className={style['tab-link']}
               />
               <Tab
                 component={Link}
                 to={`/browse/${accession}/rgyr`}
                 label="rgyr"
                 value="rgyr"
+                className={style['tab-link']}
               />
               <Tab
                 component={Link}
                 to={`/browse/${accession}/fluctuation`}
                 label="fluctuation"
                 value="fluctuation"
+                className={style['tab-link']}
               />
             </Tabs>
           );
