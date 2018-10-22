@@ -52,8 +52,13 @@ const niceNames = {
 
 export default class Fluctuation extends PureComponent {
   #ref = React.createRef();
+  #zoom;
+  #svg;
   #graph;
   #axes;
+  #translateX = 0;
+  #scale = 1;
+  #zoomedX;
   state = {
     data: null,
     labels: {
@@ -63,7 +68,7 @@ export default class Fluctuation extends PureComponent {
 
   #draw = hovered => {
     const { clientWidth: width, clientHeight: height } = this.#ref.current;
-    this.#graph.attr('width', width).attr('height', height);
+    this.#svg.attr('width', width).attr('height', height);
 
     const yValues = Object.entries(this.state.data).filter(
       ([key]) => key !== 'atom',
@@ -73,13 +78,14 @@ export default class Fluctuation extends PureComponent {
       .scaleLinear()
       .domain([0, this.state.data.atom[this.state.data.atom.length - 1]])
       .range([margin.left, width - margin.right]);
+    const _xAxis = d3
+      .axisBottom(x)
+      .ticks(width / 80)
+      .tickSizeOuter(0);
     const xAxis = g =>
-      g.attr('transform', `translate(0, ${height - margin.bottom})`).call(
-        d3
-          .axisBottom(x)
-          .ticks(width / 80)
-          .tickSizeOuter(0),
-      );
+      g
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call(_xAxis);
     const y = d3
       .scaleLinear()
       .domain([
@@ -119,7 +125,10 @@ export default class Fluctuation extends PureComponent {
     this.#graph.on('mousemove', () => {
       const closestAtom = Math.floor(
         Math.min(
-          Math.max(0, Math.round(x.invert(d3.event.layerX - 25))),
+          Math.max(
+            0,
+            Math.round((this.#zoomedX || x).invert(d3.event.layerX - 25)),
+          ),
           this.state.data.atom[this.state.data.atom.length - 1],
         ),
       );
@@ -128,7 +137,9 @@ export default class Fluctuation extends PureComponent {
         .attr(
           'transform',
           d =>
-            `translate(${x(this.state.data.atom[closestAtom])}, ${
+            `translate(${(this.#zoomedX || x)(
+              this.state.data.atom[closestAtom],
+            )}, ${
               d === 'atom'
                 ? height - margin.bottom
                 : y(this.state.data[d][closestAtom])
@@ -140,7 +151,9 @@ export default class Fluctuation extends PureComponent {
         .attr(
           'transform',
           d =>
-            `translate(${x(this.state.data.atom[closestAtom])}, ${
+            `translate(${(this.#zoomedX || x)(
+              this.state.data.atom[closestAtom],
+            )}, ${
               d === 'atom'
                 ? height - margin.bottom - 7
                 : y(this.state.data[d][closestAtom]) - 7
@@ -178,6 +191,25 @@ export default class Fluctuation extends PureComponent {
       .attr('stroke-width', d => (hovered === d ? 3 : 1.5))
       .attr('d', d => lineFn(this.state.data[d]));
 
+    //   const dataPointGroups = this.#graph
+    //   .selectAll('g.rmsf-data')
+    //   .data(yValues.map(d => d[0]))
+    //   .enter()
+    //   .append('g')
+    //   .attr('class', ([key]) => `rmsf-data ${key}`);
+    // const dataPoints = dataPointGroups.selectAll('circle').data(yValues[0][1]);
+    // dataPoints
+    //   .enter()
+    //   .append('circle')
+    //   .attr('r', 1)
+    //   .attr('fill', colors.rmsf)
+    //   .style('paint-order', 'stroke')
+    //   .attr('stroke', 'rgba(0, 0, 0, 0.5)')
+    //   .attr('stroke-width', 1)
+    //   .merge(dataPoints)
+    //   .transition()
+    //   .attr('cx', (_, i) => x(i))
+    //   .attr('cy', d => y(d));
     const dataPointGroups = this.#graph
       .selectAll('g.rmsf-data')
       .data(yValues.map(d => d[0]))
@@ -187,16 +219,17 @@ export default class Fluctuation extends PureComponent {
     const dataPoints = dataPointGroups.selectAll('circle').data(yValues[0][1]);
     dataPoints
       .enter()
-      .append('circle')
-      .attr('r', 1)
+      .append('rect')
+      .attr('height', 1)
+      .attr('width', 1)
       .attr('fill', colors.rmsf)
       .style('paint-order', 'stroke')
       .attr('stroke', 'rgba(0, 0, 0, 0.5)')
       .attr('stroke-width', 1)
       .merge(dataPoints)
       .transition()
-      .attr('cx', (_, i) => x(i))
-      .attr('cy', d => y(d));
+      .attr('x', (_, i) => x(i))
+      .attr('y', d => y(d));
 
     const dotsGroups = this.#graph
       .selectAll('g.dot-data')
@@ -221,6 +254,27 @@ export default class Fluctuation extends PureComponent {
       .attr('stroke', 'rgba(255, 255, 255, 0.5)')
       .attr('stroke-width', 5)
       .attr('opacity', 0);
+
+    // this.#zoom.scaleExtent([1, (4 * this.state.data.atom.length) / width]);
+    this.#zoom
+      .scaleExtent([1, +Infinity])
+      .translateExtent([[margin.left, 0], [width - margin.right, 1]])
+      .extent([[margin.left, 0], [width - margin.right, 1]]);
+    // this.#zoom.translateExtent([
+    //   [-margin.left, margin.bottom],
+    //   [width - margin.right, height - margin.top],
+    // ]);
+    this.#zoom.on('zoom', () => {
+      this.#translateX = d3.event.transform.x;
+      this.#scale = d3.event.transform.k;
+      this.#zoomedX = d3.event.transform.rescaleX(x);
+      this.#axes.x.call(_xAxis.scale(this.#zoomedX));
+      this.#graph
+        .selectAll('g.rmsf-data rect')
+        .transition()
+        .attr('x', (_, i) => this.#zoomedX(i))
+        .attr('width', (_, i) => this.#zoomedX(i + 1) - this.#zoomedX(i));
+    });
   };
 
   #handleChange = ({ currentTarget }) => {
@@ -245,9 +299,12 @@ export default class Fluctuation extends PureComponent {
     const { accession } = this.props.match.params;
     const response = await fetch(BASE_PATH + accession + '/md.rmsf.xvg');
     const processed = rawTextToData(await response.text());
+    this.#zoom = d3.zoom();
     this.setState({ ...processed }, () => {
       if (!this.#ref.current) return;
-      this.#graph = d3.select(this.#ref.current).append('svg');
+      this.#svg = d3.select(this.#ref.current).append('svg');
+      this.#svg.call(this.#zoom);
+      this.#graph = this.#svg.append('g');
       this.#axes = {
         x: this.#graph.append('g'),
         y: this.#graph.append('g'),
