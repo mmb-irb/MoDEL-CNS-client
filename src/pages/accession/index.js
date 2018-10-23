@@ -9,6 +9,7 @@ import Rgyr from './rgyr';
 import Fluctuation from './fluctuation';
 
 import { BASE_PATH } from '../../utils/constants';
+import accessionToPDBAccession from '../../utils/accession-to-pdb-accession';
 
 class Accession extends PureComponent {
   state = {
@@ -18,10 +19,17 @@ class Accession extends PureComponent {
 
   async componentDidMount() {
     const { accession } = this.props.match.params;
+    const pdbAccession = accessionToPDBAccession(accession);
     // (1) load NGL library
     const NGLPromise = import('ngl');
     // (2) query PDB data
-    const blobPromise = fetch(BASE_PATH + accession + '/md.imaged.rot.dry.pdb')
+    const blobPromise = fetch(
+      BASE_PATH +
+        accession +
+        (accession.endsWith('_mb')
+          ? '/md.imaged.rot.dry.pdb'
+          : `/${pdbAccession}.dry.pdb`),
+    )
       // (2) and load in memory
       .then(response => response.blob());
     // do (1) & (2) in parallel, wait for both to finish

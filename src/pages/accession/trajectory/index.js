@@ -236,11 +236,13 @@ export default class Trajectory extends PureComponent {
               >
                 {smooth ? <BurstMode /> : <Videocam />}
               </IconButton>
-              <OpacitySlider
-                title="Change membrane opacity"
-                value={membraneOpacity * 100}
-                handleChange={this.#handleMembraneOpacityChange}
-              />
+              {match.params.accession.endsWith('_mb') && (
+                <OpacitySlider
+                  title="Change membrane opacity"
+                  value={membraneOpacity * 100}
+                  handleChange={this.#handleMembraneOpacityChange}
+                />
+              )}
             </div>
           </CardContent>
         </Card>

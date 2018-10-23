@@ -164,6 +164,7 @@ export default class Fluctuation extends PureComponent {
           const atom = this.props.pdbData.atomMap.get(
             this.props.pdbData.atomStore.atomTypeId[closestAtom],
           );
+          if (!atom) return closestAtom + 1;
           return `${closestAtom + 1}: ${atom.atomname} - ${atom.element}`;
         })
         .attr('opacity', 1);
