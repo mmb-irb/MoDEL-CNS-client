@@ -48,9 +48,9 @@ export default () => (
       <Button component={Link} color="inherit" to="/browse">
         Browse
       </Button>
-      <Button component={Link} color="inherit" to="/help">
+      {/* <Button component={Link} color="inherit" to="/help">
         Help
-      </Button>
+      </Button> */}
       <Button component={Link} color="inherit" to="/contact">
         Contact
       </Button>

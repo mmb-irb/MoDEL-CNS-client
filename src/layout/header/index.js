@@ -7,7 +7,7 @@ const Header = () => (
   <AppBar position="sticky">
     <Toolbar>
       <Typography variant="h6" color="inherit">
-        Human Brain Project
+        MoDEL_CNS
       </Typography>
       <Menu />
     </Toolbar>

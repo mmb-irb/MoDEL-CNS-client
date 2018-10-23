@@ -14,12 +14,13 @@ import Footer from '../layout/footer';
 import Home from '../pages/home';
 import Browse from '../pages/browse';
 import Accession from '../pages/accession';
+import Contact from '../pages/contact';
 
 const theme = createMuiTheme({
-  palette:  {
+  palette: {
     primary: blueGrey,
     secondary: lightGreen,
-  }
+  },
 });
 
 const Root = () => (
@@ -29,6 +30,7 @@ const Root = () => (
       <Main>
         <Switch>
           <Route path="/" exact component={Home} />
+          <Route path="/contact" exact component={Contact} />
           <Route path="/browse" exact component={Browse} />
           <Redirect
             from="/browse/:accession"
@@ -45,4 +47,3 @@ const Root = () => (
 );
 
 export default Root;
-

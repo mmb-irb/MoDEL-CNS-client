@@ -1,0 +1,24 @@
+.card {
+  margin: 1em 0;
+}
+
+.card-content > :not(:first-of-type) {
+  margin: 1em 0;
+}
+
+.card-content img {
+  float: left;
+  max-width: 50%;
+}
+
+.with-background {
+  border-left: 1ch solid lightblue;
+  background: lightcyan;
+  padding-left: 1ch;
+}
+
+.browse-fab {
+  position: fixed !important;
+  bottom: 6vh;
+  right: 6vw;
+}
