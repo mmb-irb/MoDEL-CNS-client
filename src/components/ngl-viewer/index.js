@@ -20,6 +20,7 @@ class NGLViewer extends PureComponent {
     membraneOpacity: T.number.isRequired,
   };
 
+  state = { loadingTrajectory: true };
   #ref = React.createRef();
   #stage;
   #trajectory;
@@ -107,7 +108,9 @@ class NGLViewer extends PureComponent {
     return (
       <div
         ref={this.#ref}
-        className={cn(this.props.className, style.container)}
+        className={cn(this.props.className, style.container, {
+          [style['loading-trajectory']]: this.state.loadingTrajectory,
+        })}
       />
     );
   }
@@ -144,6 +147,8 @@ class NGLViewer extends PureComponent {
       BASE_PATH + this.props.accession + '/md.traj.500.dcd',
       { ext: 'dcd' },
     );
+
+    this.setState({ loadingTrajectory: false });
 
     structureComponent.addTrajectory(frames);
 
