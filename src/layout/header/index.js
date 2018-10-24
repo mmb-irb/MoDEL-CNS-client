@@ -8,7 +8,11 @@ import logo from '../../images/logo.png';
 const Header = () => (
   <AppBar position="sticky">
     <Toolbar>
-      <img src={logo} width="200px" alt="MoDEL_CNS" />
+      <img
+        src={logo}
+        width="200px"
+        alt="MoDEL - Centra Nervous System - Logo"
+      />
       <Menu />
     </Toolbar>
   </AppBar>

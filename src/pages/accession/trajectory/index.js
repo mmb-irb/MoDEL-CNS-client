@@ -111,7 +111,6 @@ class TrajectoryStats extends PureComponent {
         <legend>
           <Typography variant="h6">Statistics</Typography>
         </legend>
-
         {stats ? (
           <>
             <fieldset>
