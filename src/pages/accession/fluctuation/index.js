@@ -216,17 +216,17 @@ export default class Fluctuation extends PureComponent {
       .data(yValues.map(d => d[0]))
       .enter()
       .append('g')
-      .attr('class', ([key]) => `rmsf-data ${key}`);
+      .attr('class', ([key]) => `rmsf-data ${key}`)
+      .attr('fill', colors.rmsf)
+      .style('paint-order', 'stroke')
+      .attr('stroke', 'rgba(0, 0, 0, 0.5)')
+      .attr('stroke-width', 1);
     const dataPoints = dataPointGroups.selectAll('circle').data(yValues[0][1]);
     dataPoints
       .enter()
       .append('rect')
       .attr('height', 1)
       .attr('width', 1)
-      .attr('fill', colors.rmsf)
-      .style('paint-order', 'stroke')
-      .attr('stroke', 'rgba(0, 0, 0, 0.5)')
-      .attr('stroke-width', 1)
       .merge(dataPoints)
       .transition()
       .attr('x', (_, i) => x(i))
