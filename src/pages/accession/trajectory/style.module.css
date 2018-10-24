@@ -1,8 +1,12 @@
+.card {
+  margin: 1em 0;
+}
+
 .card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 500px
+  height: 500px;
 }
 
 @media (min-width: 960px) {
@@ -32,11 +36,17 @@
   z-index: 0;
 }
 
-.progress:hover, .container:hover ~ .progress {
+.progress:hover,
+.container:hover ~ .progress {
   transform: translateY(0);
   opacity: 1;
 }
 
 .progress * {
   transition: none !important;
+}
+
+.text-field {
+  width: 20ch;
+  margin: 0 1ch !important;
 }

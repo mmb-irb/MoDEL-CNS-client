@@ -5,10 +5,13 @@ import screenfull from 'screenfull';
 import {
   Card,
   CardContent,
+  Typography,
   LinearProgress,
   IconButton,
   Popover,
   Paper,
+  TextField,
+  InputAdornment,
 } from '@material-ui/core';
 import {
   SkipPrevious,
@@ -26,6 +29,8 @@ import {
 import { Slider } from '@material-ui/lab';
 
 import NGLViewer from '../../../components/ngl-viewer';
+
+import { BASE_PATH } from '../../../utils/constants';
 
 import style from './style.module.css';
 
@@ -70,6 +75,272 @@ class OpacitySlider extends PureComponent {
           </Paper>
         </Popover>
       </>
+    );
+  }
+}
+
+const NEW_LINE = /\s*\n\s*/;
+const rawTextToData = text => {
+  const output = {};
+  text
+    .split(NEW_LINE)
+    .filter(Boolean)
+    .map(line =>
+      line
+        .split(',')
+        .map(cell => cell.trim())
+        .filter(Boolean),
+    )
+    .forEach(([key, value]) => (output[key] = value));
+  return output;
+};
+
+class TrajectoryStats extends PureComponent {
+  state = { stats: null };
+  async componentDidMount() {
+    const { accession } = this.props;
+    const response = await fetch(BASE_PATH + accession + '/metadata');
+    const stats = rawTextToData(await response.text());
+    this.setState({ stats });
+  }
+
+  render() {
+    const { stats } = this.state;
+    return (
+      <fieldset>
+        <legend>
+          <Typography variant="h6">Statistics</Typography>
+        </legend>
+
+        {stats ? (
+          <>
+            <fieldset>
+              <legend>Counts</legend>
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Atoms"
+                title="Total number of atoms in the system"
+                value={stats.SYSTATS}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Proteins"
+                title="Number of protein atoms in the system"
+                value={stats.PROTATS}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Proteins residues"
+                title="Number of protein residues in the system"
+                value={stats.PROT}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Membrane molecules"
+                title="Number of membrane molecules in the system"
+                value={stats.DPPC}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Solvent molecules"
+                title="Number of solvent molecules in the system"
+                value={stats.SOL}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Positive ions"
+                title="Number of positively charged ions in the system"
+                value={stats.NA}
+              />
+              <TextField
+                readOnly
+                helperText="Negative ions"
+                title="Number of negatively charged ions in the system"
+                value={stats.CL}
+              />
+            </fieldset>
+            <fieldset>
+              <legend>Simulation box</legend>
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Type"
+                title="Box type"
+                value={stats.BOXTYPE}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Size X"
+                title="Simulated system box X dimension"
+                value={stats.BOXSIZEX}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      nm
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Size Y"
+                title="Simulated system box Y dimension"
+                value={stats.BOXSIZEY}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      nm
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Size Z"
+                title="Simulated system box Z dimension"
+                value={stats.BOXSIZEZ}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      nm
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Volume"
+                title="Simulated system box volume"
+                value={
+                  Math.round(
+                    +stats.BOXSIZEX * +stats.BOXSIZEY * +stats.BOXSIZEZ * 1e5,
+                  ) / 1e5
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      nm³
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </fieldset>
+            <fieldset>
+              <legend>Other</legend>
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Length"
+                title="Simulation length"
+                value={stats.LENGTH}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      ns
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Timestep"
+                title="Simulation timestep"
+                value={stats.TIMESTEP}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      fs
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Snapshots"
+                title="Number of snapshots"
+                value={stats.SNAPSHOTS}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Frequency"
+                title="Frequency of snapshots"
+                value={stats.FREQUENCY}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      ps
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Force field"
+                title="Force field"
+                value={stats.FF}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Temperature"
+                title="Temperature"
+                value={stats.TEMP}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      K
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Water type"
+                title="Water type"
+                value={stats.WAT}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Ensemble"
+                title="Simulation ensemble"
+                value={stats.ENSEMBLE}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Pressure coupling"
+                title="Pressure coupling method"
+                value={stats.PCOUPLING}
+              />
+              <TextField
+                className={style['text-field']}
+                readOnly
+                helperText="Membrane"
+                title="Membrane type"
+                value={stats.MEMBRANE}
+              />
+            </fieldset>
+          </>
+        ) : (
+          'loading'
+        )}
+      </fieldset>
     );
   }
 }
@@ -169,84 +440,91 @@ export default class Trajectory extends PureComponent {
       membraneOpacity,
     } = this.state;
     return (
-      <div
-        className={cn(style['fullscreen-target'], {
-          [style['is-fullscreen']]: isFullscreen,
-        })}
-        ref={this.#ref}
-      >
-        <Card>
-          <CardContent className={style['card-content']}>
-            <NGLViewer
-              accession={match.params.accession}
-              ngl={ngl}
-              pdbData={pdbData}
-              isFullscreen={isFullscreen}
-              playing={playing}
-              membraneOpacity={membraneOpacity}
-              onProgress={this.#handleProgress}
-              className={style.container}
-              ref={this.#viewerRef}
-            />
-            <div
-              className={style.progress}
-              onClick={this.#handleManualProgress}
-            >
-              <LinearProgress
-                variant="determinate"
-                color="secondary"
-                value={progress * 100}
-              />
-            </div>
-            <div>
-              <IconButton title="Previous frame" onClick={this.#handlePrev}>
-                <SkipPrevious />
-              </IconButton>
-              <IconButton
-                title={playing ? 'Pause' : 'Play'}
-                onClick={this.#togglePlay}
-              >
-                {playing ? <Pause /> : <PlayArrow />}
-              </IconButton>
-              <IconButton title="Next frame" onClick={this.#handleNext}>
-                <SkipNext />
-              </IconButton>
-              {screenfull.enabled && (
-                <IconButton
-                  title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
-                  onClick={this.#toggleFullscreen}
-                >
-                  {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
-                </IconButton>
-              )}
-              <IconButton title="Toggle spin" onClick={this.#toggleSpin}>
-                <ThreeSixty />
-              </IconButton>
-              <IconButton title="Center focus" onClick={this.#centerFocus}>
-                <CenterFocusStrong />
-              </IconButton>
-              <IconButton
-                title={`Toggle smooth interpolation ${
-                  smooth
-                    ? 'off'
-                    : 'on (may display artifacts for simulation box border atoms)'
-                }`}
-                onClick={this.#toggleSmooth}
-                disabled={!playing}
-              >
-                {smooth ? <BurstMode /> : <Videocam />}
-              </IconButton>
-              {match.params.accession.endsWith('_mb') && (
-                <OpacitySlider
-                  title="Change membrane opacity"
-                  value={membraneOpacity * 100}
-                  handleChange={this.#handleMembraneOpacityChange}
-                />
-              )}
-            </div>
+      <>
+        <Card className={style.card}>
+          <CardContent>
+            <TrajectoryStats accession={match.params.accession} />
           </CardContent>
         </Card>
-      </div>
+        <div
+          className={cn(style['fullscreen-target'], {
+            [style['is-fullscreen']]: isFullscreen,
+          })}
+          ref={this.#ref}
+        >
+          <Card className={style.card}>
+            <CardContent className={style['card-content']}>
+              <NGLViewer
+                accession={match.params.accession}
+                ngl={ngl}
+                pdbData={pdbData}
+                isFullscreen={isFullscreen}
+                playing={playing}
+                membraneOpacity={membraneOpacity}
+                onProgress={this.#handleProgress}
+                className={style.container}
+                ref={this.#viewerRef}
+              />
+              <div
+                className={style.progress}
+                onClick={this.#handleManualProgress}
+              >
+                <LinearProgress
+                  variant="determinate"
+                  color="secondary"
+                  value={progress * 100}
+                />
+              </div>
+              <div>
+                <IconButton title="Previous frame" onClick={this.#handlePrev}>
+                  <SkipPrevious />
+                </IconButton>
+                <IconButton
+                  title={playing ? 'Pause' : 'Play'}
+                  onClick={this.#togglePlay}
+                >
+                  {playing ? <Pause /> : <PlayArrow />}
+                </IconButton>
+                <IconButton title="Next frame" onClick={this.#handleNext}>
+                  <SkipNext />
+                </IconButton>
+                {screenfull.enabled && (
+                  <IconButton
+                    title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
+                    onClick={this.#toggleFullscreen}
+                  >
+                    {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+                  </IconButton>
+                )}
+                <IconButton title="Toggle spin" onClick={this.#toggleSpin}>
+                  <ThreeSixty />
+                </IconButton>
+                <IconButton title="Center focus" onClick={this.#centerFocus}>
+                  <CenterFocusStrong />
+                </IconButton>
+                <IconButton
+                  title={`Toggle smooth interpolation ${
+                    smooth
+                      ? 'off'
+                      : 'on (may display artifacts for simulation box border atoms)'
+                  }`}
+                  onClick={this.#toggleSmooth}
+                  disabled={!playing}
+                >
+                  {smooth ? <BurstMode /> : <Videocam />}
+                </IconButton>
+                {match.params.accession.endsWith('_mb') && (
+                  <OpacitySlider
+                    title="Change membrane opacity"
+                    value={membraneOpacity * 100}
+                    handleChange={this.#handleMembraneOpacityChange}
+                  />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     );
   }
 }
