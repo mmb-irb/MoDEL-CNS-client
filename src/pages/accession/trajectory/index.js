@@ -119,48 +119,49 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Atoms"
+                label="Atoms"
                 title="Total number of atoms in the system"
                 value={stats.SYSTATS}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Proteins"
+                label="Proteins"
                 title="Number of protein atoms in the system"
                 value={stats.PROTATS}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Proteins residues"
+                label="Proteins residues"
                 title="Number of protein residues in the system"
                 value={stats.PROT}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Membrane molecules"
+                label="Membrane molecules"
                 title="Number of membrane molecules in the system"
                 value={stats.DPPC}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Solvent molecules"
+                label="Solvent molecules"
                 title="Number of solvent molecules in the system"
                 value={stats.SOL}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Positive ions"
+                label="Positive ions"
                 title="Number of positively charged ions in the system"
                 value={stats.NA}
               />
               <TextField
+                className={style['text-field']}
                 readOnly
-                helperText="Negative ions"
+                label="Negative ions"
                 title="Number of negatively charged ions in the system"
                 value={stats.CL}
               />
@@ -170,14 +171,14 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Type"
+                label="Type"
                 title="Box type"
                 value={stats.BOXTYPE}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Size X"
+                label="Size X"
                 title="Simulated system box X dimension"
                 value={stats.BOXSIZEX}
                 InputProps={{
@@ -191,7 +192,7 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Size Y"
+                label="Size Y"
                 title="Simulated system box Y dimension"
                 value={stats.BOXSIZEY}
                 InputProps={{
@@ -205,7 +206,7 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Size Z"
+                label="Size Z"
                 title="Simulated system box Z dimension"
                 value={stats.BOXSIZEZ}
                 InputProps={{
@@ -219,7 +220,7 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Volume"
+                label="Volume"
                 title="Simulated system box volume"
                 value={
                   Math.round(
@@ -240,7 +241,7 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Length"
+                label="Length"
                 title="Simulation length"
                 value={stats.LENGTH}
                 InputProps={{
@@ -254,7 +255,7 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Timestep"
+                label="Timestep"
                 title="Simulation timestep"
                 value={stats.TIMESTEP}
                 InputProps={{
@@ -268,14 +269,14 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Snapshots"
+                label="Snapshots"
                 title="Number of snapshots"
                 value={stats.SNAPSHOTS}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Frequency"
+                label="Frequency"
                 title="Frequency of snapshots"
                 value={stats.FREQUENCY}
                 InputProps={{
@@ -289,14 +290,14 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Force field"
+                label="Force field"
                 title="Force field"
                 value={stats.FF}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Temperature"
+                label="Temperature"
                 title="Temperature"
                 value={stats.TEMP}
                 InputProps={{
@@ -310,28 +311,28 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Water type"
+                label="Water type"
                 title="Water type"
                 value={stats.WAT}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Ensemble"
+                label="Ensemble"
                 title="Simulation ensemble"
                 value={stats.ENSEMBLE}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Pressure coupling"
+                label="Pressure coupling"
                 title="Pressure coupling method"
                 value={stats.PCOUPLING}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                helperText="Membrane"
+                label="Membrane"
                 title="Membrane type"
                 value={stats.MEMBRANE}
               />
