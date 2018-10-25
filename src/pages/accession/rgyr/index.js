@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { omit } from 'lodash-es';
+import { omit, round } from 'lodash-es';
 import * as d3 from 'd3';
 import {
   Card,
@@ -66,6 +66,8 @@ const PRECISION = 100;
 
 export default class Rgyr extends PureComponent {
   #ref = React.createRef();
+  #zoom;
+  #svg;
   #graph;
   #axes;
   state = {
@@ -80,7 +82,7 @@ export default class Rgyr extends PureComponent {
 
   #draw = hovered => {
     const { clientWidth: width, clientHeight: height } = this.#ref.current;
-    this.#graph.attr('width', width).attr('height', height);
+    this.#svg.attr('width', width).attr('height', height);
 
     const yValues = Object.entries(this.state.data).filter(
       ([key]) => key !== 'time',
@@ -138,7 +140,7 @@ export default class Rgyr extends PureComponent {
     );
     this.#axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
 
-    this.#graph.on('mousemove', () => {
+    this.#svg.on('mousemove', () => {
       // this.#axes.yBrush
       //   .attr('opacity', 1)
       //   .attr(
@@ -201,7 +203,7 @@ export default class Rgyr extends PureComponent {
         .text(
           d =>
             d === 'time'
-              ? closestTime / 100 / this.state.data.time[1]
+              ? round(closestTime / 100 / this.state.data.time[1], 2)
               : formatter(
                   this.state.data[d].filter((_, i) => i % PRECISION === 0)[
                     Math.round(
@@ -212,7 +214,7 @@ export default class Rgyr extends PureComponent {
         )
         .attr('opacity', 1);
     });
-    this.#graph.on('mouseleave', () => {
+    this.#svg.on('mouseleave', () => {
       this.#graph.selectAll('g.dot-data circle').attr('opacity', 0);
       this.#graph.selectAll('g.dot-data text').attr('opacity', 0);
     });
@@ -223,7 +225,7 @@ export default class Rgyr extends PureComponent {
     lines
       .enter()
       .append('path')
-      .attr('class', ([key]) => `rg-data ${key}`)
+      .attr('class', key => `rg-data ${key}`)
       .attr('fill', 'none')
       .attr('stroke', d => colors[d])
       .attr('stroke-linejoin', 'round')
@@ -291,6 +293,26 @@ export default class Rgyr extends PureComponent {
     //       ),
     //     ),
     //   );
+    this.#zoom
+      .scaleExtent([1, +Infinity])
+      .translateExtent([[margin.left, 0], [width - margin.right, 1]])
+      .extent([[margin.left, 0], [width - margin.right, 1]]);
+
+    this.#zoom.on('zoom', () => {
+      console.log(
+        Object.values(d3.event.transform),
+        d3.event.transform.toString(),
+      );
+      //   this.#translateX = d3.event.transform.x;
+      //   this.#scale = d3.event.transform.k;
+      //   this.#zoomedX = d3.event.transform.rescaleX(x);
+      //   this.#axes.x.call(_xAxis.scale(this.#zoomedX));
+      //   this.#graph
+      //     .selectAll('g.rmsf-data rect')
+      //     .transition()
+      //     .attr('x', (_, i) => this.#zoomedX(i))
+      //     .attr('width', (_, i) => this.#zoomedX(i + 1) - this.#zoomedX(i));
+    });
   };
 
   #handleChange = ({ currentTarget }) => {
@@ -315,9 +337,12 @@ export default class Rgyr extends PureComponent {
     const { accession } = this.props.match.params;
     const response = await fetch(BASE_PATH + accession + '/md.rgyr.xvg');
     const processed = rawTextToData(await response.text());
+    this.#zoom = d3.zoom();
     this.setState({ ...processed }, () => {
       if (!this.#ref.current) return;
-      this.#graph = d3.select(this.#ref.current).append('svg');
+      this.#svg = d3.select(this.#ref.current).append('svg');
+      this.#svg.call(this.#zoom);
+      this.#graph = this.#svg.append('g');
       this.#axes = {
         x: this.#graph.append('g'),
         y: this.#graph.append('g'),

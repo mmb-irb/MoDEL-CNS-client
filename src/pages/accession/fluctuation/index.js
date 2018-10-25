@@ -122,18 +122,18 @@ export default class Fluctuation extends PureComponent {
     );
     this.#axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
 
-    this.#graph.on('mousemove', () => {
+    this.#svg.on('mousemove', () => {
       const closestAtom = Math.floor(
         Math.min(
           Math.max(
             0,
-            Math.round((this.#zoomedX || x).invert(d3.event.layerX - 25)),
+            Math.floor((this.#zoomedX || x).invert(d3.event.layerX - 25)),
           ),
           this.state.data.atom[this.state.data.atom.length - 1],
         ),
       );
       this.#graph
-        .selectAll('g.dot-data circle')
+        .selectAll('g.dot-data rect')
         .attr(
           'transform',
           d =>
@@ -169,8 +169,8 @@ export default class Fluctuation extends PureComponent {
         })
         .attr('opacity', 1);
     });
-    this.#graph.on('mouseleave', () => {
-      this.#graph.selectAll('g.dot-data circle').attr('opacity', 0);
+    this.#svg.on('mouseleave', () => {
+      this.#graph.selectAll('g.dot-data rect').attr('opacity', 0);
       this.#graph.selectAll('g.dot-data text').attr('opacity', 0);
     });
 
@@ -240,10 +240,11 @@ export default class Fluctuation extends PureComponent {
       .append('g')
       .attr('class', 'dot-data');
     dotsGroups
-      .append('circle')
-      .attr('cx', 0)
-      .attr('cy', 0)
-      .attr('r', 5)
+      .append('rect')
+      .attr('x', -1)
+      .attr('y', -2.5)
+      .attr('height', 5)
+      .attr('width', 1)
       .attr('fill', d => colors[d])
       .attr('opacity', 0);
     dotsGroups
@@ -275,6 +276,11 @@ export default class Fluctuation extends PureComponent {
         .transition()
         .attr('x', (_, i) => this.#zoomedX(i))
         .attr('width', (_, i) => this.#zoomedX(i + 1) - this.#zoomedX(i));
+      this.#graph
+        .selectAll('g.dot-data rect')
+        .transition()
+        .attr('width', this.#zoomedX(2) - this.#zoomedX(1))
+        .attr('x', -this.#zoomedX(2) + this.#zoomedX(1));
     });
   };
 

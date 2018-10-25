@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { omit } from 'lodash-es';
+import { omit, round } from 'lodash-es';
 import * as d3 from 'd3';
 import {
   Card,
@@ -186,7 +186,7 @@ export default class RMSd extends PureComponent {
         .text(
           d =>
             d === 'time'
-              ? closestTime / 100 / this.state.data.time[1]
+              ? round(closestTime / 100 / this.state.data.time[1])
               : formatter(
                   this.state.data[d].filter((_, i) => i % PRECISION === 0)[
                     Math.round(
@@ -208,7 +208,7 @@ export default class RMSd extends PureComponent {
     lines
       .enter()
       .append('path')
-      .attr('class', ([key]) => `rmsd-data ${key}`)
+      .attr('class', key => `rmsd-data ${key}`)
       .attr('fill', 'none')
       .attr('stroke', d => colors[d])
       .attr('stroke-linejoin', 'round')

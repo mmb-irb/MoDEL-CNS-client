@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import cn from 'classnames';
 import screenfull from 'screenfull';
+import { round } from 'lodash-es';
 
 import {
   Card,
@@ -221,11 +222,10 @@ class TrajectoryStats extends PureComponent {
                 readOnly
                 label="Volume"
                 title="Simulated system box volume"
-                value={
-                  Math.round(
-                    +stats.BOXSIZEX * +stats.BOXSIZEY * +stats.BOXSIZEZ * 1e5,
-                  ) / 1e5
-                }
+                value={round(
+                  +stats.BOXSIZEX * +stats.BOXSIZEY * +stats.BOXSIZEZ * 1e5,
+                  5,
+                )}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment variant="filled" position="end">
