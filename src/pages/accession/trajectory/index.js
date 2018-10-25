@@ -223,7 +223,7 @@ class TrajectoryStats extends PureComponent {
                 label="Volume"
                 title="Simulated system box volume"
                 value={round(
-                  +stats.BOXSIZEX * +stats.BOXSIZEY * +stats.BOXSIZEZ * 1e5,
+                  +stats.BOXSIZEX * +stats.BOXSIZEY * +stats.BOXSIZEZ,
                   5,
                 )}
                 InputProps={{
