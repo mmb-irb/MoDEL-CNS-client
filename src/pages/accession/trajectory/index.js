@@ -119,14 +119,14 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                label="Atoms"
+                label="System atoms"
                 title="Total number of atoms in the system"
                 value={stats.SYSTATS}
               />
               <TextField
                 className={style['text-field']}
                 readOnly
-                label="Proteins"
+                label="Proteins atoms"
                 title="Number of protein atoms in the system"
                 value={stats.PROTATS}
               />
@@ -140,7 +140,7 @@ class TrajectoryStats extends PureComponent {
               <TextField
                 className={style['text-field']}
                 readOnly
-                label="Membrane molecules"
+                label="Phospholipids"
                 title="Number of membrane molecules in the system"
                 value={stats.DPPC}
               />
