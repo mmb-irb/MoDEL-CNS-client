@@ -144,7 +144,7 @@ class NGLViewer extends PureComponent {
     this.centerFocus();
     // load frames
     const frames = await this.props.ngl.autoLoad(
-      BASE_PATH + this.props.accession + '/md.traj.500.dcd',
+      BASE_PATH + this.props.accession + '/md.traj.50.dcd',
       { ext: 'dcd' },
     );
 

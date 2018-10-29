@@ -80,7 +80,7 @@ export default class Rgyr extends PureComponent {
     },
   };
 
-  #draw = hovered => {
+  #draw = (hovered, transform = { x: 0, y: 0, k: 1 }) => {
     const { clientWidth: width, clientHeight: height } = this.#ref.current;
     this.#svg.attr('width', width).attr('height', height);
 
@@ -90,7 +90,11 @@ export default class Rgyr extends PureComponent {
 
     const x = d3
       .scaleLinear()
-      .domain([0, this.state.data.time[this.state.data.time.length - 1]])
+      .domain([
+        -transform.x,
+        this.state.data.time[this.state.data.time.length - 1] / transform.k -
+          transform.x,
+      ])
       .range([margin.left, width - margin.right]);
     const xAxis = g =>
       g.attr('transform', `translate(0, ${height - margin.bottom})`).call(
@@ -297,12 +301,17 @@ export default class Rgyr extends PureComponent {
       .scaleExtent([1, +Infinity])
       .translateExtent([[margin.left, 0], [width - margin.right, 1]])
       .extent([[margin.left, 0], [width - margin.right, 1]]);
-
     this.#zoom.on('zoom', () => {
-      console.log(
-        Object.values(d3.event.transform),
-        d3.event.transform.toString(),
-      );
+      console.log(d3.event.transform.toString());
+      this.#draw(undefined, { ...d3.event.transform });
+      // this.#graph
+      //   .selectAll('path.rg-data')
+      //   .attr(
+      //     'transform',
+      //     `translate(0, ${d3.event.transform.y}) scale(${
+      //       d3.event.transform.k
+      //     }, 1)`,
+      //   );
       //   this.#translateX = d3.event.transform.x;
       //   this.#scale = d3.event.transform.k;
       //   this.#zoomedX = d3.event.transform.rescaleX(x);
