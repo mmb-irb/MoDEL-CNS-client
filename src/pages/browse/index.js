@@ -14,159 +14,76 @@ import {
 } from '@material-ui/core';
 import { Done } from '@material-ui/icons';
 
+import useAPI from '../../hooks/use-api';
 import Highlight from '../../components/highlight';
 
-import accessionToPDBAccession from '../../utils/accession-to-pdb-accession';
-import mounted from '../../utils/mounted';
-import { BASE_PATH } from '../../utils/constants';
+// import { BASE_PATH } from '../../utils/constants';
 
-/*
-<AutoSizer>
-  {({ height, width }) => (
-    <Table
-      width={width}
-      height={height}
-      headerHeight={20}
-      rowCount={data.length}
-      rowGetter={({ index }) => data[index]}
-      rowHeight={20}
-    >
-      <Column
-        label="Accession"
-        dataKey="accession"
-        width={100}
-        cellRenderer={({ cellData }) => (
-          <Link to={`/browse/${cellData}/overview`}>
-            {cellData}
-          </Link>
-        )}
-      />
-    </Table>
-  )}
-</AutoSizer>
-*/
+export default ({ location }) => {
+  const { loading, payload, error } = useAPI(
+    'http://localhost:8000/rest/current/projects/',
+  );
 
-const shouldBeFiltered = (accession, extra, search) => {
-  if (!search) return false;
-  const re = new RegExp(escapeRegExp(search), 'i');
-  if (re.test(accession)) return false;
-  if (!extra) return false;
-  for (const value of Object.values(extra)) {
-    if (typeof value === 'string' && re.test(value)) return false;
-  }
-  return true;
-};
-
-export default class Browse extends PureComponent {
-  state = { data: null, pdbData: null };
-
-  async componentDidMount() {
-    mounted.add(this);
-
-    /* TODO: change block when we have a real server */
-    const response1 = await fetch(BASE_PATH);
-    const wholeData = await response1.text();
-    const re = />([a-z0-9]{4}_[^</]+)\/</gi;
-    const projects = [];
-    let result;
-    while ((result = re.exec(wholeData))) {
-      if (result[1]) projects.push(result[1].toLowerCase());
-    }
-    /* end of block to change */
-
-    if (!mounted.has(this)) return;
-    this.setState({ data: projects });
-
-    const response2 = await fetch(
-      `https://www.rcsb.org/pdb/json/describePDB?structureId=${projects
-        .map(accessionToPDBAccession)
-        .join(',')}`,
-      {
-        headers: { Accept: 'application/json' },
-      },
-    );
-    const pdbData = await response2.json();
-    if (!mounted.has(this)) return;
-    this.setState({
-      pdbData: keyBy(pdbData, datum => datum.structureId.toLowerCase()),
-    });
+  if (loading) return 'loading';
+  if (error) {
+    console.error(error);
+    return 'Something wrong happened';
   }
 
-  componentWillUnmount() {
-    mounted.delete(this);
-  }
+  const { search } = parse(location.search, { ignoreQueryPrefix: true });
 
-  render() {
-    if (!this.state.data) return null;
-    const pdbData = this.state.pdbData || {};
-    const { search } = parse(this.props.location.search, {
-      ignoreQueryPrefix: true,
-    });
-    return (
-      <Card>
-        <CardContent>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>accession</TableCell>
-                <TableCell>PDB accession</TableCell>
-                <TableCell>name</TableCell>
-                <TableCell>membrane</TableCell>
-                <TableCell>preview</TableCell>
+  return (
+    <Card>
+      <CardContent>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>accession</TableCell>
+              <TableCell>PDB accession</TableCell>
+              <TableCell>name</TableCell>
+              <TableCell>membrane</TableCell>
+              <TableCell>preview</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {payload.projects.map(({ identifier, pdbInfo }) => (
+              <TableRow key={identifier}>
+                <TableCell>
+                  <Link to={`/browse/${identifier}/overview`}>
+                    <Highlight highlight={search}>{identifier}</Highlight>
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Highlight highlight={search}>
+                    {pdbInfo && pdbInfo._id}
+                  </Highlight>
+                </TableCell>
+                <TableCell>
+                  <Highlight highlight={search}>
+                    {pdbInfo && pdbInfo.compound}
+                  </Highlight>
+                </TableCell>
+                <TableCell>
+                  <Done />
+                </TableCell>
+                <TableCell>
+                  <img
+                    width="150px"
+                    height="150px"
+                    src={`//cdn.rcsb.org/images/hd/${pdbInfo._id
+                      .toLowerCase()
+                      .substr(
+                        1,
+                        2,
+                      )}/${pdbInfo._id.toLowerCase()}/${pdbInfo._id.toLowerCase()}.0_chimera_tm_350_350.png`}
+                    alt={`3D view of the ${pdbInfo._id.toLowerCase()} structure`}
+                  />
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {this.state.data.map(accession => {
-                const PDBAccession = accessionToPDBAccession(accession);
-                let imgSrc;
-                if (accession.endsWith('mb')) {
-                  imgSrc = `//cdn.rcsb.org/images/hd/${PDBAccession.substr(
-                    1,
-                    2,
-                  )}/${PDBAccession}/${PDBAccession}.0_chimera_tm_350_350.png`;
-                } else {
-                  imgSrc = `https://cdn.rcsb.org/images/rutgers/${PDBAccession.substr(
-                    1,
-                    2,
-                  )}/${PDBAccession}/${PDBAccession}.pdb1-250.jpg`;
-                }
-                const extra = pdbData[PDBAccession];
-                if (shouldBeFiltered(accession, extra, search)) return null;
-                return (
-                  <TableRow key={accession}>
-                    <TableCell>
-                      <Link to={`/browse/${accession}/overview`}>
-                        <Highlight highlight={search}>{accession}</Highlight>
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Highlight highlight={search}>
-                        {extra && extra.structureId}
-                      </Highlight>
-                    </TableCell>
-                    <TableCell>
-                      <Highlight highlight={search}>
-                        {extra && extra.title}
-                      </Highlight>
-                    </TableCell>
-                    <TableCell>
-                      {accession.endsWith('mb') && <Done />}
-                    </TableCell>
-                    <TableCell>
-                      <img
-                        width="150px"
-                        height="150px"
-                        src={imgSrc}
-                        alt={`3D view of the ${PDBAccession} structure`}
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    );
-  }
-}
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+};
