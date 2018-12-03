@@ -17,6 +17,9 @@ import Accession from '../pages/accession';
 import Contact from '../pages/contact';
 
 const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+  },
   palette: {
     primary: blueGrey,
     secondary: lightGreen,
