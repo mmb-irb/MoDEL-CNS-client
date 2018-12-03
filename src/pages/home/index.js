@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, Button, Typography } from '@material-ui/core';
+import { Card, CardContent, Fab, Typography } from '@material-ui/core';
 
 import style from './style.module.css';
 
@@ -51,15 +51,15 @@ const Home = () => (
         </Typography>
       </CardContent>
     </Card>
-    <Button
+    <Fab
       className={style['browse-fab']}
       component={Link}
       to="/browse"
-      variant="extendedFab"
+      variant="extended"
       color="primary"
     >
       Browse
-    </Button>
+    </Fab>
   </>
 );
 
