@@ -1,18 +1,19 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useRef, useEffect, useState } from 'react';
 import T from 'prop-types';
 import { debounce } from 'lodash-es';
 import cn from 'classnames';
+import * as ngl from 'ngl';
 
 import mounted from '../../utils/mounted';
 import { BASE_PATH } from '../../utils/constants';
 
 import style from './style.module.css';
+import useNGLFile from '../../hooks/use-ngl-file';
 
 class NGLViewer extends PureComponent {
   static propTypes = {
     onProgress: T.func,
     className: T.string,
-    ngl: T.object.isRequired,
     pdbData: T.object.isRequired,
     accession: T.string.isRequired,
     playing: T.bool,
@@ -121,12 +122,11 @@ class NGLViewer extends PureComponent {
     //   (disconnect in componentWillUnmount)
     window.addEventListener('resize', this.#handleResize);
     // create NGL Stage
-    this.#stage = new this.props.ngl.Stage(this.#ref.current);
-    // TODO: remove eventually, for now only for debugging purposes
-    window.stage = this.#stage;
+    this.#stage = new ngl.Stage(this.#ref.current);
+
     // add PDB data
     const structureComponent = this.#stage.addComponentFromObject(
-      this.props.pdbData,
+      this.props.pdbFile,
     );
     // default representation
     // this.#stage.defaultFileRepresentation(structureComponent);
@@ -143,14 +143,14 @@ class NGLViewer extends PureComponent {
     // make sure the view is centered
     this.centerFocus();
     // load frames
-    const frames = await this.props.ngl.autoLoad(
+    const frames = await ngl.autoLoad(
       BASE_PATH + this.props.accession + '/md.traj.50.dcd',
       { ext: 'dcd' },
     );
 
     this.setState({ loadingTrajectory: false });
 
-    structureComponent.addTrajectory(frames);
+    structureComponent.addTrajectory(this.props.dcdFile);
 
     this.#stage.compList[0].trajList[0].trajectory.signals.frameChanged.add(
       this.#handleFrameChange,
@@ -202,4 +202,69 @@ class NGLViewer extends PureComponent {
   }
 }
 
-export default NGLViewer;
+export default ({ accession, className, ...props }) => {
+  const { loading: loadingPDB, file: pdbFile } = useNGLFile(
+    `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
+    { defaultRepresentation: false, ext: 'pdb' },
+  );
+  const { loading: loadingDCD, file: dcdFile } = useNGLFile(
+    `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
+    { ext: 'dcd' },
+  );
+
+  const [stage, setStage] = useState(null);
+
+  const ref = useRef(null);
+
+  if (!stage && ref.current) {
+    const newStage = new ngl.Stage(ref.current);
+    console.log(newStage);
+    setStage(newStage);
+  }
+
+  if (stage && !stage.compList.length && pdbFile) {
+    const structureComponent = stage.addComponentFromObject(pdbFile);
+
+    structureComponent.autoView();
+
+    structureComponent.addRepresentation('cartoon', {
+      sele: 'not(hetero or water or ion)',
+      name: 'structure',
+    });
+    // membrane
+    structureComponent.addRepresentation('licorice', {
+      sele: '(not polymer or hetero) and not (water or ion)',
+      opacity: 0.5,
+      name: 'membrane',
+    });
+  }
+
+  if (
+    stage &&
+    stage.compList[0] &&
+    !stage.compList[0].trajList.length &&
+    dcdFile
+  ) {
+    const frames = stage.compList[0].addTrajectory(dcdFile);
+    frames.trajectory.player.play();
+  }
+
+  // if (!(pdbFile && dcdFile)) return 'Loading';
+
+  // return (
+  //   <NGLViewer accession={accession} pdbFile={pdbFile} dcdFile={dcdFile} />
+  // );
+  return (
+    <div
+      ref={ref}
+      className={cn(className, style.container, {
+        [style.loading]: loadingPDB || loadingDCD,
+      })}
+      data-loading={
+        loadingPDB || loadingDCD
+          ? `Loading ${loadingPDB ? 'structure' : 'trajectory'}…`
+          : undefined
+      }
+    />
+  );
+};

@@ -1,6 +1,5 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { keyBy, escapeRegExp } from 'lodash-es';
 import { parse } from 'qs';
 // import { AutoSizer, Table, Column } from 'react-virtualized';
 import {
@@ -14,15 +13,14 @@ import {
 } from '@material-ui/core';
 import { Done } from '@material-ui/icons';
 
-import useAPI from '../../hooks/use-api';
 import Highlight from '../../components/highlight';
 
-// import { BASE_PATH } from '../../utils/constants';
+import useAPI from '../../hooks/use-api';
+
+import { BASE_PATH } from '../../utils/constants';
 
 export default ({ location }) => {
-  const { loading, payload, error } = useAPI(
-    'http://localhost:8000/rest/current/projects/',
-  );
+  const { loading, payload, error } = useAPI(BASE_PATH);
 
   if (loading) return 'loading';
   if (error) {

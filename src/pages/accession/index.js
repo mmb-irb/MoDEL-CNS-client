@@ -8,8 +8,63 @@ import RMSd from './rmsd';
 import Rgyr from './rgyr';
 import Fluctuation from './fluctuation';
 
+import useAPI from '../../hooks/use-api';
+
 import { BASE_PATH } from '../../utils/constants';
 import accessionToPDBAccession from '../../utils/accession-to-pdb-accession';
+
+const Loading = () => 'Loading';
+
+const Error = ({ error }) => {
+  console.error(error);
+  return 'Something wrong happened';
+};
+
+const SummarySwitch = ({ payload }) => {
+  // return JSON.stringify(payload, null, 2);
+  return (
+    <Switch>
+      <Route
+        path="/browse/:accession/overview"
+        exact
+        render={() => <Overview pdbData={payload.pdbInfo} />}
+      />
+      <Route
+        path="/browse/:accession/trajectory"
+        exact
+        render={props => (
+          <Trajectory
+            {...props}
+            metadata={payload.metadata}
+            pdbData={payload.pdbInfo}
+          />
+        )}
+      />
+      {/* <Route path="/browse/:accession/rmsd" exact component={RMSd} />
+      <Route path="/browse/:accession/rgyr" exact component={Rgyr} />
+      <Route
+        path="/browse/:accession/fluctuation"
+        exact
+        component={props => <Fluctuation {...props} pdbData={pdbData} />}
+      /> */}
+    </Switch>
+  );
+};
+
+export default ({ match }) => {
+  const { accession } = match.params;
+
+  const { loading, payload, error } = useAPI(`${BASE_PATH}${accession}/`);
+
+  return (
+    <>
+      <Typography variant="h4">Accession: {accession}</Typography>
+      {loading && <Loading />}
+      {error && <Error error={error} />}
+      {payload && <SummarySwitch payload={payload} />}
+    </>
+  );
+};
 
 class Accession extends PureComponent {
   state = {
@@ -54,38 +109,8 @@ class Accession extends PureComponent {
         <Typography variant="h4">
           Accession: {this.props.match.params.accession}
         </Typography>
-        {pdbData && (
-          <>
-            <Switch marker="here">
-              <Route
-                path="/browse/:accession/overview"
-                exact
-                render={props => (
-                  <Overview {...props} ngl={ngl} pdbData={pdbData} />
-                )}
-              />
-              <Route
-                path="/browse/:accession/trajectory"
-                exact
-                render={props => (
-                  <Trajectory {...props} ngl={ngl} pdbData={pdbData} />
-                )}
-              />
-              <Route path="/browse/:accession/rmsd" exact component={RMSd} />
-              <Route path="/browse/:accession/rgyr" exact component={Rgyr} />
-              <Route
-                path="/browse/:accession/fluctuation"
-                exact
-                component={props => (
-                  <Fluctuation {...props} pdbData={pdbData} />
-                )}
-              />
-            </Switch>
-          </>
-        )}
+        {pdbData && <></>}
       </>
     );
   }
 }
-
-export default Accession;

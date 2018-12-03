@@ -31,6 +31,7 @@ import { Slider } from '@material-ui/lab';
 
 import NGLViewer from '../../../components/ngl-viewer';
 
+import useAPI from '../../../hooks/use-api/index';
 import { BASE_PATH } from '../../../utils/constants';
 
 import style from './style.module.css';
@@ -80,266 +81,236 @@ class OpacitySlider extends PureComponent {
   }
 }
 
-const NEW_LINE = /\s*\n\s*/;
-const rawTextToData = text => {
-  const output = {};
-  text
-    .split(NEW_LINE)
-    .filter(Boolean)
-    .map(line =>
-      line
-        .split(',')
-        .map(cell => cell.trim())
-        .filter(Boolean),
-    )
-    .forEach(([key, value]) => (output[key] = value));
-  return output;
-};
-
-class TrajectoryStats extends PureComponent {
-  state = { stats: null };
-  async componentDidMount() {
-    const { accession } = this.props;
-    const response = await fetch(BASE_PATH + accession + '/metadata');
-    const stats = rawTextToData(await response.text());
-    this.setState({ stats });
-  }
-
+class TrajectoryMetadata extends PureComponent {
   render() {
-    const { stats } = this.state;
+    const { metadata } = this.props;
     return (
       <fieldset>
         <legend>
           <Typography variant="h6">Statistics</Typography>
         </legend>
-        {stats ? (
-          <>
-            <fieldset>
-              <legend>Counts</legend>
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="System atoms"
-                title="Total number of atoms in the system"
-                value={stats.SYSTATS}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Proteins atoms"
-                title="Number of protein atoms in the system"
-                value={stats.PROTATS}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Proteins residues"
-                title="Number of protein residues in the system"
-                value={stats.PROT}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Phospholipids"
-                title="Number of membrane molecules in the system"
-                value={stats.DPPC}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Solvent molecules"
-                title="Number of solvent molecules in the system"
-                value={stats.SOL}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Positive ions"
-                title="Number of positively charged ions in the system"
-                value={stats.NA}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Negative ions"
-                title="Number of negatively charged ions in the system"
-                value={stats.CL}
-              />
-            </fieldset>
-            <fieldset>
-              <legend>Simulation box</legend>
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Type"
-                title="Box type"
-                value={stats.BOXTYPE}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Size X"
-                title="Simulated system box X dimension"
-                value={stats.BOXSIZEX}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      nm
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Size Y"
-                title="Simulated system box Y dimension"
-                value={stats.BOXSIZEY}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      nm
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Size Z"
-                title="Simulated system box Z dimension"
-                value={stats.BOXSIZEZ}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      nm
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Volume"
-                title="Simulated system box volume"
-                value={round(
-                  +stats.BOXSIZEX * +stats.BOXSIZEY * +stats.BOXSIZEZ,
-                  5,
-                )}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      nm³
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </fieldset>
-            <fieldset>
-              <legend>Other</legend>
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Length"
-                title="Simulation length"
-                value={stats.LENGTH}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      ns
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Timestep"
-                title="Simulation timestep"
-                value={stats.TIMESTEP}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      fs
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Snapshots"
-                title="Number of snapshots"
-                value={stats.SNAPSHOTS}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Frequency"
-                title="Frequency of snapshots"
-                value={stats.FREQUENCY}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      ps
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Force field"
-                title="Force field"
-                value={stats.FF}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Temperature"
-                title="Temperature"
-                value={stats.TEMP}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment variant="filled" position="end">
-                      K
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Water type"
-                title="Water type"
-                value={stats.WAT}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Ensemble"
-                title="Simulation ensemble"
-                value={stats.ENSEMBLE}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Pressure coupling"
-                title="Pressure coupling method"
-                value={stats.PCOUPLING}
-              />
-              <TextField
-                className={style['text-field']}
-                readOnly
-                label="Membrane"
-                title="Membrane type"
-                value={stats.MEMBRANE}
-              />
-            </fieldset>
-          </>
-        ) : (
-          'loading'
-        )}
+        <fieldset>
+          <legend>Counts</legend>
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="System atoms"
+            title="Total number of atoms in the system"
+            value={metadata.SYSTATS}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Proteins atoms"
+            title="Number of protein atoms in the system"
+            value={metadata.PROTATS}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Proteins residues"
+            title="Number of protein residues in the system"
+            value={metadata.PROT}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Phospholipids"
+            title="Number of membrane molecules in the system"
+            value={metadata.DPPC}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Solvent molecules"
+            title="Number of solvent molecules in the system"
+            value={metadata.SOL}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Positive ions"
+            title="Number of positively charged ions in the system"
+            value={metadata.NA}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Negative ions"
+            title="Number of negatively charged ions in the system"
+            value={metadata.CL}
+          />
+        </fieldset>
+        <fieldset>
+          <legend>Simulation box</legend>
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Type"
+            title="Box type"
+            value={metadata.BOXTYPE}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Size X"
+            title="Simulated system box X dimension"
+            value={metadata.BOXSIZEX}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  nm
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Size Y"
+            title="Simulated system box Y dimension"
+            value={metadata.BOXSIZEY}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  nm
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Size Z"
+            title="Simulated system box Z dimension"
+            value={metadata.BOXSIZEZ}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  nm
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Volume"
+            title="Simulated system box volume"
+            value={round(
+              +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
+              5,
+            )}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  nm³
+                </InputAdornment>
+              ),
+            }}
+          />
+        </fieldset>
+        <fieldset>
+          <legend>Other</legend>
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Length"
+            title="Simulation length"
+            value={metadata.LENGTH}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  ns
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Timestep"
+            title="Simulation timestep"
+            value={metadata.TIMESTEP}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  fs
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Snapshots"
+            title="Number of snapshots"
+            value={metadata.SNAPSHOTS}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Frequency"
+            title="Frequency of snapshots"
+            value={metadata.FREQUENCY}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  ps
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Force field"
+            title="Force field"
+            value={metadata.FF}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Temperature"
+            title="Temperature"
+            value={metadata.TEMP}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment variant="filled" position="end">
+                  K
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Water type"
+            title="Water type"
+            value={metadata.WAT}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Ensemble"
+            title="Simulation ensemble"
+            value={metadata.ENSEMBLE}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Pressure coupling"
+            title="Pressure coupling method"
+            value={metadata.PCOUPLING}
+          />
+          <TextField
+            className={style['text-field']}
+            readOnly
+            label="Membrane"
+            title="Membrane type"
+            value={metadata.MEMBRANE}
+          />
+        </fieldset>
       </fieldset>
     );
   }
@@ -431,7 +402,7 @@ export default class Trajectory extends PureComponent {
   }
 
   render() {
-    const { ngl, pdbData, match } = this.props;
+    const { pdbData, metadata, match } = this.props;
     const {
       progress,
       playing,
@@ -443,7 +414,7 @@ export default class Trajectory extends PureComponent {
       <>
         <Card className={style.card}>
           <CardContent>
-            <TrajectoryStats accession={match.params.accession} />
+            <TrajectoryMetadata metadata={metadata} />
           </CardContent>
         </Card>
         <div
@@ -456,7 +427,6 @@ export default class Trajectory extends PureComponent {
             <CardContent className={style['card-content']}>
               <NGLViewer
                 accession={match.params.accession}
-                ngl={ngl}
                 pdbData={pdbData}
                 isFullscreen={isFullscreen}
                 playing={playing}

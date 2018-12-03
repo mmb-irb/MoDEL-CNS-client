@@ -5,12 +5,16 @@
   position: relative;
 }
 
-.container.loading-trajectory::after {
-  content: 'Loading trajectory…';
+.container.loading::after {
+  content: attr(data-loading);
   color: white;
   position: absolute;
   top: 1ch;
   left: 1ch;
+}
+
+.container.loading-trajectory::after {
+  content: 'Loading trajectory…';
 }
 
 .container > canvas {
