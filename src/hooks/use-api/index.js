@@ -13,7 +13,6 @@ const useAPI = url => {
         setPayload(null);
         return;
       }
-      if (error || payload) return;
 
       const controller = new AbortController();
       setLoading(true);
@@ -23,7 +22,11 @@ const useAPI = url => {
           error => !canceled && setError(error),
         )
         .then(
-          payload => !canceled && setPayload(payload),
+          payload => {
+            if (canceled) return;
+            setPayload(payload);
+            setError(null);
+          },
           error => !canceled && setError(error),
         )
         .then(() => !canceled && setLoading(false));

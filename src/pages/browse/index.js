@@ -20,15 +20,16 @@ import useAPI from '../../hooks/use-api';
 import { BASE_PATH } from '../../utils/constants';
 
 export default ({ location }) => {
-  const { loading, payload, error } = useAPI(BASE_PATH);
+  const { search } = parse(location.search, { ignoreQueryPrefix: true });
+
+  const ApiUrl = `${BASE_PATH}${search ? `?search=${search}` : ''}`;
+  const { loading, payload, error } = useAPI(ApiUrl);
 
   if (loading) return 'loading';
   if (error) {
     console.error(error);
     return 'Something wrong happened';
   }
-
-  const { search } = parse(location.search, { ignoreQueryPrefix: true });
 
   return (
     <Card>
