@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "3.6.1",
+    "@material-ui/core": "3.7.0",
     "@material-ui/icons": "3.0.1",
     "@material-ui/lab": "3.0.0-alpha.19",
     "classnames": "2.2.6",
     "d3": "5.7.0",
-    "husky": "1.2.0",
+    "husky": "1.2.1",
     "lint-staged": "8.1.0",
     "lodash-es": "4.17.11",
     "ngl": "0.10.4",
@@ -19,7 +19,7 @@
     "react-router-dom": "4.3.1",
     "react-scripts": "2.1.1",
     "react-virtualized": "9.21.0",
-    "screenfull": "3.3.3",
+    "screenfull": "4.0.0",
     "timing-functions": "0.2.2",
     "typeface-roboto": "0.0.54"
   },
