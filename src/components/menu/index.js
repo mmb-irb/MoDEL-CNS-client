@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 import { parse, stringify } from 'qs';
-import { throttle } from 'lodash-es';
+import { debounce } from 'lodash-es';
 
 import Button from '@material-ui/core/Button';
 import Tabs from '@material-ui/core/Tabs';
@@ -12,22 +12,20 @@ import TextField from '@material-ui/core/TextField';
 
 import style from './style.module.css';
 
-const updateLocation = throttle(
-  (history, location, search, value) => {
-    const { search: _search, ...nextSearchObject } = parse(search, {
-      ignoreQueryPrefix: true,
-    });
-    const shouldReplace = Boolean(_search) === Boolean(value);
-    if (value) nextSearchObject.search = value;
-    if (_search === value) return;
-    history[shouldReplace ? 'replace' : 'push']({
-      ...location,
-      search: stringify(nextSearchObject),
-    });
-  },
-  1000,
-  { leading: false },
-);
+const DEBOUNCE_DELAY = 500;
+
+const updateLocation = debounce((history, location, search, value) => {
+  const { search: _search, ...nextSearchObject } = parse(search, {
+    ignoreQueryPrefix: true,
+  });
+  const shouldReplace = Boolean(_search) === Boolean(value);
+  if (value) nextSearchObject.search = value;
+  if (_search === value) return;
+  history[shouldReplace ? 'replace' : 'push']({
+    ...location,
+    search: stringify(nextSearchObject),
+  });
+}, DEBOUNCE_DELAY);
 
 const Search = props => {
   const {
@@ -47,7 +45,7 @@ const Search = props => {
     setValue(value);
 
     updateLocation(history, location, search, value);
-  });
+  }, []);
 
   return (
     <>
