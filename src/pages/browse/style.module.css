@@ -1,0 +1,7 @@
+.table-body {
+  transition: 0.5s opacity ease-in-out 0.25s;
+}
+
+.loading {
+  opacity: 0.5;
+}
