@@ -31,9 +31,13 @@ class Search extends PureComponent {
     return (
       <>
         <Icon>
-          <SearchIcon />
+          <SearchIcon className={value && style.magnifying} />
         </Icon>
-        <TextField value={value || ''} onChange={this.#handleChange} />
+        <TextField
+          value={value || ''}
+          onChange={this.#handleChange}
+          className={style.search}
+        />
       </>
     );
   }

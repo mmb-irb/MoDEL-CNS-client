@@ -3,9 +3,14 @@
   align-items: center;
 }
 
-.search {
-  flex: 1;
-  padding: 8px 16px;
+.magnifying {
+  color: lime;
+}
+
+.search input {
+  color: lime;
+  letter-spacing: 0.15ch;
+  padding: 0.5ch;
 }
 
 .tab-link {
