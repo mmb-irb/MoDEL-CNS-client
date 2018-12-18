@@ -33,7 +33,7 @@ const Search = props => {
   return (
     <>
       <Icon>
-        <SearchIcon className={value && style.magnifying} />
+        <SearchIcon className={value && style['search-active']} />
       </Icon>
       <TextField
         value={value || ''}
