@@ -25,7 +25,7 @@ const updateLocation = throttle(
       search: stringify(nextSearchObject),
     });
   },
-  5000,
+  1000,
   { leading: false },
 );
 
