@@ -1,6 +1,8 @@
-import React, { PureComponent, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 import { parse, stringify } from 'qs';
+import { throttle } from 'lodash-es';
+
 import Button from '@material-ui/core/Button';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -10,24 +12,41 @@ import TextField from '@material-ui/core/TextField';
 
 import style from './style.module.css';
 
+const updateLocation = throttle(
+  (history, location, search, value) => {
+    const { search: _search, ...nextSearchObject } = parse(search, {
+      ignoreQueryPrefix: true,
+    });
+    const shouldReplace = Boolean(_search) === Boolean(value);
+    if (value) nextSearchObject.search = value;
+    if (_search === value) return;
+    history[shouldReplace ? 'replace' : 'push']({
+      ...location,
+      search: stringify(nextSearchObject),
+    });
+  },
+  5000,
+  { leading: false },
+);
+
 const Search = props => {
   const {
     location: { search },
     history,
     location,
   } = props;
-  const value = parse(search, { ignoreQueryPrefix: true }).search;
+
+  const [value, setValue] = useState(
+    parse(search, { ignoreQueryPrefix: true }).search,
+  );
+
+  // make sure to cancel any upcoming location update if component unmounts
+  useEffect(() => updateLocation.cancel, []);
 
   const handleChange = useCallback(({ target: { value } }) => {
-    const { search: _search, ...nextSearchObject } = parse(search, {
-      ignoreQueryPrefix: true,
-    });
-    const shouldReplace = Boolean(_search) === Boolean(value);
-    if (value) nextSearchObject.search = value;
-    history[shouldReplace ? 'replace' : 'push']({
-      ...location,
-      search: stringify(nextSearchObject),
-    });
+    setValue(value);
+
+    updateLocation(history, location, search, value);
   });
 
   return (
