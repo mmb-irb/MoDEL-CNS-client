@@ -1,21 +1,25 @@
 import React from 'react';
-import { escapeRegExp } from 'lodash-es';
+import { escapeRegExp, memoize } from 'lodash-es';
 
 import style from './style.module.css';
 
 const spaces = /\s+/;
+const getRegExFor = memoize(
+  highlight =>
+    new RegExp(
+      `(${highlight
+        .trim()
+        .split(spaces)
+        .map(escapeRegExp)
+        .join('|')})`,
+      'i',
+    ),
+);
 
 export default React.memo(({ highlight, children }) => {
   if (!highlight || typeof children !== 'string') return children || null;
 
-  const re = new RegExp(
-    `(${highlight
-      .trim()
-      .split(spaces)
-      .map(escapeRegExp)
-      .join('|')})`,
-    'i',
-  );
+  const re = getRegExFor(highlight);
 
   return (
     <span className={style.higlightable}>
