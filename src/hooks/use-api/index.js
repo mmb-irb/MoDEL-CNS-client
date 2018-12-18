@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { sleep } from 'timing-functions';
+
+const NO_CONTENT = 204;
 
 const useAPI = url => {
   const [loading, setLoading] = useState(!!url);
@@ -18,7 +21,7 @@ const useAPI = url => {
       setLoading(true);
       fetch(url, { signal: controller.signal })
         .then(
-          response => response.json(),
+          response => (response.status === NO_CONTENT ? null : response.json()),
           error => !canceled && setError(error),
         )
         .then(
@@ -39,6 +42,7 @@ const useAPI = url => {
     [url],
   );
 
+  console.log({ loading, payload, error });
   return { loading, payload, error };
 };
 

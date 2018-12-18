@@ -31,6 +31,8 @@ export default ({ location }) => {
     return 'Something wrong happened';
   }
 
+  if (!payload) return 'no data';
+
   return (
     <Card>
       <CardContent>
