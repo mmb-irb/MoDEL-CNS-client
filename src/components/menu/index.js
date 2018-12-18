@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useCallback } from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 import { parse, stringify } from 'qs';
 import Button from '@material-ui/core/Button';
@@ -10,38 +10,39 @@ import TextField from '@material-ui/core/TextField';
 
 import style from './style.module.css';
 
-class Search extends PureComponent {
-  #handleChange = ({ target: { value } }) => {
-    const { search, ...nextSearchObject } = parse(this.props.location.search, {
+const Search = props => {
+  const {
+    location: { search },
+    history,
+    location,
+  } = props;
+  const value = parse(search, { ignoreQueryPrefix: true }).search;
+
+  const handleChange = useCallback(({ target: { value } }) => {
+    const { search: _search, ...nextSearchObject } = parse(search, {
       ignoreQueryPrefix: true,
     });
-    const shouldReplace = Boolean(search) === Boolean(value);
+    const shouldReplace = Boolean(_search) === Boolean(value);
     if (value) nextSearchObject.search = value;
-    this.props.history[shouldReplace ? 'replace' : 'push']({
-      ...this.props.location,
+    history[shouldReplace ? 'replace' : 'push']({
+      ...location,
       search: stringify(nextSearchObject),
     });
-  };
+  });
 
-  render() {
-    const {
-      location: { search },
-    } = this.props;
-    const value = parse(search, { ignoreQueryPrefix: true }).search;
-    return (
-      <>
-        <Icon>
-          <SearchIcon className={value && style.magnifying} />
-        </Icon>
-        <TextField
-          value={value || ''}
-          onChange={this.#handleChange}
-          className={style.search}
-        />
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Icon>
+        <SearchIcon className={value && style.magnifying} />
+      </Icon>
+      <TextField
+        value={value || ''}
+        onChange={handleChange}
+        className={style.search}
+      />
+    </>
+  );
+};
 
 export default () => (
   <menu>
