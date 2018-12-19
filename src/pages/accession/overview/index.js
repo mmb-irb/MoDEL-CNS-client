@@ -41,7 +41,7 @@ export default React.memo(({ pdbData }) => {
           <div className={style['summary-list']}>
             <div>{pdbData.title}</div>
             <div>
-              PDB Accession: {pdbData.structureId}
+              PDB Accession: {pdbData.identifier}
               {pdbData.replaces && ` (replaces ${pdbData.replaces})`}
             </div>
             <div>
