@@ -1,12 +1,9 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 
 import style from './style.module.css';
 
-export default class Body extends PureComponent {
-  render() {
-    return (
-      <div className={style.body}>{this.props.children}</div>
-    );
-  }
-}
+const Body = React.memo(({ children }) => (
+  <div className={style.body}>{children}</div>
+));
 
+export default Body;

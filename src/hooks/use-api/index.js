@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import { sleep } from 'timing-functions';
+import { useState, useEffect } from 'react';
 
 const NO_CONTENT = 204;
 
