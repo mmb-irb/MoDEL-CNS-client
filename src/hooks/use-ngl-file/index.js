@@ -1,35 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { autoLoad } from 'ngl';
 
 const useNGLFile = (url, options) => {
-  const [loading, setLoading] = useState(!!url);
-  const [file, setFile] = useState(null);
-  const [error, setError] = useState(null);
+  const [state, setState] = useState({
+    loading: !!url,
+    file: null,
+    error: null,
+  });
 
-  let canceled = false;
+  const canceledRef = useRef(false);
 
   useEffect(
     () => {
       if (!url) {
-        setFile(null);
+        setState({
+          loading: false,
+          file: null,
+          error: null,
+        });
         return;
       }
-      if (error || file) return;
 
-      setLoading(true);
-      autoLoad(url, options)
-        .then(
-          file => !canceled && setFile(file),
-          error => !canceled && setError(error),
-        )
-        .then(() => !canceled && setLoading(false));
+      setState({
+        loading: true,
+        file: null,
+        error: null,
+      });
+      autoLoad(url, options).then(
+        file => {
+          if (canceledRef.current) return;
+          setState({
+            loading: false,
+            file,
+            error: null,
+          });
+        },
+        error => {
+          if (canceledRef.current) return;
+          setState({
+            loading: false,
+            file: null,
+            error,
+          });
+        },
+      );
 
-      return () => (canceled = true);
+      return () => (canceledRef.current = true);
     },
     [url],
   );
 
-  return { loading, file, error };
+  return { ...state };
 };
 
 export default useNGLFile;

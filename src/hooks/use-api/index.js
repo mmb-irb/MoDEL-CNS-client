@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const NO_CONTENT = 204;
 
@@ -10,7 +10,7 @@ const useAPI = url => {
     previousPayload: null,
   });
 
-  let canceled = false;
+  const canceledRef = useRef(false);
 
   useEffect(
     () => {
@@ -26,7 +26,6 @@ const useAPI = url => {
 
       const controller = new AbortController();
       setState({
-        ...state,
         loading: true,
         payload: null,
         error: null,
@@ -36,7 +35,7 @@ const useAPI = url => {
         .then(
           response => (response.status === NO_CONTENT ? null : response.json()),
           error =>
-            !canceled &&
+            !canceledRef.current &&
             setState({
               loading: false,
               payload: null,
@@ -46,7 +45,7 @@ const useAPI = url => {
         )
         .then(
           payload => {
-            if (canceled) return;
+            if (canceledRef.current) return;
             setState({
               loading: false,
               payload,
@@ -54,18 +53,19 @@ const useAPI = url => {
               previousPayload: state.payload || state.previousPayload,
             });
           },
-          error =>
-            !canceled &&
+          error => {
+            if (canceledRef.current) return;
             setState({
               loading: false,
               payload: null,
               error,
               previousPayload: state.payload || state.previousPayload,
-            }),
+            });
+          },
         );
 
       return () => {
-        canceled = true;
+        canceledRef.current = true;
         controller.abort();
       };
     },
