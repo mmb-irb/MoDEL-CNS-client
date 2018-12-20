@@ -1,5 +1,12 @@
-import React, { PureComponent, useRef, useEffect, useState } from 'react';
-import T from 'prop-types';
+import React, {
+  PureComponent,
+  forwardRef,
+  useRef,
+  useImperativeMethods,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { debounce } from 'lodash-es';
 import cn from 'classnames';
 import * as ngl from 'ngl';
@@ -10,17 +17,137 @@ import { BASE_PATH } from '../../utils/constants';
 import style from './style.module.css';
 import useNGLFile from '../../hooks/use-ngl-file';
 
-class NGLViewer extends PureComponent {
-  static propTypes = {
-    onProgress: T.func,
-    className: T.string,
-    pdbData: T.object.isRequired,
-    accession: T.string.isRequired,
-    playing: T.bool,
-    isFullscreen: T.bool,
-    membraneOpacity: T.number.isRequired,
-  };
+export const NGLViewer = forwardRef(
+  ({ accession, className, playing, ...props }, ref) => {
+    const containerRef = useRef(null);
+    const stageRef = useRef(null);
 
+    const { loading: loadingPDB, file: pdbFile } = useNGLFile(
+      `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
+      { defaultRepresentation: false, ext: 'pdb' },
+    );
+    const { loading: loadingDCD, file: dcdFile } = useNGLFile(
+      `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
+      { ext: 'dcd' },
+    );
+
+    // Stage creation and removal on mounting and unmounting
+    useEffect(() => {
+      const stage = new ngl.Stage(containerRef.current);
+      stageRef.current = stage;
+      return () => stageRef.current.dispose();
+    }, []);
+
+    // Resize logic
+    // declare handler
+    const handleResize = useCallback(
+      debounce(() => {
+        if (!stageRef.current) return;
+        const canvas = containerRef.current.querySelector('canvas');
+        if (canvas) canvas.style.height = '';
+        stageRef.current.handleResize();
+      }, 500),
+      [],
+    );
+    // connect to events
+    useEffect(() => {
+      window.addEventListener('resize', handleResize);
+      return () => {
+        handleResize.cancel();
+        window.removeEventListener('resize', handleResize);
+      };
+    }, []);
+
+    // PDB file, base structure
+    useEffect(
+      () => {
+        if (!pdbFile) return;
+        const structureComponent = stageRef.current.addComponentFromObject(
+          pdbFile,
+        );
+
+        structureComponent.autoView();
+
+        // main structure
+        structureComponent.addRepresentation('cartoon', {
+          sele: 'not(hetero or water or ion)',
+          name: 'structure',
+        });
+        // membrane
+        structureComponent.addRepresentation('licorice', {
+          sele: '(not polymer or hetero) and not (water or ion)',
+          opacity: 0.5,
+          name: 'membrane',
+        });
+      },
+      [pdbFile],
+    );
+
+    // DCD file, trajectory
+    useEffect(
+      () => {
+        if (!(pdbFile && dcdFile)) return;
+        const frames = stageRef.current.compList[0].addTrajectory(dcdFile);
+        if (playing) frames.trajectory.player.play();
+      },
+      [pdbFile, dcdFile],
+    );
+
+    // play/pause
+    useEffect(
+      () => {
+        if (!(pdbFile && dcdFile)) return;
+        stageRef.current.compList[0].trajList[0].trajectory.player[
+          playing ? 'play' : 'pause'
+        ]();
+      },
+      [playing],
+    );
+
+    // Expose public methods and getters/setters
+    useImperativeMethods(ref, () => ({
+      centerFocus() {
+        console.log('centering focus');
+      },
+      toggleSpin() {
+        console.log('toggling spin');
+      },
+      toggleSmooth(on) {
+        console.log('toggling smooth');
+      },
+      goToStatic() {
+        console.log('going to static view');
+      },
+      get currentFrame() {
+        // console.log('getting current frame');
+        return '';
+      },
+      set currentFrame(value) {
+        // console.log('setting current frame');
+      },
+      get totalFrames() {
+        // console.log('getting total frame number');
+        return '';
+      },
+    }));
+
+    return (
+      <div
+        ref={containerRef}
+        className={cn(className, style.container, {
+          [style.loading]: loadingPDB || loadingDCD,
+        })}
+        data-loading={
+          loadingPDB || loadingDCD
+            ? `Loading ${loadingPDB ? 'structure' : 'trajectory'}…`
+            : undefined
+        }
+      />
+    );
+  },
+);
+
+class _NGLViewer extends PureComponent {
   state = { loadingTrajectory: true };
   #ref = React.createRef();
   #stage;

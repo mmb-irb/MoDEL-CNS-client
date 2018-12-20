@@ -29,7 +29,7 @@ import {
 } from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 
-import NGLViewer from '../../../components/ngl-viewer';
+import { NGLViewer } from '../../../components/ngl-viewer';
 
 import useAPI from '../../../hooks/use-api/index';
 import { BASE_PATH } from '../../../utils/constants';
@@ -483,13 +483,11 @@ export default class Trajectory extends PureComponent {
                 >
                   {smooth ? <BurstMode /> : <Videocam />}
                 </IconButton>
-                {match.params.accession.endsWith('_mb') && (
-                  <OpacitySlider
-                    title="Change membrane opacity"
-                    value={membraneOpacity * 100}
-                    handleChange={this.#handleMembraneOpacityChange}
-                  />
-                )}
+                <OpacitySlider
+                  title="Change membrane opacity"
+                  value={membraneOpacity * 100}
+                  handleChange={this.#handleMembraneOpacityChange}
+                />
               </div>
             </CardContent>
           </Card>
