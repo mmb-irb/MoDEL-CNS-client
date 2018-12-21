@@ -323,6 +323,7 @@ export default class Trajectory extends PureComponent {
   state = {
     progress: 0,
     playing: true,
+    spinning: false,
     smooth: false,
     isFullscreen: screenfull.isFullscreen,
     membraneOpacity: 0.5,
@@ -356,20 +357,11 @@ export default class Trajectory extends PureComponent {
   };
 
   #toggleSpin = () => {
-    if (this.#viewerRef.current) {
-      this.#viewerRef.current.toggleSpin();
-    }
+    this.setState(({ spinning }) => ({ spinning: !spinning }));
   };
 
   #toggleSmooth = () => {
-    this.setState(
-      ({ smooth }) => ({ smooth: !smooth }),
-      () => {
-        if (this.#viewerRef.current) {
-          this.#viewerRef.current.toggleSmooth(this.state.smooth);
-        }
-      },
-    );
+    this.setState(({ smooth }) => ({ smooth: !smooth }));
   };
 
   #handleProgress = progress => this.setState({ progress });
@@ -406,6 +398,7 @@ export default class Trajectory extends PureComponent {
     const {
       progress,
       playing,
+      spinning,
       isFullscreen,
       smooth,
       membraneOpacity,
@@ -430,7 +423,9 @@ export default class Trajectory extends PureComponent {
                 pdbData={pdbData}
                 isFullscreen={isFullscreen}
                 playing={playing}
+                spinning={spinning}
                 membraneOpacity={membraneOpacity}
+                smooth={smooth}
                 onProgress={this.#handleProgress}
                 className={style.container}
                 ref={this.#viewerRef}

@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { debounce } from 'lodash-es';
+import { debounce, throttle } from 'lodash-es';
 import cn from 'classnames';
 import * as ngl from 'ngl';
 
@@ -17,8 +17,30 @@ import { BASE_PATH } from '../../utils/constants';
 import style from './style.module.css';
 import useNGLFile from '../../hooks/use-ngl-file';
 
+const changeOpacity = throttle((representation, membraneOpacity) => {
+  representation.setParameters({ opacity: membraneOpacity });
+  // optimise render or not depending on opacity level
+  if (representation.visible && !membraneOpacity) {
+    representation.setVisibility(false);
+  }
+  if (!representation.visible && membraneOpacity) {
+    representation.setVisibility(true);
+  }
+}, 100);
+
 export const NGLViewer = forwardRef(
-  ({ accession, className, playing, ...props }, ref) => {
+  (
+    {
+      accession,
+      className,
+      playing,
+      spinning,
+      membraneOpacity,
+      smooth,
+      ...props
+    },
+    ref,
+  ) => {
     const containerRef = useRef(null);
     const stageRef = useRef(null);
 
@@ -104,6 +126,44 @@ export const NGLViewer = forwardRef(
       [playing],
     );
 
+    // spinning
+    useEffect(
+      () => {
+        if (spinning === stageRef.current.spinAnimation.paused) {
+          stageRef.current.toggleSpin();
+        }
+      },
+      [spinning],
+    );
+
+    // membrane opacity
+    useEffect(
+      () => {
+        if (!pdbFile) return;
+        changeOpacity(
+          stageRef.current.compList[0].reprList.find(
+            ({ name }) => name === 'membrane',
+          ).repr,
+          membraneOpacity,
+        );
+      },
+      [pdbFile, membraneOpacity],
+    );
+    useEffect(() => changeOpacity.cancel, []);
+
+    // smoothing, player interpolation
+    useEffect(
+      () => {
+        if (!(pdbFile && dcdFile)) return;
+        stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
+          ? 'linear'
+          : '';
+      },
+      [pdbFile, dcdFile, smooth],
+    );
+
+    console.log(props);
+
     // Expose public methods and getters/setters
     useImperativeMethods(ref, () => ({
       centerFocus() {
@@ -111,12 +171,6 @@ export const NGLViewer = forwardRef(
       },
       toggleSpin() {
         console.log('toggling spin');
-      },
-      toggleSmooth(on) {
-        console.log('toggling smooth');
-      },
-      goToStatic() {
-        console.log('going to static view');
       },
       get currentFrame() {
         // console.log('getting current frame');
@@ -199,12 +253,6 @@ class _NGLViewer extends PureComponent {
       this.#stage.compList[0].trajList[0].trajectory.player.interpolateType = on
         ? 'linear'
         : '';
-    }
-  };
-
-  goToStatic = () => {
-    if (this.#stage.compList[0].trajList[0]) {
-      this.#stage.compList[0].trajList[0].trajectory.setFrame(-1);
     }
   };
 
