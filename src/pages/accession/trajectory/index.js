@@ -1,4 +1,11 @@
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+  memo,
+  useCallback,
+  useRef,
+  useEffect,
+  useState,
+} from 'react';
 import cn from 'classnames';
 import screenfull from 'screenfull';
 import { round } from 'lodash-es';
@@ -36,285 +43,277 @@ import { BASE_PATH } from '../../../utils/constants';
 
 import style from './style.module.css';
 
-class OpacitySlider extends PureComponent {
-  state = { element: null };
+const OpacitySlider = memo(({ value, handleChange, ...buttonProps }) => {
+  const [element, setElement] = useState(null);
 
-  #handleOpen = ({ currentTarget: element }) => this.setState({ element });
+  const handleOpen = useCallback(
+    ({ currentTarget }) => setElement(currentTarget),
+    [],
+  );
 
-  #handleClose = () => this.setState({ element: null });
+  const handleClose = useCallback(() => setElement(null), []);
 
-  #handleChange = (_, value) => this.setState({ value });
+  return (
+    <>
+      <IconButton {...buttonProps} onClick={handleOpen}>
+        <Flip />
+      </IconButton>
+      <Popover
+        open={!!element}
+        anchorEl={element}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        container={screenfull.element || document.body}
+        onClose={handleClose}
+      >
+        <Paper style={{ padding: '1.5em' }}>
+          <span>Membrane opacity:</span>
+          <Slider
+            value={value}
+            onChange={handleChange}
+            style={{ display: 'inline-block', marginTop: '1.5em' }}
+          />
+        </Paper>
+      </Popover>
+    </>
+  );
+});
 
-  render() {
-    const { value, handleChange, ...buttonProps } = this.props;
-    const { element } = this.state;
-    return (
-      <>
-        <IconButton {...buttonProps} onClick={this.#handleOpen}>
-          <Flip />
-        </IconButton>
-        <Popover
-          open={!!element}
-          anchorEl={element}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-          container={screenfull.element || document.body}
-          onClose={this.#handleClose}
-        >
-          <Paper style={{ padding: '1.5em' }}>
-            <span>Membrane opacity:</span>
-            <Slider
-              value={value}
-              onChange={handleChange}
-              style={{ display: 'inline-block', marginTop: '1.5em' }}
-            />
-          </Paper>
-        </Popover>
-      </>
-    );
-  }
-}
-
-class TrajectoryMetadata extends PureComponent {
-  render() {
-    const { metadata } = this.props;
-    return (
-      <fieldset>
-        <legend>
-          <Typography variant="h6">Statistics</Typography>
-        </legend>
-        <fieldset>
-          <legend>Counts</legend>
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="System atoms"
-            title="Total number of atoms in the system"
-            value={metadata.SYSTATS}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Proteins atoms"
-            title="Number of protein atoms in the system"
-            value={metadata.PROTATS}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Proteins residues"
-            title="Number of protein residues in the system"
-            value={metadata.PROT}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Phospholipids"
-            title="Number of membrane molecules in the system"
-            value={metadata.DPPC}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Solvent molecules"
-            title="Number of solvent molecules in the system"
-            value={metadata.SOL}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Positive ions"
-            title="Number of positively charged ions in the system"
-            value={metadata.NA}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Negative ions"
-            title="Number of negatively charged ions in the system"
-            value={metadata.CL}
-          />
-        </fieldset>
-        <fieldset>
-          <legend>Simulation box</legend>
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Type"
-            title="Box type"
-            value={metadata.BOXTYPE}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Size X"
-            title="Simulated system box X dimension"
-            value={metadata.BOXSIZEX}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  nm
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Size Y"
-            title="Simulated system box Y dimension"
-            value={metadata.BOXSIZEY}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  nm
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Size Z"
-            title="Simulated system box Z dimension"
-            value={metadata.BOXSIZEZ}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  nm
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Volume"
-            title="Simulated system box volume"
-            value={round(
-              +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
-              5,
-            )}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  nm³
-                </InputAdornment>
-              ),
-            }}
-          />
-        </fieldset>
-        <fieldset>
-          <legend>Other</legend>
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Length"
-            title="Simulation length"
-            value={metadata.LENGTH}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  ns
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Timestep"
-            title="Simulation timestep"
-            value={metadata.TIMESTEP}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  fs
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Snapshots"
-            title="Number of snapshots"
-            value={metadata.SNAPSHOTS}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Frequency"
-            title="Frequency of snapshots"
-            value={metadata.FREQUENCY}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  ps
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Force field"
-            title="Force field"
-            value={metadata.FF}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Temperature"
-            title="Temperature"
-            value={metadata.TEMP}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  K
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Water type"
-            title="Water type"
-            value={metadata.WAT}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Ensemble"
-            title="Simulation ensemble"
-            value={metadata.ENSEMBLE}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Pressure coupling"
-            title="Pressure coupling method"
-            value={metadata.PCOUPLING}
-          />
-          <TextField
-            className={style['text-field']}
-            readOnly
-            label="Membrane"
-            title="Membrane type"
-            value={metadata.MEMBRANE}
-          />
-        </fieldset>
-      </fieldset>
-    );
-  }
-}
+const TrajectoryMetadata = memo(({ metadata }) => (
+  <fieldset>
+    <legend>
+      <Typography variant="h6">Statistics</Typography>
+    </legend>
+    <fieldset>
+      <legend>Counts</legend>
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="System atoms"
+        title="Total number of atoms in the system"
+        value={metadata.SYSTATS}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Proteins atoms"
+        title="Number of protein atoms in the system"
+        value={metadata.PROTATS}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Proteins residues"
+        title="Number of protein residues in the system"
+        value={metadata.PROT}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Phospholipids"
+        title="Number of membrane molecules in the system"
+        value={metadata.DPPC}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Solvent molecules"
+        title="Number of solvent molecules in the system"
+        value={metadata.SOL}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Positive ions"
+        title="Number of positively charged ions in the system"
+        value={metadata.NA}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Negative ions"
+        title="Number of negatively charged ions in the system"
+        value={metadata.CL}
+      />
+    </fieldset>
+    <fieldset>
+      <legend>Simulation box</legend>
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Type"
+        title="Box type"
+        value={metadata.BOXTYPE}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Size X"
+        title="Simulated system box X dimension"
+        value={metadata.BOXSIZEX}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              nm
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Size Y"
+        title="Simulated system box Y dimension"
+        value={metadata.BOXSIZEY}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              nm
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Size Z"
+        title="Simulated system box Z dimension"
+        value={metadata.BOXSIZEZ}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              nm
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Volume"
+        title="Simulated system box volume"
+        value={round(
+          +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
+          5,
+        )}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              nm³
+            </InputAdornment>
+          ),
+        }}
+      />
+    </fieldset>
+    <fieldset>
+      <legend>Other</legend>
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Length"
+        title="Simulation length"
+        value={metadata.LENGTH}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              ns
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Timestep"
+        title="Simulation timestep"
+        value={metadata.TIMESTEP}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              fs
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Snapshots"
+        title="Number of snapshots"
+        value={metadata.SNAPSHOTS}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Frequency"
+        title="Frequency of snapshots"
+        value={metadata.FREQUENCY}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              ps
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Force field"
+        title="Force field"
+        value={metadata.FF}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Temperature"
+        title="Temperature"
+        value={metadata.TEMP}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment variant="filled" position="end">
+              K
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Water type"
+        title="Water type"
+        value={metadata.WAT}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Ensemble"
+        title="Simulation ensemble"
+        value={metadata.ENSEMBLE}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Pressure coupling"
+        title="Pressure coupling method"
+        value={metadata.PCOUPLING}
+      />
+      <TextField
+        className={style['text-field']}
+        readOnly
+        label="Membrane"
+        title="Membrane type"
+        value={metadata.MEMBRANE}
+      />
+    </fieldset>
+  </fieldset>
+));
 
 export default class Trajectory extends PureComponent {
   #ref = React.createRef();
