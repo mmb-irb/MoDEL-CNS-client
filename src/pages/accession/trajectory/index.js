@@ -344,17 +344,18 @@ export default class Trajectory extends PureComponent {
     }
   };
 
-  #handlePrev = () => {
+  #handleFrameChange = value => {
     if (this.#viewerRef.current) {
-      this.#viewerRef.current.currentFrame--;
+      this.setState(
+        { playing: false },
+        () => (this.#viewerRef.current.currentFrame += value),
+      );
     }
   };
 
-  #handleNext = () => {
-    if (this.#viewerRef.current) {
-      this.#viewerRef.current.currentFrame++;
-    }
-  };
+  #handlePrev = () => this.#handleFrameChange(-1);
+
+  #handleNext = () => this.#handleFrameChange(1);
 
   #toggleSpin = () => {
     this.setState(({ spinning }) => ({ spinning: !spinning }));
@@ -375,7 +376,7 @@ export default class Trajectory extends PureComponent {
     const wantedProgress = (clientX - x) / width;
     this.setState({ playing: false }, () => {
       if (this.#viewerRef.current) {
-        this.#viewerRef.current.currentFrame = Math.round(
+        this.#viewerRef.current.currentFrame = Math.floor(
           wantedProgress * this.#viewerRef.current.totalFrames,
         );
       }
@@ -420,8 +421,6 @@ export default class Trajectory extends PureComponent {
             <CardContent className={style['card-content']}>
               <NGLViewer
                 accession={match.params.accession}
-                pdbData={pdbData}
-                isFullscreen={isFullscreen}
                 playing={playing}
                 spinning={spinning}
                 membraneOpacity={membraneOpacity}

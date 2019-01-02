@@ -1,13 +1,14 @@
 import React, {
   PureComponent,
   forwardRef,
+  memo,
   useRef,
   useImperativeMethods,
   useCallback,
   useEffect,
   useState,
 } from 'react';
-import { debounce, throttle } from 'lodash-es';
+import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
 import * as ngl from 'ngl';
 
@@ -28,418 +29,205 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
   }
 }, 100);
 
-export const NGLViewer = forwardRef(
-  (
-    {
-      accession,
-      className,
-      playing,
-      spinning,
-      membraneOpacity,
-      smooth,
-      ...props
+export const NGLViewer = memo(
+  forwardRef(
+    (
+      {
+        accession,
+        className,
+        playing,
+        spinning,
+        membraneOpacity,
+        smooth,
+        onProgress,
+        ...props
+      },
+      ref,
+    ) => {
+      const containerRef = useRef(null);
+      const stageRef = useRef(null);
+
+      const { loading: loadingPDB, file: pdbFile } = useNGLFile(
+        `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
+        { defaultRepresentation: false, ext: 'pdb' },
+      );
+      const { loading: loadingDCD, file: dcdFile } = useNGLFile(
+        `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
+        { ext: 'dcd' },
+      );
+
+      // Stage creation and removal on mounting and unmounting
+      useEffect(() => {
+        const stage = new ngl.Stage(containerRef.current);
+        stageRef.current = stage;
+        return () => stageRef.current.dispose();
+      }, []);
+
+      // frames
+      const handleFrameChange = useCallback(frame => {
+        if (!onProgress) return;
+        const progress = clamp(
+          frame /
+            (stageRef.current.compList[0].trajList[0].trajectory.numframes - 1),
+          0,
+          1,
+        );
+        onProgress(progress);
+      }, []);
+
+      // Resize logic
+      // declare handler
+      const handleResize = useCallback(
+        debounce(() => {
+          if (!stageRef.current) return;
+          const canvas = containerRef.current.querySelector('canvas');
+          if (canvas) canvas.style.height = '';
+          stageRef.current.handleResize();
+        }, 500),
+        [],
+      );
+      // connect to events
+      useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+          handleResize.cancel();
+          window.removeEventListener('resize', handleResize);
+        };
+      }, []);
+
+      // PDB file, base structure
+      useEffect(
+        () => {
+          if (!pdbFile) return;
+          const structureComponent = stageRef.current.addComponentFromObject(
+            pdbFile,
+          );
+
+          structureComponent.autoView();
+
+          // main structure
+          structureComponent.addRepresentation('cartoon', {
+            sele: 'not(hetero or water or ion)',
+            name: 'structure',
+          });
+          // membrane
+          structureComponent.addRepresentation('licorice', {
+            sele: '(not polymer or hetero) and not (water or ion)',
+            opacity: 0.5,
+            name: 'membrane',
+          });
+        },
+        [pdbFile],
+      );
+
+      // DCD file, trajectory
+      useEffect(
+        () => {
+          if (!(pdbFile && dcdFile)) return;
+          const frames = stageRef.current.compList[0].addTrajectory(dcdFile);
+          frames.signals.frameChanged.add(handleFrameChange);
+          if (playing) frames.trajectory.player.play();
+          window.frames = frames;
+          return () => {
+            frames.signals.frameChanged.remove(handleFrameChange);
+          };
+        },
+        [pdbFile, dcdFile],
+      );
+
+      // play/pause
+      useEffect(
+        () => {
+          if (!(pdbFile && dcdFile)) return;
+          stageRef.current.compList[0].trajList[0].trajectory.player[
+            playing ? 'play' : 'pause'
+          ]();
+        },
+        [playing],
+      );
+
+      // spinning
+      useEffect(
+        () => {
+          if (spinning === stageRef.current.spinAnimation.paused) {
+            stageRef.current.toggleSpin();
+          }
+        },
+        [spinning],
+      );
+
+      // membrane opacity
+      useEffect(
+        () => {
+          if (!pdbFile) return;
+          changeOpacity(
+            stageRef.current.compList[0].reprList.find(
+              ({ name }) => name === 'membrane',
+            ).repr,
+            membraneOpacity,
+          );
+        },
+        [pdbFile, membraneOpacity],
+      );
+      useEffect(() => changeOpacity.cancel, []);
+
+      // smoothing, player interpolation
+      useEffect(
+        () => {
+          if (!(pdbFile && dcdFile)) return;
+          stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
+            ? 'linear'
+            : '';
+        },
+        [pdbFile, dcdFile, smooth],
+      );
+
+      // Expose public getters/setters
+      useImperativeMethods(ref, () => ({
+        get currentFrame() {
+          if (!(pdbFile && dcdFile)) return -1;
+          try {
+            return stageRef.current.compList[0].trajList[0].trajectory
+              .currentFrame;
+          } catch (_) {
+            return -1;
+          }
+        },
+        set currentFrame(value) {
+          if (!(pdbFile && dcdFile)) return;
+          try {
+            const total = this.totalFrames;
+            let frame = value % total;
+            if (frame < 0) frame = total - 1;
+            stageRef.current.compList[0].trajList[0].trajectory.setFrame(frame);
+          } catch (_) {
+            /* */
+          }
+        },
+        get totalFrames() {
+          if (!(pdbFile && dcdFile)) return 1;
+          try {
+            return stageRef.current.compList[0].trajList[0].trajectory.frames
+              .length;
+          } catch (_) {
+            return 1;
+          }
+        },
+      }));
+
+      return (
+        <div
+          ref={containerRef}
+          className={cn(className, style.container, {
+            [style.loading]: loadingPDB || loadingDCD,
+          })}
+          data-loading={
+            loadingPDB || loadingDCD
+              ? `Loading ${loadingPDB ? 'structure' : 'trajectory'}…`
+              : undefined
+          }
+        />
+      );
     },
-    ref,
-  ) => {
-    const containerRef = useRef(null);
-    const stageRef = useRef(null);
-
-    const { loading: loadingPDB, file: pdbFile } = useNGLFile(
-      `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
-      { defaultRepresentation: false, ext: 'pdb' },
-    );
-    const { loading: loadingDCD, file: dcdFile } = useNGLFile(
-      `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
-      { ext: 'dcd' },
-    );
-
-    // Stage creation and removal on mounting and unmounting
-    useEffect(() => {
-      const stage = new ngl.Stage(containerRef.current);
-      stageRef.current = stage;
-      return () => stageRef.current.dispose();
-    }, []);
-
-    // Resize logic
-    // declare handler
-    const handleResize = useCallback(
-      debounce(() => {
-        if (!stageRef.current) return;
-        const canvas = containerRef.current.querySelector('canvas');
-        if (canvas) canvas.style.height = '';
-        stageRef.current.handleResize();
-      }, 500),
-      [],
-    );
-    // connect to events
-    useEffect(() => {
-      window.addEventListener('resize', handleResize);
-      return () => {
-        handleResize.cancel();
-        window.removeEventListener('resize', handleResize);
-      };
-    }, []);
-
-    // PDB file, base structure
-    useEffect(
-      () => {
-        if (!pdbFile) return;
-        const structureComponent = stageRef.current.addComponentFromObject(
-          pdbFile,
-        );
-
-        structureComponent.autoView();
-
-        // main structure
-        structureComponent.addRepresentation('cartoon', {
-          sele: 'not(hetero or water or ion)',
-          name: 'structure',
-        });
-        // membrane
-        structureComponent.addRepresentation('licorice', {
-          sele: '(not polymer or hetero) and not (water or ion)',
-          opacity: 0.5,
-          name: 'membrane',
-        });
-      },
-      [pdbFile],
-    );
-
-    // DCD file, trajectory
-    useEffect(
-      () => {
-        if (!(pdbFile && dcdFile)) return;
-        const frames = stageRef.current.compList[0].addTrajectory(dcdFile);
-        if (playing) frames.trajectory.player.play();
-      },
-      [pdbFile, dcdFile],
-    );
-
-    // play/pause
-    useEffect(
-      () => {
-        if (!(pdbFile && dcdFile)) return;
-        stageRef.current.compList[0].trajList[0].trajectory.player[
-          playing ? 'play' : 'pause'
-        ]();
-      },
-      [playing],
-    );
-
-    // spinning
-    useEffect(
-      () => {
-        if (spinning === stageRef.current.spinAnimation.paused) {
-          stageRef.current.toggleSpin();
-        }
-      },
-      [spinning],
-    );
-
-    // membrane opacity
-    useEffect(
-      () => {
-        if (!pdbFile) return;
-        changeOpacity(
-          stageRef.current.compList[0].reprList.find(
-            ({ name }) => name === 'membrane',
-          ).repr,
-          membraneOpacity,
-        );
-      },
-      [pdbFile, membraneOpacity],
-    );
-    useEffect(() => changeOpacity.cancel, []);
-
-    // smoothing, player interpolation
-    useEffect(
-      () => {
-        if (!(pdbFile && dcdFile)) return;
-        stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
-          ? 'linear'
-          : '';
-      },
-      [pdbFile, dcdFile, smooth],
-    );
-
-    console.log(props);
-
-    // Expose public methods and getters/setters
-    useImperativeMethods(ref, () => ({
-      centerFocus() {
-        console.log('centering focus');
-      },
-      toggleSpin() {
-        console.log('toggling spin');
-      },
-      get currentFrame() {
-        // console.log('getting current frame');
-        return '';
-      },
-      set currentFrame(value) {
-        // console.log('setting current frame');
-      },
-      get totalFrames() {
-        // console.log('getting total frame number');
-        return '';
-      },
-    }));
-
-    return (
-      <div
-        ref={containerRef}
-        className={cn(className, style.container, {
-          [style.loading]: loadingPDB || loadingDCD,
-        })}
-        data-loading={
-          loadingPDB || loadingDCD
-            ? `Loading ${loadingPDB ? 'structure' : 'trajectory'}…`
-            : undefined
-        }
-      />
-    );
-  },
+  ),
 );
-
-class _NGLViewer extends PureComponent {
-  state = { loadingTrajectory: true };
-  #ref = React.createRef();
-  #stage;
-  #trajectory;
-
-  #handleResize = debounce(async () => {
-    if (this.#stage && this.#ref.current) {
-      const canvas = this.#ref.current.querySelector('canvas');
-      // need to unset this first when we reduce the size (fullscreen off)
-      if (canvas) canvas.style.height = '';
-      this.#stage.handleResize();
-    }
-  }, 500);
-
-  #handleFrameChange = frame => {
-    if (this.#stage && this.props.onProgress) {
-      this.props.onProgress(
-        (frame + 1) /
-          (this.#stage.compList[0].trajList[0].trajectory.numframes - 1),
-      );
-    }
-  };
-
-  centerFocus = (() => {
-    // also used as flag for first time run
-    let originalOrientation = null;
-    return () => {
-      if (this.#stage.compList[0]) {
-        if (originalOrientation) {
-          // every other time
-          this.#stage.animationControls.orient(originalOrientation, 500);
-        } else {
-          // only the first time
-          this.#stage.compList[0].autoView();
-          originalOrientation = this.#stage.viewerControls.getOrientation();
-        }
-      }
-    };
-  })();
-
-  toggleSpin = () => {
-    if (this.#stage) {
-      this.#stage.toggleSpin();
-    }
-  };
-
-  toggleSmooth = on => {
-    if (this.#stage) {
-      this.#stage.compList[0].trajList[0].trajectory.player.interpolateType = on
-        ? 'linear'
-        : '';
-    }
-  };
-
-  get currentFrame() {
-    if (this.#stage.compList[0].trajList[0])
-      return this.#stage.compList[0].trajList[0].trajectory.currentFrame;
-    return null;
-  }
-
-  set currentFrame(value) {
-    if (this.#stage.compList[0].trajList[0]) {
-      const totalFrames = this.totalFrames;
-      let nextFrame = value % totalFrames;
-      if (nextFrame < 0) nextFrame = totalFrames - nextFrame;
-      if (this.props.onProgress) {
-        this.props.onProgress((nextFrame + 1) / (totalFrames - 1));
-      }
-      this.#stage.compList[0].trajList[0].trajectory.setFrame(nextFrame);
-    }
-  }
-
-  get totalFrames() {
-    if (this.#stage.compList[0].trajList[0])
-      return this.#stage.compList[0].trajList[0].trajectory.frames.length;
-    return null;
-  }
-
-  render() {
-    return (
-      <div
-        ref={this.#ref}
-        className={cn(this.props.className, style.container, {
-          [style['loading-trajectory']]: this.state.loadingTrajectory,
-        })}
-      />
-    );
-  }
-
-  async componentDidMount() {
-    mounted.add(this);
-    // connect resize event to logic to update the stage
-    //   (disconnect in componentWillUnmount)
-    window.addEventListener('resize', this.#handleResize);
-    // create NGL Stage
-    this.#stage = new ngl.Stage(this.#ref.current);
-
-    // add PDB data
-    const structureComponent = this.#stage.addComponentFromObject(
-      this.props.pdbFile,
-    );
-    // default representation
-    // this.#stage.defaultFileRepresentation(structureComponent);
-    structureComponent.addRepresentation('cartoon', {
-      sele: 'not(hetero or water or ion)',
-      name: 'structure',
-    });
-    // membrane
-    structureComponent.addRepresentation('licorice', {
-      sele: '(not polymer or hetero) and not (water or ion)',
-      opacity: 0.5,
-      name: 'membrane',
-    });
-    // make sure the view is centered
-    this.centerFocus();
-    // load frames
-    const frames = await ngl.autoLoad(
-      BASE_PATH + this.props.accession + '/md.traj.50.dcd',
-      { ext: 'dcd' },
-    );
-
-    this.setState({ loadingTrajectory: false });
-
-    structureComponent.addTrajectory(this.props.dcdFile);
-
-    this.#stage.compList[0].trajList[0].trajectory.signals.frameChanged.add(
-      this.#handleFrameChange,
-    );
-
-    this.#handleChanges(undefined, this.props);
-  }
-
-  #handleChanges = (prevProps = {}, props) => {
-    if (prevProps.isFullscreen !== props.isFullscreen) {
-      this.#handleResize();
-    }
-
-    if (prevProps.playing !== props.playing) {
-      this.#stage.compList[0].trajList[0].trajectory.player[
-        props.playing ? 'play' : 'pause'
-      ]();
-    }
-
-    if (prevProps.membraneOpacity !== props.membraneOpacity) {
-      const representation = this.#stage.compList[0].reprList.find(
-        ({ name }) => name === 'membrane',
-      ).repr;
-      representation.setParameters({ opacity: props.membraneOpacity });
-      // optimise render or not depending on opacity level
-      if (!prevProps.membraneOpacity) {
-        representation.setVisibility(true);
-      }
-      if (!props.membraneOpacity) {
-        representation.setVisibility(false);
-      }
-    }
-  };
-
-  componentDidUpdate(prevProps) {
-    this.#handleChanges(prevProps, this.props);
-  }
-
-  componentWillUnmount() {
-    mounted.delete(this);
-    // remove event listeners
-    if (this.#stage.compList[0].trajList[0]) {
-      this.#stage.compList[0].trajList[0].trajectory.signals.frameChanged.remove(
-        this.#handleFrameChange,
-      );
-    }
-    this.#handleResize.cancel();
-    window.removeEventListener('resize', this.#handleResize);
-  }
-}
-
-export default ({ accession, className, ...props }) => {
-  const { loading: loadingPDB, file: pdbFile } = useNGLFile(
-    `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
-    { defaultRepresentation: false, ext: 'pdb' },
-  );
-  const { loading: loadingDCD, file: dcdFile } = useNGLFile(
-    `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
-    { ext: 'dcd' },
-  );
-
-  const [stage, setStage] = useState(null);
-
-  const ref = useRef(null);
-
-  if (!stage && ref.current) {
-    const newStage = new ngl.Stage(ref.current);
-    console.log(newStage);
-    setStage(newStage);
-  }
-
-  if (stage && !stage.compList.length && pdbFile) {
-    const structureComponent = stage.addComponentFromObject(pdbFile);
-
-    structureComponent.autoView();
-
-    structureComponent.addRepresentation('cartoon', {
-      sele: 'not(hetero or water or ion)',
-      name: 'structure',
-    });
-    // membrane
-    structureComponent.addRepresentation('licorice', {
-      sele: '(not polymer or hetero) and not (water or ion)',
-      opacity: 0.5,
-      name: 'membrane',
-    });
-  }
-
-  if (
-    stage &&
-    stage.compList[0] &&
-    !stage.compList[0].trajList.length &&
-    dcdFile
-  ) {
-    const frames = stage.compList[0].addTrajectory(dcdFile);
-    frames.trajectory.player.play();
-  }
-
-  // if (!(pdbFile && dcdFile)) return 'Loading';
-
-  // return (
-  //   <NGLViewer accession={accession} pdbFile={pdbFile} dcdFile={dcdFile} />
-  // );
-  return (
-    <div
-      ref={ref}
-      className={cn(className, style.container, {
-        [style.loading]: loadingPDB || loadingDCD,
-      })}
-      data-loading={
-        loadingPDB || loadingDCD
-          ? `Loading ${loadingPDB ? 'structure' : 'trajectory'}…`
-          : undefined
-      }
-    />
-  );
-};
