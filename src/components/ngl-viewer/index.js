@@ -26,7 +26,7 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
   }
 }, 100);
 
-export const NGLViewer = memo(
+const NGLViewer = memo(
   forwardRef(
     (
       {
@@ -126,7 +126,6 @@ export const NGLViewer = memo(
           const frames = stageRef.current.compList[0].addTrajectory(dcdFile);
           frames.signals.frameChanged.add(handleFrameChange);
           if (playing) frames.trajectory.player.play();
-          window.frames = frames;
           return () => {
             frames.signals.frameChanged.remove(handleFrameChange);
           };
@@ -224,7 +223,7 @@ export const NGLViewer = memo(
             }
           },
         }),
-        [],
+        [pdbFile, dcdFile],
       );
 
       return (
@@ -243,3 +242,5 @@ export const NGLViewer = memo(
     },
   ),
 );
+
+export default NGLViewer;

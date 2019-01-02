@@ -15,52 +15,52 @@ const useAPI = url => {
   useEffect(
     () => {
       if (!url) {
-        setState({
+        setState(state => ({
           loading: false,
           payload: null,
           error: null,
           previousPayload: state.payload || state.previousPayload,
-        });
+        }));
         return;
       }
 
       const controller = new AbortController();
-      setState({
+      setState(state => ({
         loading: true,
         payload: null,
         error: null,
         previousPayload: state.payload || state.previousPayload,
-      });
+      }));
       fetch(url, { signal: controller.signal })
         .then(
           response => (response.status === NO_CONTENT ? null : response.json()),
           error =>
             !canceledRef.current &&
-            setState({
+            setState(state => ({
               loading: false,
               payload: null,
               error,
               previousPayload: state.payload || state.previousPayload,
-            }),
+            })),
         )
         .then(
           payload => {
             if (canceledRef.current) return;
-            setState({
+            setState(state => ({
               loading: false,
               payload,
               error: null,
               previousPayload: state.payload || state.previousPayload,
-            });
+            }));
           },
           error => {
             if (canceledRef.current) return;
-            setState({
+            setState(state => ({
               loading: false,
               payload: null,
               error,
               previousPayload: state.payload || state.previousPayload,
-            });
+            }));
           },
         );
 

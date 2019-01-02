@@ -1,11 +1,4 @@
-import React, {
-  PureComponent,
-  memo,
-  useCallback,
-  useRef,
-  useEffect,
-  useState,
-} from 'react';
+import React, { memo, useCallback, useRef, useEffect, useState } from 'react';
 import cn from 'classnames';
 import screenfull from 'screenfull';
 import { round } from 'lodash-es';
@@ -36,9 +29,10 @@ import {
 } from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 
-import { NGLViewer } from '../../../components/ngl-viewer';
+import NGLViewer from '../../../components/ngl-viewer';
 
-import useAPI from '../../../hooks/use-api/index';
+import useAPI from '../../../hooks/use-api';
+import useToggleState from '../../../hooks/use-toggle-state';
 import { BASE_PATH } from '../../../utils/constants';
 
 import style from './style.module.css';
@@ -315,177 +309,147 @@ const TrajectoryMetadata = memo(({ metadata }) => (
   </fieldset>
 ));
 
-export default class Trajectory extends PureComponent {
-  #ref = React.createRef();
-  #viewerRef = React.createRef();
+const Trajectory = ({ pdbData, metadata, match }) => {
+  const containerRef = useRef(null);
+  const viewerRef = useRef(null);
 
-  state = {
-    progress: 0,
-    playing: true,
-    spinning: false,
-    smooth: false,
-    isFullscreen: screenfull.isFullscreen,
-    membraneOpacity: 0.5,
-  };
+  const [progress, setProgress] = useState(0);
+  const [playing, togglePlaying] = useToggleState(true);
+  const [spinning, toggleSpinning] = useToggleState(false);
+  const [smooth, toggleSmooth] = useToggleState(false);
+  const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
+  const [membraneOpacity, setMembraneOpacity] = useState(0.5);
 
-  #toggleFullscreen = () => {
-    if (!this.#ref.current) return;
-    screenfull.toggle(this.#ref.current);
-  };
+  const toggleFullscreen = useCallback(() => {
+    if (containerRef.current) screenfull.toggle(containerRef.current);
+  }, []);
 
-  #togglePlay = () => {
-    this.setState(({ playing }) => ({ playing: !playing }));
-  };
+  const centerFocus = useCallback(() => {
+    if (viewerRef.current) viewerRef.current.centerFocus();
+  }, []);
 
-  #centerFocus = () => {
-    if (this.#viewerRef.current) {
-      this.#viewerRef.current.centerFocus();
-    }
-  };
+  const handlePrevFrame = useCallback(() => handleFrameChange(-1), []);
+  const handleNextFrame = useCallback(() => handleFrameChange(1), []);
 
-  #handleFrameChange = value => {
-    if (this.#viewerRef.current) {
-      this.setState(
-        { playing: false },
-        () => (this.#viewerRef.current.currentFrame += value),
+  const handleFullscreenChange = useCallback(
+    () => setIsFullscreen(screenfull.isFullscreen),
+    [],
+  );
+
+  const handleMembraneOpacityChange = useCallback(
+    (_, value) => setMembraneOpacity(value / 100),
+    [],
+  );
+
+  const handleFrameChange = useCallback(value => {
+    if (!viewerRef.current) return;
+    togglePlaying(false);
+    viewerRef.current.currentFrame += value;
+  }, []);
+
+  const handleManualProgress = useCallback(
+    ({ buttons, clientX, currentTarget, type }) => {
+      if (!viewerRef.current) return;
+      if (type === 'mousemove' && buttons !== 1) return;
+      const { x, width } = currentTarget.getBoundingClientRect();
+      togglePlaying(false);
+      viewerRef.current.currentFrame = Math.floor(
+        ((clientX - x) / width) * viewerRef.current.totalFrames,
       );
-    }
-  };
+    },
+    [],
+  );
 
-  #handlePrev = () => this.#handleFrameChange(-1);
+  useEffect(() => {
+    screenfull.on('change', handleFullscreenChange);
+    return () => screenfull.off('change', handleFullscreenChange);
+  }, []);
 
-  #handleNext = () => this.#handleFrameChange(1);
-
-  #toggleSpin = () => {
-    this.setState(({ spinning }) => ({ spinning: !spinning }));
-  };
-
-  #toggleSmooth = () => {
-    this.setState(({ smooth }) => ({ smooth: !smooth }));
-  };
-
-  #handleProgress = progress => this.setState({ progress });
-
-  #handleFullscreenChange = () => {
-    this.setState({ isFullscreen: screenfull.isFullscreen });
-  };
-
-  #handleManualProgress = ({ clientX, currentTarget }) => {
-    const { x, width } = currentTarget.getBoundingClientRect();
-    const wantedProgress = (clientX - x) / width;
-    this.setState({ playing: false }, () => {
-      if (this.#viewerRef.current) {
-        this.#viewerRef.current.currentFrame = Math.floor(
-          wantedProgress * this.#viewerRef.current.totalFrames,
-        );
-      }
-    });
-  };
-
-  #handleMembraneOpacityChange = (_, value) =>
-    this.setState({ membraneOpacity: value / 100 });
-
-  componentDidMount() {
-    screenfull.on('change', this.#handleFullscreenChange);
-  }
-
-  componentWillUnmount() {
-    screenfull.off('change', this.#handleFullscreenChange);
-  }
-
-  render() {
-    const { pdbData, metadata, match } = this.props;
-    const {
-      progress,
-      playing,
-      spinning,
-      isFullscreen,
-      smooth,
-      membraneOpacity,
-    } = this.state;
-    return (
-      <>
+  return (
+    <>
+      <Card className={style.card}>
+        <CardContent>
+          <TrajectoryMetadata metadata={metadata} />
+        </CardContent>
+      </Card>
+      <div
+        className={cn(style['fullscreen-target'], {
+          [style['is-fullscreen']]: isFullscreen,
+        })}
+        ref={containerRef}
+      >
         <Card className={style.card}>
-          <CardContent>
-            <TrajectoryMetadata metadata={metadata} />
+          <CardContent className={style['card-content']}>
+            <NGLViewer
+              accession={match.params.accession}
+              playing={playing}
+              spinning={spinning}
+              membraneOpacity={membraneOpacity}
+              smooth={smooth}
+              onProgress={setProgress}
+              className={style.container}
+              ref={viewerRef}
+            />
+            <div
+              className={style.progress}
+              onClick={handleManualProgress}
+              onMouseMove={handleManualProgress}
+            >
+              <LinearProgress
+                variant="determinate"
+                color="secondary"
+                value={progress * 100}
+              />
+            </div>
+            <div>
+              <IconButton title="Previous frame" onClick={handlePrevFrame}>
+                <SkipPrevious />
+              </IconButton>
+              <IconButton
+                title={playing ? 'Pause' : 'Play'}
+                onClick={togglePlaying}
+              >
+                {playing ? <Pause /> : <PlayArrow />}
+              </IconButton>
+              <IconButton title="Next frame" onClick={handleNextFrame}>
+                <SkipNext />
+              </IconButton>
+              {screenfull.enabled && (
+                <IconButton
+                  title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
+                  onClick={toggleFullscreen}
+                >
+                  {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+                </IconButton>
+              )}
+              <IconButton title="Toggle spin" onClick={toggleSpinning}>
+                <ThreeSixty />
+              </IconButton>
+              <IconButton title="Center focus" onClick={centerFocus}>
+                <CenterFocusStrong />
+              </IconButton>
+              <IconButton
+                title={`Toggle smooth interpolation ${
+                  smooth
+                    ? 'off'
+                    : 'on (may display artifacts for simulation box border atoms)'
+                }`}
+                onClick={toggleSmooth}
+                disabled={!playing}
+              >
+                {smooth ? <BurstMode /> : <Videocam />}
+              </IconButton>
+              <OpacitySlider
+                title="Change membrane opacity"
+                value={membraneOpacity * 100}
+                handleChange={handleMembraneOpacityChange}
+              />
+            </div>
           </CardContent>
         </Card>
-        <div
-          className={cn(style['fullscreen-target'], {
-            [style['is-fullscreen']]: isFullscreen,
-          })}
-          ref={this.#ref}
-        >
-          <Card className={style.card}>
-            <CardContent className={style['card-content']}>
-              <NGLViewer
-                accession={match.params.accession}
-                playing={playing}
-                spinning={spinning}
-                membraneOpacity={membraneOpacity}
-                smooth={smooth}
-                onProgress={this.#handleProgress}
-                className={style.container}
-                ref={this.#viewerRef}
-              />
-              <div
-                className={style.progress}
-                onClick={this.#handleManualProgress}
-              >
-                <LinearProgress
-                  variant="determinate"
-                  color="secondary"
-                  value={progress * 100}
-                />
-              </div>
-              <div>
-                <IconButton title="Previous frame" onClick={this.#handlePrev}>
-                  <SkipPrevious />
-                </IconButton>
-                <IconButton
-                  title={playing ? 'Pause' : 'Play'}
-                  onClick={this.#togglePlay}
-                >
-                  {playing ? <Pause /> : <PlayArrow />}
-                </IconButton>
-                <IconButton title="Next frame" onClick={this.#handleNext}>
-                  <SkipNext />
-                </IconButton>
-                {screenfull.enabled && (
-                  <IconButton
-                    title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
-                    onClick={this.#toggleFullscreen}
-                  >
-                    {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
-                  </IconButton>
-                )}
-                <IconButton title="Toggle spin" onClick={this.#toggleSpin}>
-                  <ThreeSixty />
-                </IconButton>
-                <IconButton title="Center focus" onClick={this.#centerFocus}>
-                  <CenterFocusStrong />
-                </IconButton>
-                <IconButton
-                  title={`Toggle smooth interpolation ${
-                    smooth
-                      ? 'off'
-                      : 'on (may display artifacts for simulation box border atoms)'
-                  }`}
-                  onClick={this.#toggleSmooth}
-                  disabled={!playing}
-                >
-                  {smooth ? <BurstMode /> : <Videocam />}
-                </IconButton>
-                <OpacitySlider
-                  title="Change membrane opacity"
-                  value={membraneOpacity * 100}
-                  handleChange={this.#handleMembraneOpacityChange}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </>
-    );
-  }
-}
+      </div>
+    </>
+  );
+};
+
+export default Trajectory;
