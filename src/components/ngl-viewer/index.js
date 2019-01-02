@@ -1,18 +1,15 @@
 import React, {
-  PureComponent,
   forwardRef,
   memo,
   useRef,
   useImperativeMethods,
   useCallback,
   useEffect,
-  useState,
 } from 'react';
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
 import * as ngl from 'ngl';
 
-import mounted from '../../utils/mounted';
 import { BASE_PATH } from '../../utils/constants';
 
 import style from './style.module.css';
