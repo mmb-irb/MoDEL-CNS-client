@@ -185,44 +185,50 @@ export const NGLViewer = memo(
       );
 
       // Expose public methods and getters/setters
-      useImperativeMethods(ref, () => ({
-        centerFocus() {
-          if (!originalOritentationRef.current) return;
-          stageRef.current.animationControls.orient(
-            originalOritentationRef.current,
-            500,
-          );
-        },
-        get currentFrame() {
-          if (!(pdbFile && dcdFile)) return -1;
-          try {
-            return stageRef.current.compList[0].trajList[0].trajectory
-              .currentFrame;
-          } catch (_) {
-            return -1;
-          }
-        },
-        set currentFrame(value) {
-          if (!(pdbFile && dcdFile)) return;
-          try {
-            const total = this.totalFrames;
-            let frame = value % total;
-            if (frame < 0) frame = total - 1;
-            stageRef.current.compList[0].trajList[0].trajectory.setFrame(frame);
-          } catch (_) {
-            /* */
-          }
-        },
-        get totalFrames() {
-          if (!(pdbFile && dcdFile)) return 1;
-          try {
-            return stageRef.current.compList[0].trajList[0].trajectory.frames
-              .length;
-          } catch (_) {
-            return 1;
-          }
-        },
-      }));
+      useImperativeMethods(
+        ref,
+        () => ({
+          centerFocus() {
+            if (!originalOritentationRef.current) return;
+            stageRef.current.animationControls.orient(
+              originalOritentationRef.current,
+              500,
+            );
+          },
+          get currentFrame() {
+            if (!(pdbFile && dcdFile)) return -1;
+            try {
+              return stageRef.current.compList[0].trajList[0].trajectory
+                .currentFrame;
+            } catch (_) {
+              return -1;
+            }
+          },
+          set currentFrame(value) {
+            if (!(pdbFile && dcdFile)) return;
+            try {
+              const total = this.totalFrames;
+              let frame = value % total;
+              if (frame < 0) frame = total - 1;
+              stageRef.current.compList[0].trajList[0].trajectory.setFrame(
+                frame,
+              );
+            } catch (_) {
+              /* */
+            }
+          },
+          get totalFrames() {
+            if (!(pdbFile && dcdFile)) return 1;
+            try {
+              return stageRef.current.compList[0].trajList[0].trajectory.frames
+                .length;
+            } catch (_) {
+              return 1;
+            }
+          },
+        }),
+        [],
+      );
 
       return (
         <div
