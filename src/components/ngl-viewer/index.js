@@ -46,6 +46,7 @@ export const NGLViewer = memo(
     ) => {
       const containerRef = useRef(null);
       const stageRef = useRef(null);
+      const originalOritentationRef = useRef(null);
 
       const { loading: loadingPDB, file: pdbFile } = useNGLFile(
         `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
@@ -104,6 +105,7 @@ export const NGLViewer = memo(
           );
 
           structureComponent.autoView();
+          originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
 
           // main structure
           structureComponent.addRepresentation('cartoon', {
@@ -182,8 +184,15 @@ export const NGLViewer = memo(
         [pdbFile, dcdFile, smooth],
       );
 
-      // Expose public getters/setters
+      // Expose public methods and getters/setters
       useImperativeMethods(ref, () => ({
+        centerFocus() {
+          if (!originalOritentationRef.current) return;
+          stageRef.current.animationControls.orient(
+            originalOritentationRef.current,
+            500,
+          );
+        },
         get currentFrame() {
           if (!(pdbFile && dcdFile)) return -1;
           try {
