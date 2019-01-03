@@ -41,10 +41,12 @@ const NGLViewer = memo(
       },
       ref,
     ) => {
+      // references
       const containerRef = useRef(null);
       const stageRef = useRef(null);
       const originalOritentationRef = useRef(null);
 
+      // state (remote data retrieved from custom hook)
       const { loading: loadingPDB, file: pdbFile } = useNGLFile(
         `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
         { defaultRepresentation: false, ext: 'pdb' },

@@ -31,25 +31,23 @@ import { Slider } from '@material-ui/lab';
 
 import NGLViewer from '../../../components/ngl-viewer';
 
-import useAPI from '../../../hooks/use-api';
 import useToggleState from '../../../hooks/use-toggle-state';
-import { BASE_PATH } from '../../../utils/constants';
 
 import style from './style.module.css';
 
 const OpacitySlider = memo(({ value, handleChange, ...buttonProps }) => {
+  // useState
   const [element, setElement] = useState(null);
-
-  const handleOpen = useCallback(
-    ({ currentTarget }) => setElement(currentTarget),
-    [],
-  );
-
-  const handleClose = useCallback(() => setElement(null), []);
 
   return (
     <>
-      <IconButton {...buttonProps} onClick={handleOpen}>
+      <IconButton
+        {...buttonProps}
+        onClick={useCallback(
+          ({ currentTarget }) => setElement(currentTarget),
+          [],
+        )}
+      >
         <Flip />
       </IconButton>
       <Popover
@@ -64,7 +62,7 @@ const OpacitySlider = memo(({ value, handleChange, ...buttonProps }) => {
           horizontal: 'center',
         }}
         container={screenfull.element || document.body}
-        onClose={handleClose}
+        onClose={useCallback(() => setElement(null), [])}
       >
         <Paper style={{ padding: '1.5em' }}>
           <span>Membrane opacity:</span>
@@ -310,43 +308,21 @@ const TrajectoryMetadata = memo(({ metadata }) => (
 ));
 
 const Trajectory = ({ pdbData, metadata, match }) => {
+  // references
   const containerRef = useRef(null);
   const viewerRef = useRef(null);
 
-  const [progress, setProgress] = useState(0);
+  // toggle states
   const [playing, togglePlaying] = useToggleState(true);
   const [spinning, toggleSpinning] = useToggleState(false);
   const [smooth, toggleSmooth] = useToggleState(false);
+
+  // states
+  const [progress, setProgress] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
   const [membraneOpacity, setMembraneOpacity] = useState(0.5);
 
-  const toggleFullscreen = useCallback(() => {
-    if (containerRef.current) screenfull.toggle(containerRef.current);
-  }, []);
-
-  const centerFocus = useCallback(() => {
-    if (viewerRef.current) viewerRef.current.centerFocus();
-  }, []);
-
-  const handlePrevFrame = useCallback(() => handleFrameChange(-1), []);
-  const handleNextFrame = useCallback(() => handleFrameChange(1), []);
-
-  const handleFullscreenChange = useCallback(
-    () => setIsFullscreen(screenfull.isFullscreen),
-    [],
-  );
-
-  const handleMembraneOpacityChange = useCallback(
-    (_, value) => setMembraneOpacity(value / 100),
-    [],
-  );
-
-  const handleFrameChange = useCallback(value => {
-    if (!viewerRef.current) return;
-    togglePlaying(false);
-    viewerRef.current.currentFrame += value;
-  }, []);
-
+  // handlers
   const handleManualProgress = useCallback(
     ({ buttons, clientX, currentTarget, type }) => {
       if (!viewerRef.current) return;
@@ -360,6 +336,21 @@ const Trajectory = ({ pdbData, metadata, match }) => {
     [],
   );
 
+  const handleFrameChange = useCallback(
+    value => {
+      if (!viewerRef.current) return;
+      togglePlaying(false);
+      viewerRef.current.currentFrame += value;
+    },
+    [viewerRef.current],
+  );
+
+  const handleFullscreenChange = useCallback(
+    () => setIsFullscreen(screenfull.isFullscreen),
+    [],
+  );
+
+  // effects
   useEffect(() => {
     screenfull.on('change', handleFullscreenChange);
     return () => screenfull.off('change', handleFullscreenChange);
@@ -402,7 +393,10 @@ const Trajectory = ({ pdbData, metadata, match }) => {
               />
             </div>
             <div>
-              <IconButton title="Previous frame" onClick={handlePrevFrame}>
+              <IconButton
+                title="Previous frame"
+                onClick={useCallback(() => handleFrameChange(-1), [])}
+              >
                 <SkipPrevious />
               </IconButton>
               <IconButton
@@ -411,13 +405,19 @@ const Trajectory = ({ pdbData, metadata, match }) => {
               >
                 {playing ? <Pause /> : <PlayArrow />}
               </IconButton>
-              <IconButton title="Next frame" onClick={handleNextFrame}>
+              <IconButton
+                title="Next frame"
+                onClick={useCallback(() => handleFrameChange(1), [])}
+              >
                 <SkipNext />
               </IconButton>
               {screenfull.enabled && (
                 <IconButton
                   title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
-                  onClick={toggleFullscreen}
+                  onClick={useCallback(() => {
+                    if (containerRef.current)
+                      screenfull.toggle(containerRef.current);
+                  }, [])}
                 >
                   {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
                 </IconButton>
@@ -425,7 +425,12 @@ const Trajectory = ({ pdbData, metadata, match }) => {
               <IconButton title="Toggle spin" onClick={toggleSpinning}>
                 <ThreeSixty />
               </IconButton>
-              <IconButton title="Center focus" onClick={centerFocus}>
+              <IconButton
+                title="Center focus"
+                onClick={useCallback(() => {
+                  if (viewerRef.current) viewerRef.current.centerFocus();
+                }, [])}
+              >
                 <CenterFocusStrong />
               </IconButton>
               <IconButton
@@ -442,7 +447,10 @@ const Trajectory = ({ pdbData, metadata, match }) => {
               <OpacitySlider
                 title="Change membrane opacity"
                 value={membraneOpacity * 100}
-                handleChange={handleMembraneOpacityChange}
+                handleChange={useCallback(
+                  (_, value) => setMembraneOpacity(value / 100),
+                  [],
+                )}
               />
             </div>
           </CardContent>
