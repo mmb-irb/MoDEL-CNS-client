@@ -62,9 +62,11 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
     };
     const allDotGroups = graph.append('g');
 
-    drawRef.current = ({ hovered, precision = pr, labels = lab } = {}) => {
-      console.log('drawing!');
-      if (hovered) console.log(`hovered: ${hovered}`);
+    drawRef.current = ({
+      hovered,
+      precision = prevPrecision.current,
+      labels = lab,
+    } = {}) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
@@ -156,6 +158,7 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
         .attr('stroke-width', 5)
         .attr('filter', 'url(#background)');
 
+      // mouse move handler
       graph.on('mousemove', (_, index, nodes) => {
         const [xValue] = mouse(nodes[index]);
         const closestIndex =
@@ -217,10 +220,15 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
               [],
             )}
             onMouseOver={useCallback(
-              () => drawRef.current({ hovered: key }),
-              [],
+              () =>
+                lab[key] &&
+                drawRef.current({ hovered: key, precision: pr, labels: lab }),
+              [pr, lab],
             )}
-            onMouseOut={useCallback(() => drawRef.current(), [])}
+            onMouseOut={useCallback(
+              () => lab[key] && drawRef.current({ precision: pr, labels: lab }),
+              [pr, lab],
+            )}
             control={
               <Checkbox
                 checked={lab[key]}
