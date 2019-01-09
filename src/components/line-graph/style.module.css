@@ -1,0 +1,25 @@
+.graph-container {
+  height: 50vh;
+}
+
+.graph-container > svg {
+  height: 100%;
+  cursor: crosshair;
+}
+
+.graph-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1ch;
+}
+
+.graph-legend > * {
+  margin: 0 1em !important;
+}
+
+.graph-legend.precision {
+  margin-top: 2ch;
+  margin-left: 25%;
+  width: 50%;
+}

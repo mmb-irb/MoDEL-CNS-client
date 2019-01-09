@@ -1,18 +1,12 @@
-import React, { PureComponent } from 'react';
-import { omit, round } from 'lodash-es';
+import React, { PureComponent, useState, useCallback } from 'react';
+import { omit, round, noop, fromPairs } from 'lodash-es';
 import * as d3 from 'd3';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  FormControlLabel,
-  Checkbox,
-} from '@material-ui/core';
+import { Card, CardContent, Typography } from '@material-ui/core';
+
+import StatisticsTable from '../../../components/statistics-table';
+import LineGraph from '../../../components/line-graph';
+
+import useAPI from '../../../hooks/use-api';
 
 import { BASE_PATH } from '../../../utils/constants';
 
@@ -52,7 +46,7 @@ const niceNames = {
 
 const PRECISION = 100;
 
-export default class RMSd extends PureComponent {
+class _RMSd extends PureComponent {
   #ref = React.createRef();
   #graph;
   #axes;
@@ -183,17 +177,14 @@ export default class RMSd extends PureComponent {
                   ) - 7
             })`,
         )
-        .text(
-          d =>
-            d === 'time'
-              ? round(closestTime / 100 / this.state.data.time[1])
-              : formatter(
-                  this.state.data[d].filter((_, i) => i % PRECISION === 0)[
-                    Math.round(
-                      closestTime / PRECISION / this.state.data.time[1],
-                    )
-                  ],
-                ),
+        .text(d =>
+          d === 'time'
+            ? round(closestTime / 100 / this.state.data.time[1])
+            : formatter(
+                this.state.data[d].filter((_, i) => i % PRECISION === 0)[
+                  Math.round(closestTime / PRECISION / this.state.data.time[1])
+                ],
+              ),
         )
         .attr('opacity', 1);
     });
@@ -328,69 +319,95 @@ export default class RMSd extends PureComponent {
     window.addEventListener('resize', this.#draw);
   }
 
-  render() {
-    const { data, labels } = this.state;
-    return (
-      <>
-        <Card className={style.card}>
-          <CardContent>
-            <Typography variant="h6">Statistics</Typography>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>name</TableCell>
-                  <TableCell>mean</TableCell>
-                  <TableCell>standard deviation</TableCell>
-                </TableRow>
-              </TableHead>
-              {data && (
-                <TableBody>
-                  {Object.entries(data)
-                    .filter(([key]) => key !== 'time')
-                    .map(([key, value]) => (
-                      <TableRow key={key}>
-                        <TableCell>{key}</TableCell>
-                        <TableCell>
-                          {formatter(d3.mean(value))}
-                          nm
-                        </TableCell>
-                        <TableCell>
-                          {formatter(d3.deviation(value))}
-                          nm
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              )}
-            </Table>
-          </CardContent>
-        </Card>
-        <Card className={style.card}>
-          <CardContent>
-            <Typography variant="h6">Graph</Typography>
-            <div className={style['graph-container']} ref={this.#ref} />
-            <div className={style['graph-legend']}>
-              {Object.entries(labels).map(([key, value]) => (
-                <FormControlLabel
-                  key={key}
-                  data-key={key}
-                  onChange={this.#handleChange}
-                  onMouseOver={this.#handleMouseOver}
-                  onMouseOut={this.#handleMouseOut}
-                  control={
-                    <Checkbox
-                      checked={value}
-                      style={{ color: colors[key] }}
-                      inputProps={{ 'data-key': key }}
-                    />
-                  }
-                  label={niceNames[key]}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </>
-    );
-  }
+  // render() {
+  //   const { data, labels } = this.state;
+  //   return (
+  //     <>
+  //       <Card className={style.card}>
+  //         <CardContent>
+  //           <Typography variant="h6">Statistics</Typography>
+  //           <Table>
+  //             <TableHead>
+  //               <TableRow>
+  //                 <TableCell>name</TableCell>
+  //                 <TableCell>mean</TableCell>
+  //                 <TableCell>standard deviation</TableCell>
+  //               </TableRow>
+  //             </TableHead>
+  //             {data && (
+  //               <TableBody>
+  //                 {Object.entries(data)
+  //                   .filter(([key]) => key !== 'time')
+  //                   .map(([key, value]) => (
+  //                     <TableRow key={key}>
+  //                       <TableCell>{key}</TableCell>
+  //                       <TableCell>
+  //                         {formatter(d3.mean(value))}
+  //                         nm
+  //                       </TableCell>
+  //                       <TableCell>
+  //                         {formatter(d3.deviation(value))}
+  //                         nm
+  //                       </TableCell>
+  //                     </TableRow>
+  //                   ))}
+  //               </TableBody>
+  //             )}
+  //           </Table>
+  //         </CardContent>
+  //       </Card>
+  //       <Card className={style.card}>
+  //         <CardContent>
+  //           <Typography variant="h6">Graph</Typography>
+  //           <div className={style['graph-container']} ref={this.#ref} />
+  //           <div className={style['graph-legend']}>
+  //             {Object.entries(labels).map(([key, value]) => (
+  //               <FormControlLabel
+  //                 key={key}
+  //                 data-key={key}
+  //                 onChange={this.#handleChange}
+  //                 onMouseOver={this.#handleMouseOver}
+  //                 onMouseOut={this.#handleMouseOut}
+  //                 control={
+  //                   <Checkbox
+  //                     checked={value}
+  //                     style={{ color: colors[key] }}
+  //                     inputProps={{ 'data-key': key }}
+  //                   />
+  //                 }
+  //                 label={niceNames[key]}
+  //               />
+  //             ))}
+  //           </div>
+  //         </CardContent>
+  //       </Card>
+  //     </>
+  //   );
+  // }
 }
+
+const RMSd = ({ match }) => {
+  const { accession } = match.params;
+  const { payload } = useAPI(`${BASE_PATH}${accession}/analyses/rmsd/`);
+
+  if (payload) console.log(payload);
+
+  return (
+    <>
+      <Card className={style.card}>
+        <CardContent>
+          <Typography variant="h6">Statistics</Typography>
+          {payload && <StatisticsTable y={payload.y} />}
+        </CardContent>
+      </Card>
+      <Card className={style.card}>
+        <CardContent>
+          <Typography variant="h6">Graph</Typography>
+          {payload && <LineGraph y={payload.y} step={payload.step} />}
+        </CardContent>
+      </Card>
+    </>
+  );
+};
+
+export default RMSd;

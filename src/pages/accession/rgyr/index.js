@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { omit, round } from 'lodash-es';
 import * as d3 from 'd3';
+
 import {
   Card,
   CardContent,
@@ -13,6 +14,11 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@material-ui/core';
+
+import StatisticsTable from '../../../components/statistics-table';
+import LineGraph from '../../../components/line-graph';
+
+import useAPI from '../../../hooks/use-api';
 
 import { BASE_PATH } from '../../../utils/constants';
 
@@ -64,7 +70,7 @@ const niceNames = {
 
 const PRECISION = 100;
 
-export default class Rgyr extends PureComponent {
+class _Rgyr extends PureComponent {
   #ref = React.createRef();
   #zoom;
   #svg;
@@ -204,17 +210,14 @@ export default class Rgyr extends PureComponent {
                   ) - 7
             })`,
         )
-        .text(
-          d =>
-            d === 'time'
-              ? round(closestTime / 100 / this.state.data.time[1], 2)
-              : formatter(
-                  this.state.data[d].filter((_, i) => i % PRECISION === 0)[
-                    Math.round(
-                      closestTime / PRECISION / this.state.data.time[1],
-                    )
-                  ],
-                ),
+        .text(d =>
+          d === 'time'
+            ? round(closestTime / 100 / this.state.data.time[1], 2)
+            : formatter(
+                this.state.data[d].filter((_, i) => i % PRECISION === 0)[
+                  Math.round(closestTime / PRECISION / this.state.data.time[1])
+                ],
+              ),
         )
         .attr('opacity', 1);
     });
@@ -441,3 +444,29 @@ export default class Rgyr extends PureComponent {
     );
   }
 }
+
+const Rgyr = ({ match }) => {
+  const { accession } = match.params;
+  const { payload } = useAPI(`${BASE_PATH}${accession}/analyses/rgyr/`);
+
+  if (payload) console.log(payload);
+
+  return (
+    <>
+      <Card className={style.card}>
+        <CardContent>
+          <Typography variant="h6">Statistics</Typography>
+          {payload && <StatisticsTable y={payload.y} />}
+        </CardContent>
+      </Card>
+      <Card className={style.card}>
+        <CardContent>
+          <Typography variant="h6" />
+          {payload && <LineGraph y={payload.y} step={payload.step} />}
+        </CardContent>
+      </Card>
+    </>
+  );
+};
+
+export default Rgyr;
