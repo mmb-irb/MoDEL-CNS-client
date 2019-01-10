@@ -403,7 +403,15 @@ const RMSd = ({ match }) => {
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">Graph</Typography>
-          {payload && <LineGraph y={payload.y} step={payload.step} />}
+          {payload && (
+            <LineGraph
+              y={payload.y}
+              step={payload.step}
+              defaultPrecision={2 ** 6}
+              xLabel="Time (ns)"
+              yLabel="RMSd (nm)"
+            />
+          )}
         </CardContent>
       </Card>
     </>

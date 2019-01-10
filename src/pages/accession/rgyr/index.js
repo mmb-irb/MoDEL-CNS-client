@@ -462,7 +462,15 @@ const Rgyr = ({ match }) => {
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6" />
-          {payload && <LineGraph y={payload.y} step={payload.step} />}
+          {payload && (
+            <LineGraph
+              y={payload.y}
+              step={payload.step}
+              defaultPrecision={2 ** 6}
+              xLabel="Time (ns)"
+              yLabel="Rgyr (nm)"
+            />
+          )}
         </CardContent>
       </Card>
     </>

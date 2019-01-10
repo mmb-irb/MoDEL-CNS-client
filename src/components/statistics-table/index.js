@@ -9,6 +9,8 @@ import {
   TableBody,
 } from '@material-ui/core';
 
+import { NICE_NAMES } from '../../utils/constants';
+
 const formatter = format('.4f');
 
 const StatisticsTable = memo(({ y }) => {
@@ -24,7 +26,7 @@ const StatisticsTable = memo(({ y }) => {
       <TableBody>
         {Object.entries(y).map(([key, { average, stddev }]) => (
           <TableRow key={key}>
-            <TableCell>{key}</TableCell>
+            <TableCell>{NICE_NAMES.get(key) || key}</TableCell>
             <TableCell>
               {formatter(average)}
               nm

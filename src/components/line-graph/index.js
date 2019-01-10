@@ -8,6 +8,8 @@ import {
   extent,
   line,
   mouse,
+  zoom,
+  event,
 } from 'd3';
 import cn from 'classnames';
 
@@ -20,7 +22,14 @@ import style from './style.module.css';
 
 const MARGIN = { top: 20, right: 30, bottom: 40, left: 50 };
 
-const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
+const LineGraph = ({
+  y: yData,
+  step = 1,
+  startsAtOne = false,
+  defaultPrecision,
+  yLabel,
+  xLabel,
+}) => {
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
 
@@ -29,7 +38,7 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
   const [lab, setLabels] = useState(
     fromPairs(yEntries.map(([key]) => [key, true])),
   );
-  const [pr, setPrecision] = useState(64);
+  const [pr, setPrecision] = useState(defaultPrecision || 1);
 
   const prevPrecision = useRef(pr);
 
@@ -49,36 +58,50 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
     const axes = {
       x: graph.append('g'),
       y: graph.append('g'),
-      yLabel: graph
+    };
+    const graphZoom = zoom();
+    graph.call(graphZoom);
+    graphZoom.on('zoom', () => {
+      drawRef.current({
+        rescaleX: event.transform.rescaleX.bind(event.transform),
+      });
+    });
+
+    if (yLabel) {
+      axes.yLabel = graph
         .append('text')
         .attr('transform', 'rotate(-90)')
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
-        .text('RMSd (nm)'),
-      xLabel: graph
+        .text(yLabel);
+    }
+    if (xLabel) {
+      axes.xLabel = graph
         .append('text')
         .style('text-anchor', 'middle')
-        .text('Time (ns)'),
-    };
+        .text(xLabel);
+    }
     const allDotGroups = graph.append('g');
 
     drawRef.current = ({
       hovered,
       precision = prevPrecision.current,
       labels = lab,
+      rescaleX = scale => scale,
     } = {}) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
 
       // x axis
-      const x = scaleLinear()
-        .domain([
-          0,
-          yEntries[0][1].data.length * step - (startsAtOne ? 0 : step),
-        ])
-        .range([MARGIN.left, width - MARGIN.right])
-        .clamp(true);
+      const x = rescaleX(
+        scaleLinear()
+          .domain([
+            0,
+            yEntries[0][1].data.length * step - (startsAtOne ? 0 : step),
+          ])
+          .range([MARGIN.left, width - MARGIN.right]),
+      );
       const xAxis = g =>
         g.attr('transform', `translate(0, ${height - MARGIN.bottom})`).call(
           axisBottom(x)
@@ -87,7 +110,9 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
             .tickFormat(d => d / 1e3),
         );
       axes.x.call(xAxis);
-      axes.xLabel.attr('transform', `translate(${width / 2}, ${height - 5})`);
+      if (axes.xLabel) {
+        axes.xLabel.attr('transform', `translate(${width / 2}, ${height - 5})`);
+      }
 
       // y axis/axes
       const y = scaleLinear()
@@ -107,7 +132,9 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
           .transition()
           .call(axisLeft(y).ticks(8, '.2f'));
       axes.y.call(yAxis);
-      axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
+      if (axes.yLabel) {
+        axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
+      }
 
       // lines
       const lineFn = line()
@@ -236,26 +263,28 @@ const LineGraph = ({ y: yData, step = 1, startsAtOne = false }) => {
                 inputProps={{ 'data-key': key }}
               />
             }
-            label={NICE_NAMES.get(key)}
+            label={NICE_NAMES.get(key) || key}
           />
         ))}
       </div>
-      <div
-        className={cn(style['graph-legend'], style['precision'])}
-        title={`Showing ${pr === 1 ? 'all' : `1 out of ${pr}`} data points`}
-      >
-        <span>Precision:</span>
-        <Slider
-          value={9 - Math.log2(pr)}
-          min={0}
-          max={9}
-          step={1}
-          onChange={useCallback(
-            (_, value) => setPrecision(2 ** (9 - value)),
-            [],
-          )}
-        />
-      </div>
+      {defaultPrecision && (
+        <div
+          className={cn(style['graph-legend'], style['precision'])}
+          title={`Showing ${pr === 1 ? 'all' : `1 out of ${pr}`} data points`}
+        >
+          <span>Precision:</span>
+          <Slider
+            value={9 - Math.log2(pr)}
+            min={0}
+            max={9}
+            step={1}
+            onChange={useCallback(
+              (_, value) => setPrecision(2 ** (9 - value)),
+              [],
+            )}
+          />
+        </div>
+      )}
     </>
   );
 };

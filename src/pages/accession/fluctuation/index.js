@@ -14,6 +14,10 @@ import {
   Checkbox,
 } from '@material-ui/core';
 
+import StatisticsTable from '../../../components/statistics-table';
+import LineGraph from '../../../components/line-graph';
+
+import useAPI from '../../../hooks/use-api/index';
 import { BASE_PATH } from '../../../utils/constants';
 
 import style from './style.module.css';
@@ -50,7 +54,7 @@ const niceNames = {
   rmsf: 'Fluctuation',
 };
 
-export default class Fluctuation extends PureComponent {
+class _Fluctuation extends PureComponent {
   #ref = React.createRef();
   #zoom;
   #svg;
@@ -401,3 +405,36 @@ export default class Fluctuation extends PureComponent {
     );
   }
 }
+
+const Fluctuation = ({ match }) => {
+  const { accession } = match.params;
+  const { payload } = useAPI(`${BASE_PATH}${accession}/analyses/fluctuation`);
+
+  if (payload) console.log(payload);
+
+  return (
+    <>
+      <Card className={style.card}>
+        <CardContent>
+          <Typography variant="h6">Statistics</Typography>
+          {payload && <StatisticsTable y={payload.y} />}
+        </CardContent>
+      </Card>
+      <Card className={style.card}>
+        <CardContent>
+          <Typography variant="h6" />
+          {payload && (
+            <LineGraph
+              y={payload.y}
+              step={payload.step}
+              xLabel="Atom"
+              yLabel="Fluctuation (nm)"
+            />
+          )}
+        </CardContent>
+      </Card>
+    </>
+  );
+};
+
+export default Fluctuation;

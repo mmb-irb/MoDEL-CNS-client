@@ -19,7 +19,7 @@ const Error = ({ error }) => {
   return 'Something wrong happened';
 };
 
-const SummarySwitch = ({ payload }) => {
+const SummarySwitch = ({ payload, pdbData }) => {
   return (
     <Switch>
       <Route
@@ -40,11 +40,11 @@ const SummarySwitch = ({ payload }) => {
       />
       <Route path="/browse/:accession/rmsd" exact component={RMSd} />
       <Route path="/browse/:accession/rgyr" exact component={Rgyr} />
-      {/* <Route
+      <Route
         path="/browse/:accession/fluctuation"
         exact
         component={props => <Fluctuation {...props} pdbData={pdbData} />}
-      /> */}
+      />
     </Switch>
   );
 };

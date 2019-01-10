@@ -8,6 +8,7 @@ export const NICE_NAMES = new Map([
   ['rgyrx', 'RgyrX'],
   ['rgyry', 'RgyrY'],
   ['rgyrz', 'RgyrZ'],
+  ['rmsf', 'Fluctuation'],
 ]);
 
 export const COLORS = new Map([
@@ -16,5 +17,6 @@ export const COLORS = new Map([
   ['rgyrx', '#fdd400'],
   ['rgyry', '#84b761'],
   ['rgyrz', '#cc4748'],
+  ['rmsf', '#67b7dc'],
   ['time', 'gray'],
 ]);
