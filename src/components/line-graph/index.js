@@ -66,6 +66,7 @@ const LineGraph = ({
       allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
       drawRef.current({
         rescaleX: event.transform.rescaleX.bind(event.transform),
+        noDataTransition: true,
       });
     });
 
@@ -89,6 +90,7 @@ const LineGraph = ({
       precision = prevPrecision.current,
       labels = lab,
       rescaleX = scale => scale,
+      noDataTransition,
     } = {}) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
@@ -150,9 +152,11 @@ const LineGraph = ({
         .attr('stroke-linecap', 'round')
         .merge(lines)
         .transition()
-        // deactivate transition if precision changes because
-        // the interpolation is misleading
-        .duration(() => (prevPrecision.current === precision ? 250 : 0))
+        // deactivate transition if precision changes or if zooming/panning
+        // because the interpolation is misleading
+        .duration(() =>
+          noDataTransition || prevPrecision.current !== precision ? 0 : 250,
+        )
         .attr('d', d =>
           lineFn(yData[d].data.filter((_, i) => i % precision === 0)),
         )
