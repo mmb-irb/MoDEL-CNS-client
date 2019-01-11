@@ -41,6 +41,7 @@ const LineGraph = ({
   const [pr, setPrecision] = useState(defaultPrecision || 1);
 
   const prevPrecision = useRef(pr);
+  const prevRescaleX = useRef(scale => scale);
 
   useEffect(() => {
     const graph = select(containerRef.current).append('svg');
@@ -89,7 +90,7 @@ const LineGraph = ({
       hovered,
       precision = prevPrecision.current,
       labels = lab,
-      rescaleX = scale => scale,
+      rescaleX = prevRescaleX.current,
       noDataTransition,
     } = {}) => {
       // container size
@@ -106,7 +107,7 @@ const LineGraph = ({
       const xAxis = g =>
         g.attr('transform', `translate(0, ${height - MARGIN.bottom})`).call(
           axisBottom(x)
-            .ticks(width / 80)
+            .ticks(width / 100)
             .tickSizeOuter(0)
             .tickFormat(d => d / 1e3),
         );
@@ -223,6 +224,7 @@ const LineGraph = ({
         allDotGroups.selectAll('g.dot-group').attr('opacity', 0),
       );
 
+      prevRescaleX.current = rescaleX;
       prevPrecision.current = precision;
     };
 
