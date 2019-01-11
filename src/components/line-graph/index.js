@@ -59,7 +59,7 @@ const LineGraph = ({
       x: graph.append('g'),
       y: graph.append('g'),
     };
-    const graphZoom = zoom();
+    const graphZoom = zoom().scaleExtent([1, 50]);
     graph.call(graphZoom);
     graphZoom.on('zoom', () => {
       drawRef.current({
