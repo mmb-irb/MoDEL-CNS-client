@@ -93,13 +93,11 @@ const LineGraph = ({
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
 
+      const xMax = yEntries[0][1].data.length * step - (startsAtOne ? 0 : step);
       // x axis
       const x = rescaleX(
         scaleLinear()
-          .domain([
-            0,
-            yEntries[0][1].data.length * step - (startsAtOne ? 0 : step),
-          ])
+          .domain([0, xMax])
           .range([MARGIN.left, width - MARGIN.right]),
       );
       const xAxis = g =>
@@ -190,10 +188,12 @@ const LineGraph = ({
         const [xValue] = mouse(nodes[index]);
         const closestIndex =
           Math.round(x.invert(xValue) / precision / step) * precision;
-        allDotGroups.attr(
-          'transform',
-          `translate(${x(closestIndex * step)}, 0)`,
-        );
+        allDotGroups
+          .attr('transform', `translate(${x(closestIndex * step)}, 0)`)
+          .attr(
+            'opacity',
+            closestIndex * step >= 0 && closestIndex * step <= xMax ? 1 : 0,
+          );
         allDotGroups
           .selectAll('g.dot-group')
           .attr(
