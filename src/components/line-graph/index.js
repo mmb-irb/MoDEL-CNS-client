@@ -59,9 +59,11 @@ const LineGraph = ({
       x: graph.append('g'),
       y: graph.append('g'),
     };
+    const allDotGroups = graph.append('g');
     const graphZoom = zoom().scaleExtent([1, 50]);
     graph.call(graphZoom);
     graphZoom.on('zoom', () => {
+      allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
       drawRef.current({
         rescaleX: event.transform.rescaleX.bind(event.transform),
       });
@@ -81,7 +83,6 @@ const LineGraph = ({
         .style('text-anchor', 'middle')
         .text(xLabel);
     }
-    const allDotGroups = graph.append('g');
 
     drawRef.current = ({
       hovered,
