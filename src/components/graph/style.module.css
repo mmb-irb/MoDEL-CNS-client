@@ -3,17 +3,12 @@
 }
 
 .graph-container > svg {
-  height: 100%;
   cursor: crosshair;
 }
 
 .graph-container > svg,
 .graph-container > canvas {
   position: absolute;
-}
-
-.graph-container > canvas {
-  width: 100%;
 }
 
 .graph-legend {

@@ -24,7 +24,7 @@ const MARGIN = { top: 20, right: 30, bottom: 40, left: 50 };
 
 const dPR = window.devicePixelRatio || 1;
 
-const LineGraph = ({
+const Graph = ({
   y: yData,
   step = 1,
   startsAtOne = false,
@@ -340,4 +340,4 @@ const LineGraph = ({
   );
 };
 
-export default LineGraph;
+export default Graph;
