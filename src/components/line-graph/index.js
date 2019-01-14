@@ -176,7 +176,7 @@ const LineGraph = ({
         )
         .attr('opacity', d => {
           if (!labels[d]) return 0;
-          return type === 'dash' ? 0.1 : 0;
+          return type === 'dash' ? 0.25 : 1;
         })
         .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
       if (type === 'dash' && canvasContext) {
