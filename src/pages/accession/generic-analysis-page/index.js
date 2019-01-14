@@ -24,20 +24,23 @@ const Analysis = ({
   startsAtOne,
 }) => {
   const { accession } = match.params;
-  const { payload } = useAPI(`${BASE_PATH}${accession}/analyses/${analysis}/`);
+  const { loading, payload } = useAPI(
+    `${BASE_PATH}${accession}/analyses/${analysis}/`,
+  );
 
+  if (!loading && payload) console.log(Object.keys(payload.y));
   return (
     <Suspense fallback={<span>Loading</span>}>
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">Statistics</Typography>
-          {payload && <StatisticsTable y={payload.y} />}
+          {!loading && payload && <StatisticsTable y={payload.y} />}
         </CardContent>
       </Card>
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6" />
-          {payload && (
+          {!loading && payload && (
             <Graph
               y={payload.y}
               step={payload.step}

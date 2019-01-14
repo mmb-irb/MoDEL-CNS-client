@@ -14,6 +14,7 @@ const useAPI = url => {
 
   useEffect(
     () => {
+      canceledRef.current = false;
       if (!url) {
         setState(state => ({
           loading: false,
