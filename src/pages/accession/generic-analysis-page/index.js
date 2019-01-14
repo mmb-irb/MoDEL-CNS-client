@@ -28,7 +28,6 @@ const Analysis = ({
     `${BASE_PATH}${accession}/analyses/${analysis}/`,
   );
 
-  if (!loading && payload) console.log(Object.keys(payload.y));
   return (
     <Suspense fallback={<span>Loading</span>}>
       <Card className={style.card}>
