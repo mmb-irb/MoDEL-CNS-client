@@ -429,6 +429,7 @@ const Fluctuation = ({ match }) => {
               step={payload.step}
               xLabel="Atom"
               yLabel="Fluctuation (nm)"
+              startsAtOne
             />
           )}
         </CardContent>

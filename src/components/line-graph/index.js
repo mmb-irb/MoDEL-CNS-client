@@ -28,6 +28,7 @@ const LineGraph = ({
   startsAtOne = false,
   defaultPrecision,
   yLabel,
+  xScaleFactor = 1,
   xLabel,
 }) => {
   const containerRef = useRef(null);
@@ -97,11 +98,12 @@ const LineGraph = ({
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
 
-      const xMax = yEntries[0][1].data.length * step - (startsAtOne ? 0 : step);
+      const xMin = 0;
+      const xMax = yEntries[0][1].data.length * step - (startsAtOne ? step : 0);
       // x axis
       const x = rescaleX(
         scaleLinear()
-          .domain([0, xMax])
+          .domain([xMin, xMax])
           .range([MARGIN.left, width - MARGIN.right]),
       );
       const xAxis = g =>
@@ -109,12 +111,13 @@ const LineGraph = ({
           axisBottom(x)
             .ticks(width / 100)
             .tickSizeOuter(0)
-            .tickFormat(d => d / 1e3),
+            .tickFormat(d => (d + (startsAtOne ? step : 0)) * xScaleFactor),
         );
       axes.x.call(xAxis);
       if (axes.xLabel) {
         axes.xLabel.attr('transform', `translate(${width / 2}, ${height - 5})`);
       }
+      window.x = x;
 
       // y axis/axes
       const y = scaleLinear()
@@ -140,8 +143,8 @@ const LineGraph = ({
 
       // lines
       const lineFn = line()
-        .x((_, i, { length }) => x(i * step * precision))
-        .y(d => y(d));
+        .x((_, i) => x(i * step * precision))
+        .y((d, i, arr) => y(d));
       const lines = graph.selectAll('path.line').data(yKeys);
       lines
         .enter()
@@ -198,7 +201,7 @@ const LineGraph = ({
           .attr('transform', `translate(${x(closestIndex * step)}, 0)`)
           .attr(
             'opacity',
-            closestIndex * step >= 0 && closestIndex * step <= xMax ? 1 : 0,
+            closestIndex * step >= xMin && closestIndex * step <= xMax ? 1 : 0,
           );
         allDotGroups
           .selectAll('g.dot-group')
@@ -215,7 +218,7 @@ const LineGraph = ({
           .selectAll('text')
           .text(d =>
             d === 'time'
-              ? (closestIndex * step) / 1000
+              ? closestIndex * step * xScaleFactor + (startsAtOne ? step : 0)
               : yData[d].data[closestIndex],
           );
       });

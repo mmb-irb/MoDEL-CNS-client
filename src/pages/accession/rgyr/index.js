@@ -468,6 +468,7 @@ const Rgyr = ({ match }) => {
               step={payload.step}
               defaultPrecision={2 ** 6}
               xLabel="Time (ns)"
+              xScaleFactor={0.001}
               yLabel="Rgyr (nm)"
             />
           )}
