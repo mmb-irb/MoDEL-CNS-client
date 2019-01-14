@@ -22,6 +22,8 @@ import style from './style.module.css';
 
 const MARGIN = { top: 20, right: 30, bottom: 40, left: 50 };
 
+const dPR = window.devicePixelRatio || 1;
+
 const LineGraph = ({
   y: yData,
   step = 1,
@@ -103,7 +105,8 @@ const LineGraph = ({
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
       if (canvas) {
-        canvas.attr('width', width).attr('height', height);
+        canvas.attr('width', width * dPR).attr('height', height * dPR);
+        canvas.style('width', `${width}px`).style('height', `${height}px`);
       }
 
       const xMin = 0;
@@ -194,10 +197,10 @@ const LineGraph = ({
             index += step
           ) {
             canvasContext.fillRect(
-              x(index * step * precision) - dashWidth / 2,
-              y(data[index]),
-              dashWidth,
-              5,
+              (x(index * step * precision) - dashWidth / 2) * dPR,
+              y(data[index]) * dPR,
+              dashWidth * dPR,
+              5 * dPR,
             );
           }
         }
