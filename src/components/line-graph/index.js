@@ -30,6 +30,7 @@ const LineGraph = ({
   yLabel,
   xScaleFactor = 1,
   xLabel,
+  type = 'line',
 }) => {
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
@@ -43,6 +44,12 @@ const LineGraph = ({
   const prevRescaleX = useRef(scale => scale);
 
   useEffect(() => {
+    let canvas;
+    let canvasContext;
+    if (type === 'dash') {
+      canvas = select(containerRef.current).append('canvas');
+      canvasContext = canvas.node().getContext('2d');
+    }
     const graph = select(containerRef.current).append('svg');
     // text background
     const filter = graph
@@ -95,6 +102,9 @@ const LineGraph = ({
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
+      if (canvas) {
+        canvas.attr('width', width).attr('height', height);
+      }
 
       const xMin = 0;
       const xMax = yEntries[0][1].data.length * step - (startsAtOne ? step : 0);
@@ -144,7 +154,7 @@ const LineGraph = ({
       // lines
       const lineFn = line()
         .x((_, i) => x(i * step * precision))
-        .y((d, i, arr) => y(d));
+        .y(d => y(d));
       const lines = graph.selectAll('path.line').data(yKeys);
       lines
         .enter()
@@ -157,15 +167,43 @@ const LineGraph = ({
         .merge(lines)
         .transition()
         // deactivate transition if precision changes or if zooming/panning
-        // because the interpolation is misleading
+        // because the interpolation is weird
         .duration(() =>
           noDataTransition || prevPrecision.current !== precision ? 0 : 250,
         )
         .attr('d', d =>
           lineFn(yData[d].data.filter((_, i) => i % precision === 0)),
         )
-        .attr('opacity', d => (labels[d] ? 1 : 0))
+        .attr('opacity', d => {
+          if (!labels[d]) return 0;
+          return type === 'dash' ? 0.1 : 0;
+        })
         .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
+      if (type === 'dash' && canvasContext) {
+        const dashWidth = x(1) - x(0);
+        const minIndex = Math.floor(x.invert(0));
+        const maxIndex = Math.ceil(x.invert(width));
+        canvasContext.clearRect(0, 0, width, height);
+        for (const [key, { data }] of yEntries) {
+          if (!labels[key]) continue;
+          canvasContext.fillStyle = COLORS.get(key);
+          const maxInView = Math.min(data.length - 1, maxIndex);
+          for (
+            let index = Math.max(0, minIndex);
+            index <= maxInView;
+            index += step
+          ) {
+            canvasContext.fillRect(
+              x(index * step * precision) - dashWidth / 2,
+              y(data[index]),
+              dashWidth,
+              5,
+            );
+          }
+        }
+      } else {
+        console.error(`"${type}" is not a supported graph type.`);
+      }
 
       // dots
       const dotGroups = allDotGroups

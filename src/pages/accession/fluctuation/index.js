@@ -430,6 +430,7 @@ const Fluctuation = ({ match }) => {
               xLabel="Atom"
               yLabel="Fluctuation (nm)"
               startsAtOne
+              type="dash"
             />
           )}
         </CardContent>
