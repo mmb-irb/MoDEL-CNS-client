@@ -62,7 +62,7 @@ export default ({ location }) => {
                   </TableCell>
                   <TableCell>
                     <Highlight highlight={search}>
-                      {pdbInfo && pdbInfo._id}
+                      {pdbInfo && pdbInfo.identifier}
                     </Highlight>
                   </TableCell>
                   <TableCell>
@@ -77,13 +77,13 @@ export default ({ location }) => {
                     <img
                       width="150px"
                       height="150px"
-                      src={`//cdn.rcsb.org/images/hd/${pdbInfo._id
+                      src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier
                         .toLowerCase()
                         .substr(
                           1,
                           2,
-                        )}/${pdbInfo._id.toLowerCase()}/${pdbInfo._id.toLowerCase()}.0_chimera_tm_350_350.png`}
-                      alt={`3D view of the ${pdbInfo._id.toLowerCase()} structure`}
+                        )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`}
+                      alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
                     />
                   </TableCell>
                 </TableRow>
