@@ -1,9 +1,6 @@
-import React, { memo } from 'react';
+import React, { lazy, Suspense } from 'react';
 
 import { Card, CardContent, Typography } from '@material-ui/core';
-
-import StatisticsTable from '../../../components/statistics-table';
-import Graph from '../../../components/graph';
 
 import useAPI from '../../../hooks/use-api';
 
@@ -11,14 +8,26 @@ import { BASE_PATH } from '../../../utils/constants';
 
 import style from './style.module.css';
 
-const Rgyr = memo(({ match }) => {
-  const { accession } = match.params;
-  const { payload } = useAPI(`${BASE_PATH}${accession}/analyses/rgyr/`);
+const StatisticsTable = lazy(() =>
+  import('../../../components/statistics-table'),
+);
+const Graph = lazy(() => import('../../../components/graph'));
 
-  if (payload) console.log(payload);
+const Analysis = ({
+  match,
+  analysis,
+  defaultPrecision,
+  xLabel,
+  xScaleFactor,
+  yLabel,
+  graphType,
+  startsAtOne,
+}) => {
+  const { accession } = match.params;
+  const { payload } = useAPI(`${BASE_PATH}${accession}/analyses/${analysis}/`);
 
   return (
-    <>
+    <Suspense fallback={<span>Loading</span>}>
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">Statistics</Typography>
@@ -32,16 +41,18 @@ const Rgyr = memo(({ match }) => {
             <Graph
               y={payload.y}
               step={payload.step}
-              defaultPrecision={2 ** 6}
-              xLabel="Time (ns)"
-              xScaleFactor={0.001}
-              yLabel="Rgyr (nm)"
+              defaultPrecision={defaultPrecision}
+              xLabel={xLabel}
+              xScaleFactor={xScaleFactor}
+              yLabel={yLabel}
+              type={graphType}
+              startsAtOne={startsAtOne}
             />
           )}
         </CardContent>
       </Card>
-    </>
+    </Suspense>
   );
-});
+};
 
-export default Rgyr;
+export default Analysis;

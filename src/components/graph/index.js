@@ -204,8 +204,6 @@ const Graph = ({
             );
           }
         }
-      } else {
-        console.error(`"${type}" is not a supported graph type.`);
       }
 
       // dots
