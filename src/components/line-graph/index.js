@@ -36,9 +36,7 @@ const LineGraph = ({
 
   const yEntries = Object.entries(yData);
   const yKeys = yEntries.map(([key]) => key);
-  const [lab, setLabels] = useState(
-    fromPairs(yEntries.map(([key]) => [key, true])),
-  );
+  const [lab, setLabels] = useState(fromPairs(yKeys.map(key => [key, true])));
   const [pr, setPrecision] = useState(defaultPrecision || 1);
 
   const prevPrecision = useRef(pr);
@@ -111,13 +109,15 @@ const LineGraph = ({
           axisBottom(x)
             .ticks(width / 100)
             .tickSizeOuter(0)
-            .tickFormat(d => (d + (startsAtOne ? step : 0)) * xScaleFactor),
+            .tickFormat(d => {
+              const tickValue = (d + (startsAtOne ? step : 0)) * xScaleFactor;
+              if (tickValue >= xMin && tickValue <= xMax) return tickValue;
+            }),
         );
       axes.x.call(xAxis);
       if (axes.xLabel) {
         axes.xLabel.attr('transform', `translate(${width / 2}, ${height - 5})`);
       }
-      window.x = x;
 
       // y axis/axes
       const y = scaleLinear()
