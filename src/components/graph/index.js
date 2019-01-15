@@ -56,9 +56,9 @@ const Graph = ({
       canvasContext = canvas.node().getContext('2d');
     }
     const graph = select(containerRef.current).append('svg');
+    const defs = graph.append('defs');
     // text background
-    const filter = graph
-      .append('defs')
+    const filter = defs
       .append('filter')
       .attr('x', 0)
       .attr('y', 0.2)
@@ -67,11 +67,62 @@ const Graph = ({
       .attr('id', 'background');
     filter.append('feFlood').attr('flood-color', 'white');
     filter.append('feComposite').attr('in', 'SourceGraphic');
+
+    {
+      // mask opacity
+      const leftMaskGradient = defs
+        .append('linearGradient')
+        .attr('id', 'gradient-left');
+      leftMaskGradient
+        .append('stop')
+        .attr('offset', '0%')
+        .style('stop-color', 'white')
+        .style('stop-opacity', '1');
+      leftMaskGradient
+        .append('stop')
+        .attr('offset', '100%')
+        .style('stop-color', 'white')
+        .style('stop-opacity', '0');
+      const rightMaskGradient = defs
+        .append('linearGradient')
+        .attr('id', 'gradient-right');
+      rightMaskGradient
+        .append('stop')
+        .attr('offset', '0%')
+        .style('stop-color', 'white')
+        .style('stop-opacity', '0');
+      rightMaskGradient
+        .append('stop')
+        .attr('offset', '100%')
+        .style('stop-color', 'white')
+        .style('stop-opacity', '1');
+    }
+
+    const main = graph.append('g');
+    const allDotGroups = graph.append('g');
+
+    // order is important, everything before that will be hidden by masks
+    // masks
+    graph
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', MARGIN.left)
+      .attr('height', '100%')
+      .style('fill', 'url(#gradient-left)');
+    const maskRight = graph
+      .append('rect')
+      .attr('y', 0)
+      .attr('height', '100%')
+      .style('fill', 'url(#gradient-right)');
+
+    // axes
     const axes = {
       x: graph.append('g'),
       y: graph.append('g'),
     };
-    const allDotGroups = graph.append('g');
+
+    // zoom
     const graphZoom = zoom().scaleExtent([1, 50]);
     graph.call(graphZoom);
     graphZoom.on('zoom', () => {
@@ -111,6 +162,8 @@ const Graph = ({
         canvas.attr('width', width * dPR).attr('height', height * dPR);
         canvas.style('width', `${width}px`).style('height', `${height}px`);
       }
+
+      maskRight.attr('x', width - MARGIN.right).attr('width', MARGIN.right);
 
       const xMin = 0;
       const xMax = yEntries[0][1].data.length * step - (startsAtOne ? step : 0);
@@ -160,7 +213,7 @@ const Graph = ({
       }
 
       if (mean) {
-        const meanLines = graph.selectAll('line.mean').data(yKeys);
+        const meanLines = main.selectAll('line.mean').data(yKeys);
         meanLines
           .enter()
           .append('line')
@@ -174,7 +227,7 @@ const Graph = ({
           .attr('y2', d => y(yData[d].average));
       }
       if (standardDeviation) {
-        const sdRects = graph.selectAll('rect.sd').data(yKeys);
+        const sdRects = main.selectAll('rect.sd').data(yKeys);
         sdRects
           .enter()
           .append('rect')
@@ -193,36 +246,37 @@ const Graph = ({
           );
       }
 
-      // lines
-      const lineFn = line()
-        .x((_, i) => x(i * step * precision))
-        .y(d => y(d));
-      const lines = graph.selectAll('path.line').data(yKeys);
-      lines
-        .enter()
-        .append('path')
-        .attr('class', 'line')
-        .attr('fill', 'none')
-        .attr('stroke', d => COLORS.get(d))
-        .attr('stroke-linejoin', 'round')
-        .attr('stroke-linecap', 'round')
-        .merge(lines)
-        .transition()
-        // deactivate transition if precision changes or if zooming/panning
-        // because the interpolation is weird
-        .duration(() =>
-          noDataTransition || prevPrecision.current !== precision ? 0 : 250,
-        )
-        .attr('d', d =>
-          lineFn(yData[d].data.filter((_, i) => i % precision === 0)),
-        )
-        .attr('opacity', d => {
-          if (!labels[d]) return 0;
-          return type === 'dash' ? 0.25 : 1;
-        })
-        .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
-      if (type === 'dash' && canvasContext) {
-        const dashWidth = x(1) - x(0);
+      if (type === 'line') {
+        // lines
+        const lineFn = line()
+          .x((_, i) => x(i * step * precision))
+          .y(d => y(d));
+        const lines = main.selectAll('path.line').data(yKeys);
+        lines
+          .enter()
+          .append('path')
+          .attr('class', 'line')
+          .attr('fill', 'none')
+          .attr('stroke', d => COLORS.get(d))
+          .attr('stroke-linejoin', 'round')
+          .attr('stroke-linecap', 'round')
+          .merge(lines)
+          .transition()
+          // deactivate transition if precision changes or if zooming/panning
+          // because the interpolation is weird
+          .duration(() =>
+            noDataTransition || prevPrecision.current !== precision ? 0 : 250,
+          )
+          .attr('d', d =>
+            lineFn(yData[d].data.filter((_, i) => i % precision === 0)),
+          )
+          .attr('opacity', d => {
+            if (!labels[d]) return 0;
+            return type === 'dash' ? 0.25 : 1;
+          })
+          .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
+      } else if (type === 'dash' && canvasContext) {
+        const dashWidth = Math.max(1, x(1) - x(0));
         const minIndex = Math.floor(x.invert(0));
         const maxIndex = Math.ceil(x.invert(width));
         canvasContext.clearRect(0, 0, width, height);
@@ -289,7 +343,7 @@ const Graph = ({
               `translate(0, ${
                 d === 'time'
                   ? height - MARGIN.bottom
-                  : y(yData[d].data[closestIndex])
+                  : y(yData[d].data[closestIndex]) + 2.5
               })`,
           )
           .attr('opacity', d => (d === 'time' || labels[d] ? 1 : 0))
@@ -302,7 +356,7 @@ const Graph = ({
         if (onHover) {
           onHover(
             closestIndex * step >= xMin && closestIndex * step <= xMax
-              ? closestIndex
+              ? [closestIndex]
               : null,
           );
         }

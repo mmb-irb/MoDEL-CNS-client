@@ -142,9 +142,9 @@ const NGLViewer = memo(
               previousRepresentation,
             );
           }
-          if (!hovered) return;
+          if (!hovered || !hovered.length) return;
           stageRef.current.compList[0].addRepresentation('spacefill', {
-            sele: `@${hovered - 1}`,
+            sele: `@${hovered.map(h => h - 1).join(',')}`,
             opacity: 0.75,
             scale: 5,
             name,

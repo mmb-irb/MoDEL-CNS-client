@@ -35,11 +35,7 @@ const SummarySwitch = ({ payload, pdbData }) => {
         exact
         render={props => (
           <Suspense fallback={loading}>
-            <Trajectory
-              {...props}
-              metadata={payload.metadata}
-              pdbData={payload.pdbInfo}
-            />
+            <Trajectory {...props} metadata={payload.metadata} />
           </Suspense>
         )}
       />
@@ -86,7 +82,6 @@ const SummarySwitch = ({ payload, pdbData }) => {
               yLabel="Fluctuation (nm)"
               startsAtOne
               graphType="dash"
-              pdbData={pdbData}
               {...props}
             />
           </Suspense>

@@ -307,7 +307,7 @@ const TrajectoryMetadata = memo(({ metadata }) => (
   </fieldset>
 ));
 
-const Trajectory = ({ pdbData, metadata, match }) => {
+const Trajectory = ({ metadata, match }) => {
   // references
   const containerRef = useRef(null);
   const viewerRef = useRef(null);
