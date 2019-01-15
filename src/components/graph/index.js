@@ -372,6 +372,14 @@ const Graph = ({
           />
         </div>
       )}
+      <details className={style['graph-legend']}>
+        <summary>Graph information</summary>
+        <span>
+          Displaying observed data (more opaque lines), alongside corresponding
+          mean value (light horizontal lines), and mean ± 1σ (lighter horizontal
+          bands)
+        </span>
+      </details>
     </>
   );
 };
