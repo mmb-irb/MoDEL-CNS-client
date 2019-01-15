@@ -33,6 +33,8 @@ const Graph = ({
   xScaleFactor = 1,
   xLabel,
   type = 'line',
+  mean = true,
+  standardDeviation = true,
 }) => {
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
@@ -154,6 +156,40 @@ const Graph = ({
       axes.y.call(yAxis);
       if (axes.yLabel) {
         axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
+      }
+
+      if (mean) {
+        const meanLines = graph.selectAll('line.mean').data(yKeys);
+        meanLines
+          .enter()
+          .append('line')
+          .attr('class', 'mean')
+          .attr('stroke', d => COLORS.get(d))
+          .attr('opacity', 0.5)
+          .merge(meanLines)
+          .attr('x1', x(xMin))
+          .attr('x2', x(xMax))
+          .attr('y1', d => y(yData[d].average))
+          .attr('y2', d => y(yData[d].average));
+      }
+      if (standardDeviation) {
+        const sdRects = graph.selectAll('rect.sd').data(yKeys);
+        sdRects
+          .enter()
+          .append('rect')
+          .attr('class', 'sd')
+          .attr('fill', d => COLORS.get(d))
+          .attr('opacity', 0.1)
+          .merge(sdRects)
+          .attr('x', x(xMin))
+          .attr('width', x(xMax) - x(xMin))
+          .attr('y', d => y(yData[d].average + yData[d].stddev))
+          .attr(
+            'height',
+            d =>
+              y(yData[d].average - yData[d].stddev) -
+              y(yData[d].average + yData[d].stddev),
+          );
       }
 
       // lines
