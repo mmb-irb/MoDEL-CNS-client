@@ -124,7 +124,9 @@ const Graph = ({
             .tickSizeOuter(0)
             .tickFormat(d => {
               const tickValue = (d + (startsAtOne ? step : 0)) * xScaleFactor;
-              if (tickValue >= xMin && tickValue <= xMax) return tickValue;
+              if (tickValue >= xMin && tickValue <= xMax) {
+                return +tickValue.toFixed(2);
+              }
             }),
         );
       axes.x.call(xAxis);
