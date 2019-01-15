@@ -35,6 +35,7 @@ const Graph = ({
   type = 'line',
   mean = true,
   standardDeviation = true,
+  onHover,
 }) => {
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
@@ -298,11 +299,19 @@ const Graph = ({
               ? closestIndex * step * xScaleFactor + (startsAtOne ? step : 0)
               : yData[d].data[closestIndex],
           );
+        if (onHover) {
+          onHover(
+            closestIndex * step >= xMin && closestIndex * step <= xMax
+              ? closestIndex
+              : null,
+          );
+        }
       });
 
-      graph.on('mouseout', () =>
-        allDotGroups.selectAll('g.dot-group').attr('opacity', 0),
-      );
+      graph.on('mouseout', () => {
+        allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
+        if (onHover) onHover(null);
+      });
 
       prevRescaleX.current = rescaleX;
       prevPrecision.current = precision;

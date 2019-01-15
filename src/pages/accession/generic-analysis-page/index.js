@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 
 import { Card, CardContent, Typography } from '@material-ui/core';
 
@@ -12,6 +12,7 @@ const StatisticsTable = lazy(() =>
   import('../../../components/statistics-table'),
 );
 const Graph = lazy(() => import('../../../components/graph'));
+const NGLViewer = lazy(() => import('../../../components/ngl-viewer'));
 
 const Analysis = ({
   match,
@@ -27,6 +28,7 @@ const Analysis = ({
   const { loading, payload } = useAPI(
     `${BASE_PATH}${accession}/analyses/${analysis}/`,
   );
+  const [hovered, setHovered] = useState(null);
 
   return (
     <Suspense fallback={<span>Loading</span>}>
@@ -49,10 +51,25 @@ const Analysis = ({
               yLabel={yLabel}
               type={graphType}
               startsAtOne={startsAtOne}
+              onHover={setHovered}
             />
           )}
         </CardContent>
       </Card>
+      {analysis === 'fluctuation' && (
+        <Card className={style['floating-card']}>
+          <CardContent className={style['floating-card-content']}>
+            <Suspense>
+              <NGLViewer
+                accession={accession}
+                noTrajectory
+                hovered={hovered}
+                membraneOpacity={0.5}
+              />
+            </Suspense>
+          </CardContent>
+        </Card>
+      )}
     </Suspense>
   );
 };

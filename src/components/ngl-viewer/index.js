@@ -37,6 +37,8 @@ const NGLViewer = memo(
         membraneOpacity,
         smooth,
         onProgress,
+        noTrajectory,
+        hovered,
         ...props
       },
       ref,
@@ -51,10 +53,16 @@ const NGLViewer = memo(
         `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
         { defaultRepresentation: false, ext: 'pdb' },
       );
-      const { loading: loadingDCD, file: dcdFile } = useNGLFile(
-        `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
-        { ext: 'dcd' },
-      );
+      let loadingDCD;
+      let dcdFile;
+      if (noTrajectory) {
+        const dcd = useNGLFile(
+          `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
+          { ext: 'dcd' },
+        );
+        loadingDCD = dcd.loading;
+        dcdFile = dcd.file;
+      }
 
       // Stage creation and removal on mounting and unmounting
       useEffect(() => {
@@ -119,6 +127,30 @@ const NGLViewer = memo(
           });
         },
         [pdbFile],
+      );
+
+      // highlight hovered atoms from other components
+      useEffect(
+        () => {
+          if (!pdbFile) return;
+          const name = 'hovered';
+          const previousRepresentation = stageRef.current.compList[0].reprList.find(
+            representation => representation.name === name,
+          );
+          if (previousRepresentation) {
+            stageRef.current.compList[0].removeRepresentation(
+              previousRepresentation,
+            );
+          }
+          if (!hovered) return;
+          stageRef.current.compList[0].addRepresentation('spacefill', {
+            sele: `@${hovered - 1}`,
+            opacity: 0.75,
+            scale: 5,
+            name,
+          });
+        },
+        [pdbFile, hovered],
       );
 
       // DCD file, trajectory
@@ -235,7 +267,7 @@ const NGLViewer = memo(
             [style.loading]: loadingPDB || loadingDCD,
           })}
           data-loading={
-            loadingPDB || loadingDCD
+            loadingPDB || (!noTrajectory && loadingDCD)
               ? `Loading ${loadingPDB ? 'structure' : 'trajectory'}…`
               : undefined
           }
