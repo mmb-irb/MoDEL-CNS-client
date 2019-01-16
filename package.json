@@ -13,6 +13,7 @@
     "qs": "6.6.0",
     "react": "next",
     "react-dom": "next",
+    "react-draggable": "3.1.1",
     "react-router-dom": "4.3.1",
     "react-virtualized": "9.21.0",
     "screenfull": "4.0.0",

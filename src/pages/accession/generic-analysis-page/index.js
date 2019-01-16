@@ -1,5 +1,6 @@
-import React, { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense, useState, useRef } from 'react';
 
+import Draggable from 'react-draggable';
 import { Card, CardContent, Typography } from '@material-ui/core';
 
 import useAPI from '../../../hooks/use-api';
@@ -29,6 +30,8 @@ const Analysis = ({
     `${BASE_PATH}${accession}/analyses/${analysis}/`,
   );
   const [hovered, setHovered] = useState(null);
+  const [selected, setSelected] = useState(new Set());
+  const nglViewRef = useRef(null);
 
   return (
     <Suspense fallback={<span>Loading</span>}>
@@ -52,23 +55,33 @@ const Analysis = ({
               type={graphType}
               startsAtOne={startsAtOne}
               onHover={setHovered}
+              hovered={hovered}
+              onSelect={setSelected}
+              selected={selected}
             />
           )}
         </CardContent>
       </Card>
       {analysis === 'fluctuation' && (
-        <Card className={style['floating-card']}>
-          <CardContent className={style['floating-card-content']}>
-            <Suspense>
-              <NGLViewer
-                accession={accession}
-                noTrajectory
-                hovered={hovered}
-                membraneOpacity={0.5}
-              />
-            </Suspense>
-          </CardContent>
-        </Card>
+        <Draggable
+          cancel={`.${style['floating-card-content']} > *`}
+          bounds="body"
+        >
+          <Card className={style['floating-card']} elevation={4} draggable>
+            <CardContent className={style['floating-card-content']}>
+              <Suspense>
+                <NGLViewer
+                  accession={accession}
+                  playing
+                  hovered={hovered}
+                  selected={selected}
+                  membraneOpacity={0.5}
+                  ref={nglViewRef}
+                />
+              </Suspense>
+            </CardContent>
+          </Card>
+        </Draggable>
       )}
     </Suspense>
   );

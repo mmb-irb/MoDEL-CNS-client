@@ -4,13 +4,19 @@
 
 .floating-card {
   position: fixed;
+  cursor: move;
   z-index: 1;
   bottom: 10px;
   right: 10px;
+  transition: opacity 0.1s ease-in-out;
 }
 
 .floating-card-content {
   display: flex;
   height: 30vh;
   width: 30vh;
+}
+
+.floating-card-content > * {
+  cursor: default;
 }

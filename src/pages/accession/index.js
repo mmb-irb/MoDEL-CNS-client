@@ -18,7 +18,7 @@ const Error = ({ error }) => {
   return 'Something wrong happened';
 };
 
-const SummarySwitch = ({ payload, pdbData }) => {
+const SummarySwitch = ({ payload }) => {
   return (
     <Switch>
       <Route

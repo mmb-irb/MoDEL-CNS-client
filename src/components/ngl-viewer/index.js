@@ -39,7 +39,7 @@ const NGLViewer = memo(
         onProgress,
         noTrajectory,
         hovered,
-        ...props
+        selected,
       },
       ref,
     ) => {
@@ -55,7 +55,7 @@ const NGLViewer = memo(
       );
       let loadingDCD;
       let dcdFile;
-      if (noTrajectory) {
+      if (!noTrajectory) {
         const dcd = useNGLFile(
           `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
           { ext: 'dcd' },
@@ -132,8 +132,8 @@ const NGLViewer = memo(
       // highlight hovered atoms from other components
       useEffect(
         () => {
-          if (!pdbFile) return;
-          const name = 'hovered';
+          if (!pdbFile || !(hovered || selected)) return;
+          const name = 'higlighted';
           const previousRepresentation = stageRef.current.compList[0].reprList.find(
             representation => representation.name === name,
           );
@@ -142,15 +142,18 @@ const NGLViewer = memo(
               previousRepresentation,
             );
           }
-          if (!hovered || !hovered.length) return;
+          const atoms = Array.from(selected);
+          if (hovered) atoms.push(hovered);
+          if (!atoms.length) return;
+          const sele = `@${atoms.map(atomNumber => atomNumber - 1).join(',')}`;
           stageRef.current.compList[0].addRepresentation('spacefill', {
-            sele: `@${hovered.map(h => h - 1).join(',')}`,
-            opacity: 0.75,
-            scale: 5,
+            sele,
+            opacity: 0.5,
+            scale: 4,
             name,
           });
         },
-        [pdbFile, hovered],
+        [pdbFile, hovered, selected],
       );
 
       // DCD file, trajectory
@@ -259,12 +262,11 @@ const NGLViewer = memo(
         }),
         [pdbFile, dcdFile],
       );
-
       return (
         <div
           ref={containerRef}
           className={cn(className, style.container, {
-            [style.loading]: loadingPDB || loadingDCD,
+            [style.loading]: loadingPDB || (!noTrajectory && loadingDCD),
           })}
           data-loading={
             loadingPDB || (!noTrajectory && loadingDCD)

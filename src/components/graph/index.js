@@ -13,7 +13,8 @@ import {
 } from 'd3';
 import cn from 'classnames';
 
-import { FormControlLabel, Checkbox } from '@material-ui/core';
+import { FormControlLabel, Checkbox, Button } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Slider } from '@material-ui/lab';
 
 import { NICE_NAMES, COLORS } from '../../utils/constants';
@@ -36,9 +37,12 @@ const Graph = ({
   mean = true,
   standardDeviation = true,
   onHover,
+  selected,
+  onSelect,
 }) => {
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
+  const selectedRef = useRef(new Set());
 
   const yEntries = Object.entries(yData);
   const yKeys = yEntries.map(([key]) => key);
@@ -48,6 +52,7 @@ const Graph = ({
   const prevPrecision = useRef(pr);
   const prevRescaleX = useRef(scale => scale);
 
+  // should only be run once
   useEffect(() => {
     let canvas;
     let canvasContext;
@@ -133,6 +138,7 @@ const Graph = ({
       });
     });
 
+    // labels
     if (yLabel) {
       axes.yLabel = graph
         .append('text')
@@ -154,6 +160,7 @@ const Graph = ({
       labels = lab,
       rescaleX = prevRescaleX.current,
       noDataTransition,
+      selected = selectedRef.current,
     } = {}) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
@@ -212,6 +219,7 @@ const Graph = ({
         axes.yLabel.attr('y', 0).attr('x', 0 - height / 2);
       }
 
+      // mean line
       if (mean) {
         const meanLines = main.selectAll('line.mean').data(yKeys);
         meanLines
@@ -226,6 +234,7 @@ const Graph = ({
           .attr('y1', d => y(yData[d].average))
           .attr('y2', d => y(yData[d].average));
       }
+      // mean ± 1σ area
       if (standardDeviation) {
         const sdRects = main.selectAll('rect.sd').data(yKeys);
         sdRects
@@ -277,11 +286,22 @@ const Graph = ({
           .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
       } else if (type === 'dash' && canvasContext) {
         const dashWidth = Math.max(1, x(1) - x(0));
+        const dashHeight = 5;
         const minIndex = Math.floor(x.invert(0));
         const maxIndex = Math.ceil(x.invert(width));
         canvasContext.clearRect(0, 0, width, height);
         for (const [key, { data }] of yEntries) {
           if (!labels[key]) continue;
+          canvasContext.fillStyle = 'rgb(200, 200, 200)';
+          for (const atom of selected) {
+            if (atom < minIndex || atom > maxIndex) continue;
+            canvasContext.fillRect(
+              (x(atom * step * precision) - dashWidth / 2) * dPR,
+              0,
+              dashWidth * dPR,
+              height * dPR,
+            );
+          }
           canvasContext.fillStyle = COLORS.get(key);
           const maxInView = Math.min(data.length - 1, maxIndex);
           for (
@@ -291,9 +311,9 @@ const Graph = ({
           ) {
             canvasContext.fillRect(
               (x(index * step * precision) - dashWidth / 2) * dPR,
-              y(data[index]) * dPR,
+              (y(data[index]) - dashHeight / 2) * dPR,
               dashWidth * dPR,
-              5 * dPR,
+              dashHeight * dPR,
             );
           }
         }
@@ -356,11 +376,27 @@ const Graph = ({
         if (onHover) {
           onHover(
             closestIndex * step >= xMin && closestIndex * step <= xMax
-              ? [closestIndex]
+              ? closestIndex
               : null,
           );
         }
       });
+
+      if (onSelect) {
+        graph.on('click', (_, index, nodes) => {
+          const [xValue] = mouse(nodes[index]);
+          const closestIndex =
+            Math.round(x.invert(xValue) / precision / step) * precision;
+          if (closestIndex * step < xMin || closestIndex * step > xMax) {
+            return;
+          }
+          onSelect(selected => {
+            const newSet = new Set(selected);
+            newSet[newSet.has(closestIndex) ? 'delete' : 'add'](closestIndex);
+            return newSet;
+          });
+        });
+      }
 
       graph.on('mouseout', () => {
         allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
@@ -375,6 +411,14 @@ const Graph = ({
 
     return () => window.removeEventListener('resize', drawRef.current);
   }, []);
+
+  useEffect(
+    () => {
+      selectedRef.current = selected;
+      drawRef.current({ selected });
+    },
+    [selected],
+  );
 
   useEffect(() => drawRef.current({ precision: pr, labels: lab }), [pr, lab]);
 
@@ -396,16 +440,30 @@ const Graph = ({
                 }),
               [],
             )}
-            onMouseOver={useCallback(
-              () =>
-                lab[key] &&
-                drawRef.current({ hovered: key, precision: pr, labels: lab }),
-              [pr, lab],
-            )}
-            onMouseOut={useCallback(
-              () => lab[key] && drawRef.current({ precision: pr, labels: lab }),
-              [pr, lab],
-            )}
+            onMouseOver={
+              type === 'dash'
+                ? undefined
+                : useCallback(
+                    () =>
+                      lab[key] &&
+                      drawRef.current({
+                        hovered: key,
+                        precision: pr,
+                        labels: lab,
+                      }),
+                    [pr, lab],
+                  )
+            }
+            onMouseOut={
+              type === 'dash'
+                ? undefined
+                : useCallback(
+                    () =>
+                      lab[key] &&
+                      drawRef.current({ precision: pr, labels: lab }),
+                    [pr, lab],
+                  )
+            }
             control={
               <Checkbox
                 checked={lab[key]}
@@ -416,6 +474,16 @@ const Graph = ({
             label={NICE_NAMES.get(key) || key}
           />
         ))}
+        {type === 'dash' && (
+          <Button
+            variant="contained"
+            disabled={!selected.size}
+            onClick={useCallback(() => onSelect(new Set()), [])}
+          >
+            <DeleteIcon />
+            <span>Clear selection</span>
+          </Button>
+        )}
       </div>
       {defaultPrecision && (
         <div
