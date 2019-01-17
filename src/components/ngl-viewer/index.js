@@ -221,6 +221,7 @@ const NGLViewer = memo(
       useImperativeMethods(
         ref,
         () => ({
+          autoResize: handleResize,
           centerFocus() {
             if (!originalOritentationRef.current) return;
             stageRef.current.animationControls.orient(

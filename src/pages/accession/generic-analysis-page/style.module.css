@@ -2,21 +2,16 @@
   margin: 1em 0;
 }
 
-.floating-card {
-  position: fixed;
-  cursor: move;
+.rnd {
   z-index: 1;
-  bottom: 10px;
-  right: 10px;
-  transition: opacity 0.1s ease-in-out;
 }
 
+.floating-card,
 .floating-card-content {
-  display: flex;
-  height: 30vh;
-  width: 30vh;
+  height: 100%;
 }
 
 .floating-card-content > * {
+  height: 100%;
   cursor: default;
 }
