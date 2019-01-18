@@ -4,6 +4,7 @@ import { Rnd } from 'react-rnd';
 import { Card, CardContent, Typography } from '@material-ui/core';
 
 import useAPI from '../../../hooks/use-api';
+import useNGLFile from '../../../hooks/use-ngl-file';
 
 import { BASE_PATH } from '../../../utils/constants';
 
@@ -43,6 +44,13 @@ const Analysis = ({
   const { loading, payload } = useAPI(
     `${BASE_PATH}${accession}/analyses/${analysis}/`,
   );
+  let pdbData;
+  if (analysis === 'fluctuation') {
+    pdbData = useNGLFile(
+      `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
+      { defaultRepresentation: false, ext: 'pdb' },
+    );
+  }
 
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState(new Set());
@@ -89,6 +97,7 @@ const Analysis = ({
               hovered={hovered}
               onSelect={setSelected}
               selected={selected}
+              pdbData={pdbData}
             />
           )}
         </CardContent>
@@ -117,6 +126,7 @@ const Analysis = ({
                   selected={selected}
                   membraneOpacity={0.5}
                   ref={nglViewRef}
+                  pdbData={pdbData}
                 />
               </Suspense>
             </CardContent>

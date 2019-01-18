@@ -40,6 +40,7 @@ const NGLViewer = memo(
         noTrajectory,
         hovered,
         selected,
+        pdbData,
       },
       ref,
     ) => {
@@ -48,11 +49,15 @@ const NGLViewer = memo(
       const stageRef = useRef(null);
       const originalOritentationRef = useRef(null);
 
-      // state (remote data retrieved from custom hook)
-      const { loading: loadingPDB, file: pdbFile } = useNGLFile(
-        `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
-        { defaultRepresentation: false, ext: 'pdb' },
-      );
+      let _pdbData = pdbData;
+      if (!_pdbData) {
+        // state (remote data retrieved from custom hook)
+        _pdbData = useNGLFile(
+          `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
+          { defaultRepresentation: false, ext: 'pdb' },
+        );
+      }
+      const { loading: loadingPDB, file: pdbFile } = _pdbData;
       let loadingDCD;
       let dcdFile;
       if (!noTrajectory) {

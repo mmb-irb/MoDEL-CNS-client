@@ -11,6 +11,7 @@ import {
   zoom,
   event,
 } from 'd3';
+import { ColormakerRegistry } from 'ngl';
 import cn from 'classnames';
 
 import { FormControlLabel, Checkbox, Button } from '@material-ui/core';
@@ -23,6 +24,7 @@ import style from './style.module.css';
 
 const MARGIN = { top: 20, right: 30, bottom: 40, left: 50 };
 
+const scheme = new ColormakerRegistry.schemes.element();
 const dPR = window.devicePixelRatio || 1;
 
 const Graph = ({
@@ -39,10 +41,12 @@ const Graph = ({
   onHover,
   selected,
   onSelect,
+  pdbData,
 }) => {
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
   const selectedRef = useRef(new Set());
+  const pdbDataRef = useRef({});
 
   const yEntries = Object.entries(yData);
   const yKeys = yEntries.map(([key]) => key);
@@ -51,6 +55,13 @@ const Graph = ({
 
   const prevPrecision = useRef(pr);
   const prevRescaleX = useRef(scale => scale);
+
+  useEffect(
+    () => {
+      drawRef.current && pdbData && pdbData.file && drawRef.current();
+    },
+    [pdbData],
+  );
 
   // should only be run once
   useEffect(() => {
@@ -161,6 +172,7 @@ const Graph = ({
       rescaleX = prevRescaleX.current,
       noDataTransition,
       selected = selectedRef.current,
+      pdbData = pdbDataRef.current,
     } = {}) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
@@ -293,10 +305,14 @@ const Graph = ({
         for (const [key, { data }] of yEntries) {
           if (!labels[key]) continue;
           canvasContext.fillStyle = 'rgb(200, 200, 200)';
+          // selected areas
           for (const atom of selected) {
+            // skip the ones not in view
             if (atom < minIndex || atom > maxIndex) continue;
             canvasContext.fillRect(
-              (x(atom * step * precision) - dashWidth / 2) * dPR,
+              (x(atom * step * precision - (startsAtOne ? step : 0)) -
+                dashWidth / 2) *
+                dPR,
               0,
               dashWidth * dPR,
               height * dPR,
@@ -304,11 +320,26 @@ const Graph = ({
           }
           canvasContext.fillStyle = COLORS.get(key);
           const maxInView = Math.min(data.length - 1, maxIndex);
+          // each atom in view
           for (
             let index = Math.max(0, minIndex);
             index <= maxInView;
             index += step
           ) {
+            if (pdbData.file) {
+              const atom = pdbData.file.atomMap.get(
+                pdbData.file.atomStore.atomTypeId[index],
+              );
+              if (atom) {
+                const color = `#${scheme
+                  .atomColor(atom)
+                  .toString(16)
+                  .padStart(6, '0')}`;
+                canvasContext.fillStyle =
+                  color === '#ffffff' ? '#eeeeee' : color;
+              }
+            }
+
             canvasContext.fillRect(
               (x(index * step * precision) - dashWidth / 2) * dPR,
               (y(data[index]) - dashHeight / 2) * dPR,
@@ -368,15 +399,26 @@ const Graph = ({
           )
           .attr('opacity', d => (d === 'time' || labels[d] ? 1 : 0))
           .selectAll('text')
-          .text(d =>
-            d === 'time'
-              ? closestIndex * step * xScaleFactor + (startsAtOne ? step : 0)
-              : yData[d].data[closestIndex],
-          );
+          .text(d => {
+            if (d === 'time') {
+              const number =
+                closestIndex * step * xScaleFactor + (startsAtOne ? step : 0);
+              if (!pdbDataRef.current.file) return number;
+              const atom = pdbDataRef.current.file.atomMap.get(
+                pdbDataRef.current.file.atomStore.atomTypeId[
+                  number - (startsAtOne ? step : 0)
+                ],
+              );
+              if (!atom) return number;
+              return `${number}: ${atom.atomname} - ${atom.element}`;
+            } else {
+              return yData[d].data[closestIndex];
+            }
+          });
         if (onHover) {
           onHover(
             closestIndex * step >= xMin && closestIndex * step <= xMax
-              ? closestIndex
+              ? closestIndex + (startsAtOne ? step : 0)
               : null,
           );
         }
@@ -386,7 +428,8 @@ const Graph = ({
         graph.on('click', (_, index, nodes) => {
           const [xValue] = mouse(nodes[index]);
           const closestIndex =
-            Math.round(x.invert(xValue) / precision / step) * precision;
+            Math.round(x.invert(xValue) / precision / step) * precision +
+            (startsAtOne ? step : 0);
           if (closestIndex * step < xMin || closestIndex * step > xMax) {
             return;
           }
@@ -415,9 +458,10 @@ const Graph = ({
   useEffect(
     () => {
       selectedRef.current = selected;
-      drawRef.current({ selected });
+      pdbDataRef.current = pdbData || pdbDataRef.current;
+      drawRef.current({ selected, pdbData });
     },
-    [selected],
+    [selected, pdbData],
   );
 
   useEffect(() => drawRef.current({ precision: pr, labels: lab }), [pr, lab]);
