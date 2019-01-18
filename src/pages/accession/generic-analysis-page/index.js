@@ -129,6 +129,7 @@ const Analysis = ({
                 ref={nglViewRef}
                 pdbData={pdbData}
                 className={style['ngl-viewer-with-controls']}
+                startsPlaying={false}
               />
             </Suspense>
           </Card>
