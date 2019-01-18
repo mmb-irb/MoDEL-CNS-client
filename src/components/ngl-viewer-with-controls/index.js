@@ -163,7 +163,7 @@ const NGLViewerWithControls = forwardRef(
               value={progress * 100}
             />
           </div>
-          <div>
+          <div className={style.controls}>
             <IconButton
               title="Previous frame"
               onClick={useCallback(() => handleFrameChange(-1), [])}
@@ -216,6 +216,7 @@ const NGLViewerWithControls = forwardRef(
               {smooth ? <BurstMode /> : <Videocam />}
             </IconButton>
             <OpacitySlider
+              className={style['opacity-slider']}
               title="Change membrane opacity"
               value={membraneOpacity * 100}
               handleChange={useCallback(

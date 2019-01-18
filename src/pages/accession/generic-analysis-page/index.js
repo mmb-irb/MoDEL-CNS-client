@@ -110,6 +110,7 @@ const Analysis = ({
         <Rnd
           className={style.rnd}
           default={defaultPosition}
+          data-rnd
           bounds="body"
           cancel="canvas, [data-popover]"
           onResize={() => nglViewRef.current && nglViewRef.current.autoResize()}

@@ -45,3 +45,12 @@
 .progress * {
   transition: none !important;
 }
+
+[data-rnd] .controls button {
+  padding: 0.5ch;
+}
+
+[data-rnd] .is-fullscreen .controls .opacity-slider {
+  /* hiding it in this case because it messes things up */
+  display: none;
+}
