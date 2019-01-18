@@ -11,21 +11,25 @@ import { BASE_PATH } from '../../../utils/constants';
 import style from './style.module.css';
 
 const StatisticsTable = lazy(() =>
-  import('../../../components/statistics-table'),
+  import(/* webpackChunkName: 'statistics-table' */ '../../../components/statistics-table'),
 );
-const Graph = lazy(() => import('../../../components/graph'));
-const NGLViewer = lazy(() => import('../../../components/ngl-viewer'));
+const Graph = lazy(() =>
+  import(/* webpackChunkName: 'graph' */ '../../../components/graph'),
+);
+const NGLViewerWithControls = lazy(() =>
+  import(/* webpackChunkName: 'ngl-viewer-with-controls' */ '../../../components/ngl-viewer-with-controls'),
+);
 
 const defaultPosition = (() => {
-  const MARGIN = 10;
+  const MARGIN = 25;
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
   const dimension = Math.min(windowWidth / 4, windowHeight / 4);
   return {
     x: windowWidth - dimension - MARGIN,
-    y: windowHeight - dimension - MARGIN,
+    y: windowHeight - 1.5 * dimension - MARGIN,
     width: dimension,
-    height: dimension,
+    height: 1.5 * dimension,
   };
 })();
 
@@ -107,7 +111,7 @@ const Analysis = ({
           className={style.rnd}
           default={defaultPosition}
           bounds="body"
-          cancel="canvas"
+          cancel="canvas, [data-popover]"
           onResize={() => nglViewRef.current && nglViewRef.current.autoResize()}
           onResizeStop={() => {
             if (!nglViewRef.current) return;
@@ -117,19 +121,16 @@ const Analysis = ({
           ref={rndRef}
         >
           <Card className={style['floating-card']} elevation={4}>
-            <CardContent className={style['floating-card-content']}>
-              <Suspense>
-                <NGLViewer
-                  accession={accession}
-                  playing
-                  hovered={hovered}
-                  selected={selected}
-                  membraneOpacity={0.5}
-                  ref={nglViewRef}
-                  pdbData={pdbData}
-                />
-              </Suspense>
-            </CardContent>
+            <Suspense>
+              <NGLViewerWithControls
+                accession={accession}
+                hovered={hovered}
+                selected={selected}
+                ref={nglViewRef}
+                pdbData={pdbData}
+                className={style['ngl-viewer-with-controls']}
+              />
+            </Suspense>
           </Card>
         </Rnd>
       )}

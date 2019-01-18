@@ -6,9 +6,15 @@ import useAPI from '../../hooks/use-api';
 
 import { BASE_PATH } from '../../utils/constants';
 
-const Overview = lazy(() => import('./overview'));
-const Trajectory = lazy(() => import('./trajectory'));
-const GenericAnalysisPage = lazy(() => import('./generic-analysis-page'));
+const Overview = lazy(() =>
+  import(/* webpackChunkName: 'overview' */ './overview'),
+);
+const Trajectory = lazy(() =>
+  import(/* webpackChunkName: 'trajectory' */ './trajectory'),
+);
+const GenericAnalysisPage = lazy(() =>
+  import(/* webpackChunkName: 'generic-analysis-page' */ './generic-analysis-page'),
+);
 
 const loading = <span>Loading</span>;
 const Loading = () => loading;

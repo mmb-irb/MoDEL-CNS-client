@@ -6,12 +6,10 @@
   z-index: 1;
 }
 
-.floating-card,
-.floating-card-content {
+.floating-card {
   height: 100%;
 }
 
-.floating-card-content > * {
+.ngl-viewer-with-controls {
   height: 100%;
-  cursor: default;
 }

@@ -153,7 +153,7 @@ const NGLViewer = memo(
           const sele = `@${atoms.map(atomNumber => atomNumber - 1).join(',')}`;
           stageRef.current.compList[0].addRepresentation('spacefill', {
             sele,
-            opacity: 0.5,
+            opacity: 0.75,
             scale: 4,
             name,
           });
@@ -220,6 +220,15 @@ const NGLViewer = memo(
             : '';
         },
         [pdbFile, dcdFile, smooth],
+      );
+
+      // to avoid sometimes when it's not rendering after loading
+      useEffect(
+        () => {
+          handleResize();
+          return handleResize.cancel;
+        },
+        [pdbFile, dcdFile],
       );
 
       // Expose public methods and getters/setters
