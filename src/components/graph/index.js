@@ -239,12 +239,13 @@ const Graph = ({
           .append('line')
           .attr('class', 'mean')
           .attr('stroke', d => COLORS.get(d))
-          .attr('opacity', 0.5)
           .merge(meanLines)
           .attr('x1', x(xMin))
           .attr('x2', x(xMax))
           .attr('y1', d => y(yData[d].average))
-          .attr('y2', d => y(yData[d].average));
+          .attr('y2', d => y(yData[d].average))
+          .transition()
+          .attr('opacity', d => (labels[d] ? 0.5 : 0));
       }
       // mean ± 1σ area
       if (standardDeviation) {
@@ -254,7 +255,6 @@ const Graph = ({
           .append('rect')
           .attr('class', 'sd')
           .attr('fill', d => COLORS.get(d))
-          .attr('opacity', 0.1)
           .merge(sdRects)
           .attr('x', x(xMin))
           .attr('width', x(xMax) - x(xMin))
@@ -264,7 +264,9 @@ const Graph = ({
             d =>
               y(yData[d].average - yData[d].stddev) -
               y(yData[d].average + yData[d].stddev),
-          );
+          )
+          .transition()
+          .attr('opacity', d => (labels[d] ? 0.1 : 0));
       }
 
       if (type === 'line') {
