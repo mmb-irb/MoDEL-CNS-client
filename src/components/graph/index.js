@@ -60,12 +60,9 @@ const Graph = ({
   const prevPrecision = useRef(pr);
   const prevRescaleX = useRef(scale => scale);
 
-  useEffect(
-    () => {
-      drawRef.current && pdbData && pdbData.file && drawRef.current();
-    },
-    [pdbData],
-  );
+  useEffect(() => {
+    drawRef.current && pdbData && pdbData.file && drawRef.current();
+  }, [pdbData]);
 
   // should only be run once
   useEffect(() => {
@@ -418,14 +415,11 @@ const Graph = ({
     return () => window.removeEventListener('resize', drawRef.current);
   }, []);
 
-  useEffect(
-    () => {
-      selectedRef.current = selected;
-      pdbDataRef.current = pdbData || pdbDataRef.current;
-      drawRef.current({ selected, pdbData });
-    },
-    [selected, pdbData],
-  );
+  useEffect(() => {
+    selectedRef.current = selected;
+    pdbDataRef.current = pdbData || pdbDataRef.current;
+    drawRef.current({ selected, pdbData });
+  }, [selected, pdbData]);
 
   useEffect(() => drawRef.current({ precision: pr, labels: lab }), [pr, lab]);
 

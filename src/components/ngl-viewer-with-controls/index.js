@@ -98,27 +98,26 @@ const NGLViewerWithControls = forwardRef(
     const [membraneOpacity, setMembraneOpacity] = useState(0.5);
 
     // handlers
-    const handleManualProgress = useCallback(
-      ({ buttons, clientX, currentTarget, type }) => {
-        if (!viewerRef.current) return;
-        if (type === 'mousemove' && buttons !== 1) return;
-        const { x, width } = currentTarget.getBoundingClientRect();
-        togglePlaying(false);
-        viewerRef.current.currentFrame = Math.floor(
-          ((clientX - x) / width) * viewerRef.current.totalFrames,
-        );
-      },
-      [],
-    );
+    const handleManualProgress = useCallback(({
+      buttons,
+      clientX,
+      currentTarget,
+      type,
+    }) => {
+      if (!viewerRef.current) return;
+      if (type === 'mousemove' && buttons !== 1) return;
+      const { x, width } = currentTarget.getBoundingClientRect();
+      togglePlaying(false);
+      viewerRef.current.currentFrame = Math.floor(
+        ((clientX - x) / width) * viewerRef.current.totalFrames,
+      );
+    }, []);
 
-    const handleFrameChange = useCallback(
-      value => {
-        if (!viewerRef.current) return;
-        togglePlaying(false);
-        viewerRef.current.currentFrame += value;
-      },
-      [viewerRef.current],
-    );
+    const handleFrameChange = useCallback(value => {
+      if (!viewerRef.current) return;
+      togglePlaying(false);
+      viewerRef.current.currentFrame += value;
+    }, [viewerRef.current]);
 
     const handleFullscreenChange = useCallback(
       () => setIsFullscreen(screenfull.isFullscreen),

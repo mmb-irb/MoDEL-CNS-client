@@ -109,127 +109,103 @@ const NGLViewer = memo(
       }, []);
 
       // PDB file, base structure
-      useEffect(
-        () => {
-          if (!pdbFile) return;
-          const structureComponent = stageRef.current.addComponentFromObject(
-            pdbFile,
-          );
+      useEffect(() => {
+        if (!pdbFile) return;
+        const structureComponent = stageRef.current.addComponentFromObject(
+          pdbFile,
+        );
 
-          structureComponent.autoView();
-          originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
+        structureComponent.autoView();
+        originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
 
-          // main structure
-          structureComponent.addRepresentation('cartoon', {
-            sele: 'not(hetero or water or ion)',
-            name: 'structure',
-          });
-          // membrane
-          structureComponent.addRepresentation('licorice', {
-            sele: '(not polymer or hetero) and not (water or ion)',
-            opacity: 0.5,
-            name: 'membrane',
-          });
-        },
-        [pdbFile],
-      );
+        // main structure
+        structureComponent.addRepresentation('cartoon', {
+          sele: 'not(hetero or water or ion)',
+          name: 'structure',
+        });
+        // membrane
+        structureComponent.addRepresentation('licorice', {
+          sele: '(not polymer or hetero) and not (water or ion)',
+          opacity: 0.5,
+          name: 'membrane',
+        });
+      }, [pdbFile]);
 
       // highlight hovered atoms from other components
-      useEffect(
-        () => {
-          if (!pdbFile || !(hovered || selected)) return;
-          const name = 'higlighted';
-          const previousRepresentation = stageRef.current.compList[0].reprList.find(
-            representation => representation.name === name,
+      useEffect(() => {
+        if (!pdbFile || !(hovered || selected)) return;
+        const name = 'higlighted';
+        const previousRepresentation = stageRef.current.compList[0].reprList.find(
+          representation => representation.name === name,
+        );
+        if (previousRepresentation) {
+          stageRef.current.compList[0].removeRepresentation(
+            previousRepresentation,
           );
-          if (previousRepresentation) {
-            stageRef.current.compList[0].removeRepresentation(
-              previousRepresentation,
-            );
-          }
-          const atoms = Array.from(selected);
-          if (hovered) atoms.push(hovered);
-          if (!atoms.length) return;
-          const sele = `@${atoms.map(atomNumber => atomNumber - 1).join(',')}`;
-          stageRef.current.compList[0].addRepresentation('spacefill', {
-            sele,
-            opacity: 0.75,
-            scale: 4,
-            name,
-          });
-        },
-        [pdbFile, hovered, selected],
-      );
+        }
+        const atoms = Array.from(selected);
+        if (hovered) atoms.push(hovered);
+        if (!atoms.length) return;
+        const sele = `@${atoms.map(atomNumber => atomNumber - 1).join(',')}`;
+        stageRef.current.compList[0].addRepresentation('spacefill', {
+          sele,
+          opacity: 0.75,
+          scale: 4,
+          name,
+        });
+      }, [pdbFile, hovered, selected]);
 
       // DCD file, trajectory
-      useEffect(
-        () => {
-          if (!(pdbFile && dcdFile)) return;
-          const frames = stageRef.current.compList[0].addTrajectory(dcdFile);
-          frames.signals.frameChanged.add(handleFrameChange);
-          if (playing) frames.trajectory.player.play();
-          return () => {
-            frames.signals.frameChanged.remove(handleFrameChange);
-          };
-        },
-        [pdbFile, dcdFile],
-      );
+      useEffect(() => {
+        if (!(pdbFile && dcdFile)) return;
+        const frames = stageRef.current.compList[0].addTrajectory(dcdFile);
+        frames.signals.frameChanged.add(handleFrameChange);
+        if (playing) frames.trajectory.player.play();
+        return () => {
+          frames.signals.frameChanged.remove(handleFrameChange);
+        };
+      }, [pdbFile, dcdFile]);
 
       // play/pause
-      useEffect(
-        () => {
-          if (!(pdbFile && dcdFile)) return;
-          stageRef.current.compList[0].trajList[0].trajectory.player[
-            playing ? 'play' : 'pause'
-          ]();
-        },
-        [playing],
-      );
+      useEffect(() => {
+        if (!(pdbFile && dcdFile)) return;
+        stageRef.current.compList[0].trajList[0].trajectory.player[
+          playing ? 'play' : 'pause'
+        ]();
+      }, [playing]);
 
       // spinning
-      useEffect(
-        () => {
-          if (spinning === stageRef.current.spinAnimation.paused) {
-            stageRef.current.toggleSpin();
-          }
-        },
-        [spinning],
-      );
+      useEffect(() => {
+        if (spinning === stageRef.current.spinAnimation.paused) {
+          stageRef.current.toggleSpin();
+        }
+      }, [spinning]);
 
       // membrane opacity
-      useEffect(
-        () => {
-          if (!pdbFile) return;
-          changeOpacity(
-            stageRef.current.compList[0].reprList.find(
-              ({ name }) => name === 'membrane',
-            ).repr,
-            membraneOpacity,
-          );
-        },
-        [pdbFile, membraneOpacity],
-      );
+      useEffect(() => {
+        if (!pdbFile) return;
+        changeOpacity(
+          stageRef.current.compList[0].reprList.find(
+            ({ name }) => name === 'membrane',
+          ).repr,
+          membraneOpacity,
+        );
+      }, [pdbFile, membraneOpacity]);
       useEffect(() => changeOpacity.cancel, []);
 
       // smoothing, player interpolation
-      useEffect(
-        () => {
-          if (!(pdbFile && dcdFile)) return;
-          stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
-            ? 'linear'
-            : '';
-        },
-        [pdbFile, dcdFile, smooth],
-      );
+      useEffect(() => {
+        if (!(pdbFile && dcdFile)) return;
+        stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
+          ? 'linear'
+          : '';
+      }, [pdbFile, dcdFile, smooth]);
 
       // to avoid sometimes when it's not rendering after loading
-      useEffect(
-        () => {
-          handleResize();
-          return handleResize.cancel;
-        },
-        [pdbFile, dcdFile],
-      );
+      useEffect(() => {
+        handleResize();
+        return handleResize.cancel;
+      }, [pdbFile, dcdFile]);
 
       // Expose public methods and getters/setters
       useImperativeMethods(
