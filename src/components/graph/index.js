@@ -56,6 +56,7 @@ const Graph = ({
   const [lab, setLabels] = useState(fromPairs(yKeys.map(key => [key, true])));
   const [pr, setPrecision] = useState(defaultPrecision || 1);
 
+  const prevLabels = useRef(lab);
   const prevPrecision = useRef(pr);
   const prevRescaleX = useRef(scale => scale);
 
@@ -135,7 +136,7 @@ const Graph = ({
     drawRef.current = ({
       hovered,
       precision = prevPrecision.current,
-      labels = lab,
+      labels = prevLabels.current,
       rescaleX = prevRescaleX.current,
       selected = selectedRef.current,
       pdbData = pdbDataRef.current,
@@ -406,8 +407,9 @@ const Graph = ({
         if (onHover) onHover(null);
       });
 
-      prevRescaleX.current = rescaleX;
+      prevLabels.current = labels;
       prevPrecision.current = precision;
+      prevRescaleX.current = rescaleX;
     };
 
     window.addEventListener('resize', drawRef.current);
