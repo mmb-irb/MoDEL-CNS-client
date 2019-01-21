@@ -145,7 +145,6 @@ const Graph = ({
       allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
       drawRef.current({
         rescaleX: event.transform.rescaleX.bind(event.transform),
-        noDataTransition: true,
       });
     });
 
@@ -170,7 +169,6 @@ const Graph = ({
       precision = prevPrecision.current,
       labels = lab,
       rescaleX = prevRescaleX.current,
-      noDataTransition,
       selected = selectedRef.current,
       pdbData = pdbDataRef.current,
     } = {}) => {
@@ -284,19 +282,11 @@ const Graph = ({
           .attr('stroke-linejoin', 'round')
           .attr('stroke-linecap', 'round')
           .merge(lines)
-          .transition()
-          // deactivate transition if precision changes or if zooming/panning
-          // because the interpolation is weird
-          .duration(() =>
-            noDataTransition || prevPrecision.current !== precision ? 0 : 250,
-          )
           .attr('d', d =>
             lineFn(yData[d].data.filter((_, i) => i % precision === 0)),
           )
-          .attr('opacity', d => {
-            if (!labels[d]) return 0;
-            return type === 'dash' ? 0.25 : 1;
-          })
+          .transition()
+          .attr('opacity', d => (labels[d] ? 1 : 0))
           .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
       } else if (type === 'dash' && canvasContext) {
         const dashWidth = Math.max(1, x(1) - x(0));
