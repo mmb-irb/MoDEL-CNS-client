@@ -14,6 +14,9 @@ import {
 import { ColormakerRegistry } from 'ngl';
 import cn from 'classnames';
 
+import addTextBackground from './add-text-background';
+import addMasks from './add-masks';
+
 import { FormControlLabel, Checkbox, Button } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Slider } from '@material-ui/lab';
@@ -74,45 +77,10 @@ const Graph = ({
     const graph = select(containerRef.current).append('svg');
     const defs = graph.append('defs');
     // text background
-    const filter = defs
-      .append('filter')
-      .attr('x', 0)
-      .attr('y', 0.2)
-      .attr('width', 1)
-      .attr('height', 0.6)
-      .attr('id', 'background');
-    filter.append('feFlood').attr('flood-color', 'white');
-    filter.append('feComposite').attr('in', 'SourceGraphic');
+    const textBackgroundURL = addTextBackground(defs);
 
-    {
-      // mask opacity
-      const leftMaskGradient = defs
-        .append('linearGradient')
-        .attr('id', 'gradient-left');
-      leftMaskGradient
-        .append('stop')
-        .attr('offset', '0%')
-        .style('stop-color', 'white')
-        .style('stop-opacity', '1');
-      leftMaskGradient
-        .append('stop')
-        .attr('offset', '100%')
-        .style('stop-color', 'white')
-        .style('stop-opacity', '0');
-      const rightMaskGradient = defs
-        .append('linearGradient')
-        .attr('id', 'gradient-right');
-      rightMaskGradient
-        .append('stop')
-        .attr('offset', '0%')
-        .style('stop-color', 'white')
-        .style('stop-opacity', '0');
-      rightMaskGradient
-        .append('stop')
-        .attr('offset', '100%')
-        .style('stop-color', 'white')
-        .style('stop-opacity', '1');
-    }
+    // mask opacity
+    const [startMaskURL, endMaskURL] = addMasks(defs);
 
     const main = graph.append('g');
     const allDotGroups = graph.append('g');
@@ -125,12 +93,12 @@ const Graph = ({
       .attr('y', 0)
       .attr('width', MARGIN.left)
       .attr('height', '100%')
-      .style('fill', 'url(#gradient-left)');
-    const maskRight = graph
+      .style('fill', startMaskURL);
+    const maskEnd = graph
       .append('rect')
       .attr('y', 0)
       .attr('height', '100%')
-      .style('fill', 'url(#gradient-right)');
+      .style('fill', endMaskURL);
 
     // axes
     const axes = {
@@ -180,7 +148,7 @@ const Graph = ({
         canvas.style('width', `${width}px`).style('height', `${height}px`);
       }
 
-      maskRight.attr('x', width - MARGIN.right).attr('width', MARGIN.right);
+      maskEnd.attr('x', width - MARGIN.right).attr('width', MARGIN.right);
 
       const xMin = 0;
       const xMax = yEntries[0][1].data.length * step - (startsAtOne ? step : 0);
@@ -365,7 +333,7 @@ const Graph = ({
         .attr('fill', d => COLORS.get(d))
         .attr('stroke', 'rgba(255, 255, 255, 0.5)')
         .attr('stroke-width', 5)
-        .attr('filter', 'url(#background)');
+        .attr('filter', textBackgroundURL);
 
       // mouse move handler
       graph.on('mousemove', (_, index, nodes) => {
