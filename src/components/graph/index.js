@@ -236,9 +236,12 @@ const Graph = ({
           .attr('opacity', d => (labels[d] ? 0.1 : 0));
       }
 
+      const minIndex = Math.floor(x.invert(0) / step / precision);
+      const maxIndex = Math.ceil(x.invert(width) / step / precision);
       if (type === 'line') {
         // lines
         const lineFn = line()
+          .defined((_, i) => i >= minIndex && i <= maxIndex)
           .x((_, i) => x(i * step * precision))
           .y(d => y(d));
         const lines = main.selectAll('path.line').data(yKeys);
@@ -260,13 +263,11 @@ const Graph = ({
       } else if (type === 'dash' && canvasContext) {
         const dashWidth = Math.max(1, x(1) - x(0));
         const dashHeight = 5;
-        const minIndex = Math.floor(x.invert(0));
-        const maxIndex = Math.ceil(x.invert(width));
         canvasContext.clearRect(0, 0, width, height);
         for (const [key, { data }] of yEntries) {
           if (!labels[key]) continue;
-          canvasContext.fillStyle = 'rgb(200, 200, 200)';
           // selected areas
+          canvasContext.fillStyle = '#c8c8c8';
           for (const atom of selected) {
             // skip the ones not in view
             if (atom < minIndex || atom > maxIndex) continue;
