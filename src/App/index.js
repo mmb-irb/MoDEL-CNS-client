@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter as Router } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 
 import Root from '../Root';
 
