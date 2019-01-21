@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import Root from '../Root';
 
 const App = () => (
-  <Router>
+  <Router basename={process.env.REACT_APP_ROOT}>
     <Root />
   </Router>
 );
