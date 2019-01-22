@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
-import * as ngl from 'ngl';
+import { Stage } from 'ngl';
 
 import { BASE_PATH } from '../../utils/constants';
 
@@ -71,7 +71,7 @@ const NGLViewer = memo(
 
       // Stage creation and removal on mounting and unmounting
       useEffect(() => {
-        const stage = new ngl.Stage(containerRef.current);
+        const stage = new Stage(containerRef.current);
         stageRef.current = stage;
         return () => stageRef.current.dispose();
       }, []);
