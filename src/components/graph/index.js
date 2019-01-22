@@ -312,7 +312,7 @@ const Graph = ({
       // dots
       const dotGroups = allDotGroups
         .selectAll('g.dot-group')
-        .data([...yKeys, 'time'])
+        .data([...yKeys, 'x'])
         .enter()
         .append('g')
         .attr('class', 'dot-group')
@@ -351,25 +351,27 @@ const Graph = ({
             'transform',
             d =>
               `translate(0, ${
-                d === 'time'
+                d === 'x'
                   ? height - MARGIN.bottom
                   : y(yData[d].data[closestIndex]) + 2.5
               })`,
           )
-          .attr('opacity', d => (d === 'time' || labels[d] ? 1 : 0))
+          .attr('opacity', d => (d === 'x' || labels[d] ? 1 : 0))
           .selectAll('text')
           .text(d => {
-            if (d === 'time') {
+            if (d === 'x') {
               const number =
                 closestIndex * step * xScaleFactor + (startsAtOne ? step : 0);
-              if (!pdbDataRef.current.file) return number;
+              if (!pdbDataRef.current.file) return +number.toFixed(2);
               const atom = pdbDataRef.current.file.atomMap.get(
                 pdbDataRef.current.file.atomStore.atomTypeId[
                   number - (startsAtOne ? step : 0)
                 ],
               );
-              if (!atom) return number;
-              return `${number}: ${atom.atomname} - ${atom.element}`;
+              if (!atom) return +number.toFixed(2);
+              return `${+number.toFixed(2)}: ${atom.atomname} - ${
+                atom.element
+              }`;
             } else {
               return yData[d].data[closestIndex];
             }
