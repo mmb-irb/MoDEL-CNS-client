@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 const NO_CONTENT = 204;
 
-const useAPI = url => {
+const useAPI = (url, { bodyParser = 'json', fetchOptions = {} } = {}) => {
   const [state, setState] = useState({
     loading: !!url,
     payload: null,
@@ -31,9 +31,10 @@ const useAPI = url => {
       error: null,
       previousPayload: state.payload || state.previousPayload,
     }));
-    fetch(url, { signal: controller.signal })
+    fetch(url, { signal: controller.signal, ...fetchOptions })
       .then(
-        response => (response.status === NO_CONTENT ? null : response.json()),
+        response =>
+          response.status === NO_CONTENT ? null : response[bodyParser](),
         error =>
           !canceledRef.current &&
           setState(state => ({

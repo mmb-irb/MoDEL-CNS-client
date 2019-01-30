@@ -13,6 +13,7 @@ import { Stage } from 'ngl';
 import { BASE_PATH } from '../../utils/constants';
 
 import style from './style.module.css';
+import useAPI from '../../hooks/use-api';
 import useNGLFile from '../../hooks/use-ngl-file';
 
 const changeOpacity = throttle((representation, membraneOpacity) => {
@@ -25,6 +26,9 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
     representation.setVisibility(true);
   }
 }, 100);
+
+const COORDINATES_NUMBER = 3;
+const nFrames = 10;
 
 const NGLViewer = memo(
   forwardRef(
@@ -58,15 +62,26 @@ const NGLViewer = memo(
         );
       }
       const { loading: loadingPDB, file: pdbFile } = _pdbData;
+
       let loadingDCD;
-      let dcdFile;
+      let dcdPayload;
       if (!noTrajectory) {
-        const dcd = useNGLFile(
-          `${BASE_PATH}${accession}/files/md.traj.50.dcd`,
-          { ext: 'dcd' },
-        );
+        const dcd = _pdbData.file
+          ? useAPI(`${BASE_PATH}${accession}/files/trajectory.bin`, {
+              bodyParser: 'arrayBuffer',
+              fetchOptions: {
+                headers: {
+                  range: `bytes=0-${nFrames *
+                    _pdbData.file.atomCount *
+                    COORDINATES_NUMBER *
+                    Float32Array.BYTES_PER_ELEMENT -
+                    1}`,
+                },
+              },
+            })
+          : useAPI();
         loadingDCD = dcd.loading;
-        dcdFile = dcd.file;
+        dcdPayload = dcd.payload;
       }
 
       // Stage creation and removal on mounting and unmounting
@@ -146,6 +161,7 @@ const NGLViewer = memo(
         const atoms = Array.from(selected);
         if (hovered) atoms.push(hovered);
         if (!atoms.length) return;
+        // ngl starts counting at 0
         const sele = `@${atoms.map(atomNumber => atomNumber - 1).join(',')}`;
         stageRef.current.compList[0].addRepresentation('spacefill', {
           sele,
@@ -157,18 +173,33 @@ const NGLViewer = memo(
 
       // DCD file, trajectory
       useEffect(() => {
-        if (!(pdbFile && dcdFile)) return;
-        const frames = stageRef.current.compList[0].addTrajectory(dcdFile);
+        if (!(pdbFile && dcdPayload)) return;
+        const file = {
+          boxes: [],
+          type: 'Frames',
+          coordinates: [],
+        };
+        const view = new Float32Array(dcdPayload);
+        for (let frame = 0; frame < nFrames; frame++) {
+          file.coordinates.push(
+            view.subarray(
+              frame * pdbFile.atomCount * COORDINATES_NUMBER,
+              (frame + 1) * pdbFile.atomCount * COORDINATES_NUMBER,
+            ),
+          );
+        }
+        const frames = stageRef.current.compList[0].addTrajectory(file);
+        window.frames = frames;
         frames.signals.frameChanged.add(handleFrameChange);
         if (playing) frames.trajectory.player.play();
         return () => {
           frames.signals.frameChanged.remove(handleFrameChange);
         };
-      }, [pdbFile, dcdFile]);
+      }, [pdbFile, dcdPayload]);
 
       // play/pause
       useEffect(() => {
-        if (!(pdbFile && dcdFile)) return;
+        if (!(pdbFile && dcdPayload)) return;
         stageRef.current.compList[0].trajList[0].trajectory.player[
           playing ? 'play' : 'pause'
         ]();
@@ -195,17 +226,17 @@ const NGLViewer = memo(
 
       // smoothing, player interpolation
       useEffect(() => {
-        if (!(pdbFile && dcdFile)) return;
+        if (!(pdbFile && dcdPayload)) return;
         stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
           ? 'linear'
           : '';
-      }, [pdbFile, dcdFile, smooth]);
+      }, [pdbFile, dcdPayload, smooth]);
 
       // to avoid sometimes when it's not rendering after loading
       useEffect(() => {
         handleResize();
         return handleResize.cancel;
-      }, [pdbFile, dcdFile]);
+      }, [pdbFile, dcdPayload]);
 
       // Expose public methods and getters/setters
       useImperativeMethods(
@@ -220,7 +251,7 @@ const NGLViewer = memo(
             );
           },
           get currentFrame() {
-            if (!(pdbFile && dcdFile)) return -1;
+            if (!(pdbFile && dcdPayload)) return -1;
             try {
               return stageRef.current.compList[0].trajList[0].trajectory
                 .currentFrame;
@@ -229,7 +260,7 @@ const NGLViewer = memo(
             }
           },
           set currentFrame(value) {
-            if (!(pdbFile && dcdFile)) return;
+            if (!(pdbFile && dcdPayload)) return;
             try {
               const total = this.totalFrames;
               let frame = value % total;
@@ -242,7 +273,7 @@ const NGLViewer = memo(
             }
           },
           get totalFrames() {
-            if (!(pdbFile && dcdFile)) return 1;
+            if (!(pdbFile && dcdPayload)) return 1;
             try {
               return stageRef.current.compList[0].trajList[0].trajectory.frames
                 .length;
@@ -251,7 +282,7 @@ const NGLViewer = memo(
             }
           },
         }),
-        [pdbFile, dcdFile],
+        [pdbFile, dcdPayload],
       );
       return (
         <div
