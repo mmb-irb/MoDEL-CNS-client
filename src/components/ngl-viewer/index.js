@@ -2,7 +2,7 @@ import React, {
   forwardRef,
   memo,
   useRef,
-  useImperativeMethods,
+  useImperativeHandle,
   useCallback,
   useEffect,
 } from 'react';
@@ -28,7 +28,7 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
 }, 100);
 
 const COORDINATES_NUMBER = 3;
-const nFrames = 10;
+const NUMBER_OF_FRAMES = 10;
 
 const NGLViewer = memo(
   forwardRef(
@@ -45,6 +45,7 @@ const NGLViewer = memo(
         hovered,
         selected,
         pdbData,
+        metadata,
       },
       ref,
     ) => {
@@ -62,24 +63,36 @@ const NGLViewer = memo(
         );
       }
       const { loading: loadingPDB, file: pdbFile } = _pdbData;
-
       let loadingDCD;
       let dcdPayload;
       if (!noTrajectory) {
-        const dcd = _pdbData.file
-          ? useAPI(`${BASE_PATH}${accession}/files/trajectory.bin`, {
-              bodyParser: 'arrayBuffer',
-              fetchOptions: {
-                headers: {
-                  range: `bytes=0-${nFrames *
-                    _pdbData.file.atomCount *
-                    COORDINATES_NUMBER *
-                    Float32Array.BYTES_PER_ELEMENT -
-                    1}`,
-                },
+        let dcd;
+        if (_pdbData.file && metadata) {
+          const frameStep = Math.floor(metadata.SNAPSHOTS / NUMBER_OF_FRAMES);
+          const frames = Array.from({ length: NUMBER_OF_FRAMES }).map(
+            (_, i) => i * frameStep,
+          );
+          const frameSize =
+            _pdbData.file.atomCount *
+            COORDINATES_NUMBER *
+            Float32Array.BYTES_PER_ELEMENT;
+          dcd = useAPI(`${BASE_PATH}${accession}/files/trajectory.bin`, {
+            bodyParser: 'arrayBuffer',
+            fetchOptions: {
+              headers: {
+                range: `bytes=${frames
+                  .map(frame => {
+                    const start = frame * frameSize;
+                    const end = start + frameSize - 1;
+                    return `${start}-${end}`;
+                  })
+                  .join(',')}`,
               },
-            })
-          : useAPI();
+            },
+          });
+        } else {
+          dcd = useAPI();
+        }
         loadingDCD = dcd.loading;
         dcdPayload = dcd.payload;
       }
@@ -180,7 +193,7 @@ const NGLViewer = memo(
           coordinates: [],
         };
         const view = new Float32Array(dcdPayload);
-        for (let frame = 0; frame < nFrames; frame++) {
+        for (let frame = 0; frame < NUMBER_OF_FRAMES; frame++) {
           file.coordinates.push(
             view.subarray(
               frame * pdbFile.atomCount * COORDINATES_NUMBER,
@@ -239,7 +252,7 @@ const NGLViewer = memo(
       }, [pdbFile, dcdPayload]);
 
       // Expose public methods and getters/setters
-      useImperativeMethods(
+      useImperativeHandle(
         ref,
         () => ({
           autoResize: handleResize,

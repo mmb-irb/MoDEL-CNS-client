@@ -261,6 +261,7 @@ const Trajectory = ({
     <Card className={style.card}>
       <NGLViewerWithControls
         accession={match.params.accession}
+        metadata={metadata}
         className={style.container}
       />
     </Card>
