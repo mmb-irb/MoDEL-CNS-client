@@ -5,29 +5,27 @@
   position: relative;
 }
 
-.container.loading::after {
+.container[data-loading]::before {
   content: attr(data-loading);
   color: white;
-  position: absolute;
-  top: 1ch;
-  left: 1ch;
+  background: black;
+  padding-top: 1ch;
+  padding-left: 1ch;
 }
 
-.container::before {
-  content: '';
+.container::before,
+.container.loading-trajectory::before {
   position: absolute;
   pointer-events: none;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: black;
-  opacity: 0;
-  transition: opacity 0.33s ease-in-out;
+  background: transparent;
 }
 
-.container.loading::before {
-  opacity: 1;
+.container.loading-pdb {
+  pointer-events: none;
 }
 
 .container > canvas {

@@ -65,6 +65,7 @@ const NGLViewer = memo(
       const { loading: loadingPDB, file: pdbFile } = _pdbData;
       let loadingDCD;
       let dcdPayload;
+      let dcdProgress;
       if (!noTrajectory) {
         let dcd;
         if (_pdbData.file && metadata) {
@@ -89,12 +90,14 @@ const NGLViewer = memo(
                   .join(',')}`,
               },
             },
+            withProgress: true,
           });
         } else {
           dcd = useAPI();
         }
         loadingDCD = dcd.loading;
         dcdPayload = dcd.payload;
+        dcdProgress = dcd.progress;
       }
 
       // Stage creation and removal on mounting and unmounting
@@ -301,11 +304,16 @@ const NGLViewer = memo(
         <div
           ref={containerRef}
           className={cn(className, style.container, {
-            [style.loading]: loadingPDB || (!noTrajectory && loadingDCD),
+            [style['loading-pdb']]: loadingPDB,
+            [style['loading-trajectory']]: !noTrajectory && loadingDCD,
           })}
           data-loading={
             loadingPDB || (!noTrajectory && loadingDCD)
-              ? `Loading ${loadingPDB ? 'structure' : 'trajectory'}…`
+              ? `Loading ${
+                  loadingPDB
+                    ? 'structure'
+                    : `trajectory (${Math.round(dcdProgress * 100)}%)`
+                }…`
               : undefined
           }
         />
