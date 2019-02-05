@@ -7,7 +7,7 @@
     "@material-ui/icons": "3.0.2",
     "@material-ui/lab": "3.0.0-alpha.19",
     "classnames": "2.2.6",
-    "d3": "5.8.0",
+    "d3": "5.8.2",
     "lodash-es": "4.17.11",
     "ngl": "0.10.4",
     "qs": "6.6.0",
