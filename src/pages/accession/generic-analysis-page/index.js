@@ -35,6 +35,7 @@ const defaultPosition = (() => {
 
 const Analysis = ({
   match,
+  metadata,
   analysis,
   defaultPrecision,
   xLabel,
@@ -125,6 +126,7 @@ const Analysis = ({
             <Suspense>
               <NGLViewerWithControls
                 accession={accession}
+                metadata={metadata}
                 hovered={hovered}
                 selected={selected}
                 ref={nglViewRef}

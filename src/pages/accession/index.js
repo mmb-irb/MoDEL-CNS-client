@@ -83,6 +83,7 @@ const SummarySwitch = ({ payload }) => {
         component={props => (
           <Suspense fallback={loading}>
             <GenericAnalysisPage
+              metadata={payload.metadata}
               analysis="fluctuation"
               xLabel="Atom"
               yLabel="Fluctuation (nm)"
