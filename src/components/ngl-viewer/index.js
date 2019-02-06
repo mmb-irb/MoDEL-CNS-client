@@ -28,7 +28,7 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
 }, 100);
 
 const COORDINATES_NUMBER = 3;
-const NUMBER_OF_FRAMES = 10;
+const NUMBER_OF_FRAMES = 25;
 
 const NGLViewer = memo(
   forwardRef(
