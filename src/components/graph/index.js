@@ -26,6 +26,7 @@ import { NICE_NAMES, COLORS } from '../../utils/constants';
 import style from './style.module.css';
 
 const MARGIN = { top: 20, right: 30, bottom: 40, left: 50 };
+const NUMBER_OF_DATA_POINTS_ON_SCREEN_AT_MAX_ZOOM = 100;
 
 const scheme = new ColormakerRegistry.schemes.element();
 const dPR = window.devicePixelRatio || 1;
@@ -105,7 +106,11 @@ const Graph = ({
     };
 
     // zoom
-    const graphZoom = zoom().scaleExtent([1, 50]);
+    //   make zoom extent dynamic depending on number of data points
+    //   ↳ results in similar precision at maximum zoom regardless of data size
+    const maxZoomExtent =
+      yEntries[0][1].data.length / NUMBER_OF_DATA_POINTS_ON_SCREEN_AT_MAX_ZOOM;
+    const graphZoom = zoom().scaleExtent([1, maxZoomExtent]);
     graph.call(graphZoom);
     graphZoom.on('zoom', () => {
       allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
