@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useContext,
+} from 'react';
 import { fromPairs, noop } from 'lodash-es';
 import {
   select,
@@ -14,14 +20,15 @@ import {
 import { ColormakerRegistry } from 'ngl';
 import cn from 'classnames';
 
-import addTextBackground from './add-text-background';
-import addMasks from './add-masks';
-
 import { FormControlLabel, Checkbox, Button } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Slider } from '@material-ui/lab';
 
+import { PdbCtx } from '../../contexts';
 import { NICE_NAMES, COLORS } from '../../utils/constants';
+
+import addTextBackground from './add-text-background';
+import addMasks from './add-masks';
 
 import style from './style.module.css';
 
@@ -45,8 +52,9 @@ const Graph = ({
   onHover,
   selected,
   onSelect,
-  pdbData,
 }) => {
+  const pdbData = useContext(PdbCtx);
+
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
   const selectedRef = useRef(new Set());
@@ -82,7 +90,20 @@ const Graph = ({
     const [startMaskURL, endMaskURL] = addMasks(defs);
 
     const main = graph.append('g');
-    const allDotGroups = graph.append('g');
+
+    // selected
+    const selectedRect =
+      selected instanceof Set
+        ? null
+        : main
+            .append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 0)
+            .attr('height', '100%')
+            .attr('fill', '#c8c8c8');
+
+    const allDotGroups = main.append('g');
 
     // order is important, everything before that will be hidden by masks
     // masks
@@ -240,6 +261,7 @@ const Graph = ({
 
       const minIndex = Math.floor(x.invert(0) / step / precision);
       const maxIndex = Math.ceil(x.invert(width) / step / precision);
+      // if type of graph is line
       if (type === 'line') {
         // lines
         const lineFn = line()
@@ -262,6 +284,17 @@ const Graph = ({
           .transition()
           .attr('opacity', d => (labels[d] ? 1 : 0))
           .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
+
+        // selected
+        const width = Math.max(1, x(precision * step) - x(0));
+        selectedRect
+          .attr('width', () => width)
+          .attr('x', () =>
+            Number.isInteger(selected) ? x(selected * step) - width / 2 : 0,
+          )
+          .attr('opacity', selected === null ? 0 : 1);
+
+        // if type of graph is dash
       } else if (type === 'dash' && canvasContext) {
         const dashWidth = Math.max(1, x(1) - x(0));
         const dashHeight = 5;
@@ -400,6 +433,9 @@ const Graph = ({
             return;
           }
           onSelect(selected => {
+            if (!(selected instanceof Set)) {
+              return closestIndex === selected ? null : closestIndex;
+            }
             const newSet = new Set(selected);
             newSet[newSet.has(closestIndex) ? 'delete' : 'add'](closestIndex);
             return newSet;

@@ -5,16 +5,17 @@ import React, {
   useImperativeHandle,
   useCallback,
   useEffect,
+  useContext,
 } from 'react';
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
 import { Stage } from 'ngl';
 
-import { BASE_PATH } from '../../utils/constants';
+import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
+
+import useFrames from '../../hooks/use-frames';
 
 import style from './style.module.css';
-import useAPI from '../../hooks/use-api';
-import useNGLFile from '../../hooks/use-ngl-file';
 
 const changeOpacity = throttle((representation, membraneOpacity) => {
   representation.setParameters({ opacity: membraneOpacity });
@@ -34,7 +35,6 @@ const NGLViewer = memo(
   forwardRef(
     (
       {
-        accession,
         className,
         playing,
         spinning,
@@ -44,61 +44,40 @@ const NGLViewer = memo(
         noTrajectory,
         hovered,
         selected,
-        pdbData,
-        metadata,
+        requestedFrame,
       },
       ref,
     ) => {
+      // data from context
+      const accession = useContext(AccessionCtx);
+      const { metadata } = useContext(ProjectCtx);
+      const pdbData = useContext(PdbCtx);
+
       // references
       const containerRef = useRef(null);
       const stageRef = useRef(null);
       const originalOritentationRef = useRef(null);
 
-      let _pdbData = pdbData;
-      if (!_pdbData) {
-        // state (remote data retrieved from custom hook)
-        _pdbData = useNGLFile(
-          `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
-          { defaultRepresentation: false, ext: 'pdb' },
+      const { loading: loadingPDB, file: pdbFile } = pdbData;
+
+      // default, no frames loaded
+      let frames = [];
+      // multiple frames loaded, as a trajectory
+      if (metadata && !noTrajectory) {
+        const frameStep = Math.floor(metadata.SNAPSHOTS / NUMBER_OF_FRAMES);
+        frames = Array.from({ length: NUMBER_OF_FRAMES }).map(
+          (_, i) => i * frameStep,
         );
+        // only one specific frame loaded
+      } else if (metadata && noTrajectory && Number.isFinite(requestedFrame)) {
+        frames = [Math.floor(requestedFrame / 10)];
       }
-      const { loading: loadingPDB, file: pdbFile } = _pdbData;
-      let loadingDCD;
-      let dcdPayload;
-      let dcdProgress;
-      if (!noTrajectory) {
-        let dcd;
-        if (_pdbData.file && metadata) {
-          const frameStep = Math.floor(metadata.SNAPSHOTS / NUMBER_OF_FRAMES);
-          const frames = Array.from({ length: NUMBER_OF_FRAMES }).map(
-            (_, i) => i * frameStep,
-          );
-          const frameSize =
-            _pdbData.file.atomCount *
-            COORDINATES_NUMBER *
-            Float32Array.BYTES_PER_ELEMENT;
-          dcd = useAPI(`${BASE_PATH}${accession}/files/trajectory.bin`, {
-            bodyParser: 'arrayBuffer',
-            fetchOptions: {
-              headers: {
-                range: `bytes=${frames
-                  .map(frame => {
-                    const start = frame * frameSize;
-                    const end = start + frameSize - 1;
-                    return `${start}-${end}`;
-                  })
-                  .join(',')}`,
-              },
-            },
-            withProgress: true,
-          });
-        } else {
-          dcd = useAPI();
-        }
-        loadingDCD = dcd.loading;
-        dcdPayload = dcd.payload;
-        dcdProgress = dcd.progress;
-      }
+
+      const {
+        loading: loadingDCD,
+        frameData: dcdPayload,
+        progress: dcdProgress,
+      } = useFrames(accession, frames, pdbData.file && pdbData.file.atomCount);
 
       // Stage creation and removal on mounting and unmounting
       useEffect(() => {
@@ -164,8 +143,10 @@ const NGLViewer = memo(
 
       // highlight hovered atoms from other components
       useEffect(() => {
-        if (!pdbFile || !(hovered || selected)) return;
-        const name = 'higlighted';
+        if (!pdbFile || !(selected instanceof Set) || !(hovered || selected)) {
+          return;
+        }
+        const name = 'highlighted';
         const previousRepresentation = stageRef.current.compList[0].reprList.find(
           representation => representation.name === name,
         );
@@ -190,28 +171,34 @@ const NGLViewer = memo(
       // DCD file, trajectory
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
+        const view = new Float32Array(dcdPayload);
+        window.view = view;
         const file = {
           boxes: [],
           type: 'Frames',
-          coordinates: [],
-        };
-        const view = new Float32Array(dcdPayload);
-        for (let frame = 0; frame < NUMBER_OF_FRAMES; frame++) {
-          file.coordinates.push(
+          coordinates: Array.from({
+            length: Number.isFinite(requestedFrame) ? 1 : NUMBER_OF_FRAMES,
+          }).map((_, i) =>
             view.subarray(
-              frame * pdbFile.atomCount * COORDINATES_NUMBER,
-              (frame + 1) * pdbFile.atomCount * COORDINATES_NUMBER,
+              i * pdbFile.atomCount * COORDINATES_NUMBER,
+              (i + 1) * pdbFile.atomCount * COORDINATES_NUMBER,
             ),
-          );
+          ),
+        };
+
+        const component = stageRef.current.compList[0];
+
+        for (const trajectory of component.trajList) {
+          component.removeTrajectory(trajectory);
         }
-        const frames = stageRef.current.compList[0].addTrajectory(file);
-        window.frames = frames;
+
+        const frames = component.addTrajectory(file);
         frames.signals.frameChanged.add(handleFrameChange);
         if (playing) frames.trajectory.player.play();
         return () => {
           frames.signals.frameChanged.remove(handleFrameChange);
         };
-      }, [pdbFile, dcdPayload]);
+      }, [requestedFrame, pdbFile, dcdPayload]);
 
       // play/pause
       useEffect(() => {

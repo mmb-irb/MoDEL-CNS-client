@@ -4,6 +4,14 @@
 
 .rnd {
   z-index: 1;
+  opacity: 1;
+  pointer-events: initial;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.rnd.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .floating-card {

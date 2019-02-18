@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Card,
   CardContent,
@@ -9,24 +9,28 @@ import {
 } from '@material-ui/core';
 import { Language } from '@material-ui/icons';
 
+import { ProjectCtx } from '../../../contexts';
+
 import style from './style.module.css';
 
 const COMMA_SEPARATOR = /\s*,\s*/;
 
-export default React.memo(({ pdbData }) => {
-  const imgSrc = `//cdn.rcsb.org/images/hd/${pdbData.identifier
+export default React.memo(() => {
+  const { pdbInfo } = useContext(ProjectCtx);
+
+  const imgSrc = `//cdn.rcsb.org/images/hd/${pdbInfo.identifier
     .toLowerCase()
     .substr(
       1,
       2,
-    )}/${pdbData.identifier.toLowerCase()}/${pdbData.identifier.toLowerCase()}.0_chimera_tm_350_350.png`;
+    )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`;
   let organisms;
   let keywords;
   let publishDate;
-  if (pdbData) {
-    organisms = Array.from(new Set(pdbData.sources.split(COMMA_SEPARATOR)));
-    keywords = Array.from(new Set(pdbData.header.split(COMMA_SEPARATOR)));
-    publishDate = new Date(pdbData.ascDate);
+  if (pdbInfo) {
+    organisms = Array.from(new Set(pdbInfo.sources.split(COMMA_SEPARATOR)));
+    keywords = Array.from(new Set(pdbInfo.header.split(COMMA_SEPARATOR)));
+    publishDate = new Date(pdbInfo.ascDate);
   }
 
   return (
@@ -35,21 +39,21 @@ export default React.memo(({ pdbData }) => {
         <Typography variant="h6">PDB information</Typography>
         <img
           src={imgSrc}
-          alt={`3D view of the ${pdbData.identifier} structure`}
+          alt={`3D view of the ${pdbInfo.identifier} structure`}
         />
-        {pdbData && (
+        {pdbInfo && (
           <div className={style['summary-list']}>
-            <div>{pdbData.title}</div>
+            <div>{pdbInfo.title}</div>
             <div>
-              PDB Accession: {pdbData.identifier}
-              {pdbData.replaces && ` (replaces ${pdbData.replaces})`}
+              PDB Accession: {pdbInfo.identifier}
+              {pdbInfo.replaces && ` (replaces ${pdbInfo.replaces})`}
             </div>
             <div>
-              {pdbData.status &&
-                pdbData.status !== 'CURRENT' &&
-                `Status: ${pdbData.status}`}
+              {pdbInfo.status &&
+                pdbInfo.status !== 'CURRENT' &&
+                `Status: ${pdbInfo.status}`}
             </div>
-            <div>Experimental method: {pdbData.expClass.toLowerCase()}</div>
+            <div>Experimental method: {pdbInfo.expClass.toLowerCase()}</div>
             <div>
               Organism
               {organisms.length > 1 && 's'}:{' '}
@@ -89,7 +93,7 @@ export default React.memo(({ pdbData }) => {
         <Button
           component={'a'}
           variant="contained"
-          href={`https://www.ebi.ac.uk/pdbe/entry/pdb/${pdbData.identifier}`}
+          href={`https://www.ebi.ac.uk/pdbe/entry/pdb/${pdbInfo.identifier}`}
           size="small"
           color="primary"
           target="_blank"
@@ -101,7 +105,7 @@ export default React.memo(({ pdbData }) => {
         <Button
           component={'a'}
           variant="contained"
-          href={`https://www.rcsb.org/structure/${pdbData.identifier}`}
+          href={`https://www.rcsb.org/structure/${pdbInfo.identifier}`}
           size="small"
           color="primary"
           target="_blank"

@@ -28,7 +28,7 @@ const handleProgress = async (setState, response, resolution, canceledRef) => {
 
 const useAPI = (
   url,
-  { bodyParser = 'json', fetchOptions = {}, withProgress = false } = {},
+  { bodyParser = 'json', fetchOptions = {}, withProgress = false, range } = {},
 ) => {
   const [state, setState] = useState({
     loading: !!url,
@@ -59,9 +59,17 @@ const useAPI = (
       payload: null,
       error: null,
       previousPayload: state.payload || state.previousPayload,
-      progress: 0,
+      progress: withProgress ? 0 : null,
     }));
-    fetch(url, { signal: controller.signal, ...fetchOptions })
+    const _fetchOptions = { ...fetchOptions };
+    if (range) {
+      // _fetchOptions.cache = 'no-cache';
+      _fetchOptions.headers = {
+        ...(_fetchOptions.headers || {}),
+        range,
+      };
+    }
+    fetch(url, { signal: controller.signal, ..._fetchOptions })
       .then(
         response => {
           if (response.status === NO_CONTENT) return;
@@ -114,9 +122,9 @@ const useAPI = (
       canceledRef.current = true;
       controller.abort();
     };
-  }, [url]);
+  }, [url, range]);
 
-  return { ...state };
+  return state;
 };
 
 export default useAPI;

@@ -82,7 +82,7 @@ const OpacitySlider = memo(({ value, handleChange, ...buttonProps }) => {
 });
 
 const NGLViewerWithControls = forwardRef(
-  ({ className, startsPlaying = true, ...props }, ref) => {
+  ({ className, startsPlaying = true, noTrajectory, ...props }, ref) => {
     // references
     const containerRef = useRef(null);
     const viewerRef = useRef(null);
@@ -150,38 +150,45 @@ const NGLViewerWithControls = forwardRef(
             smooth={smooth}
             onProgress={setProgress}
             ref={viewerRef}
+            noTrajectory={noTrajectory}
             {...props}
           />
-          <div
-            className={style.progress}
-            onClick={handleManualProgress}
-            onMouseMove={handleManualProgress}
-          >
-            <LinearProgress
-              variant="determinate"
-              color="secondary"
-              value={progress * 100}
-            />
-          </div>
+          {noTrajectory || (
+            <div
+              className={style.progress}
+              onClick={handleManualProgress}
+              onMouseMove={handleManualProgress}
+            >
+              <LinearProgress
+                variant="determinate"
+                color="secondary"
+                value={progress * 100}
+              />
+            </div>
+          )}
           <div className={style.controls}>
-            <IconButton
-              title="Previous frame"
-              onClick={useCallback(() => handleFrameChange(-1), [])}
-            >
-              <SkipPrevious />
-            </IconButton>
-            <IconButton
-              title={playing ? 'Pause' : 'Play'}
-              onClick={togglePlaying}
-            >
-              {playing ? <Pause /> : <PlayArrow />}
-            </IconButton>
-            <IconButton
-              title="Next frame"
-              onClick={useCallback(() => handleFrameChange(1), [])}
-            >
-              <SkipNext />
-            </IconButton>
+            {noTrajectory || (
+              <>
+                <IconButton
+                  title="Previous frame"
+                  onClick={useCallback(() => handleFrameChange(-1), [])}
+                >
+                  <SkipPrevious />
+                </IconButton>
+                <IconButton
+                  title={playing ? 'Pause' : 'Play'}
+                  onClick={togglePlaying}
+                >
+                  {playing ? <Pause /> : <PlayArrow />}
+                </IconButton>
+                <IconButton
+                  title="Next frame"
+                  onClick={useCallback(() => handleFrameChange(1), [])}
+                >
+                  <SkipNext />
+                </IconButton>
+              </>
+            )}
             {screenfull.enabled && (
               <IconButton
                 title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}

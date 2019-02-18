@@ -1,10 +1,20 @@
-import React, { lazy, Suspense, useState, useRef, useEffect } from 'react';
+import React, {
+  lazy,
+  Suspense,
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+} from 'react';
 
 import { Rnd } from 'react-rnd';
 import { Card, CardContent, Typography } from '@material-ui/core';
 
+import cn from 'classnames';
+
 import useAPI from '../../../hooks/use-api';
-import useNGLFile from '../../../hooks/use-ngl-file';
+
+import { AccessionCtx } from '../../../contexts';
 
 import { BASE_PATH } from '../../../utils/constants';
 
@@ -34,8 +44,6 @@ const defaultPosition = (() => {
 })();
 
 const Analysis = ({
-  match,
-  metadata,
   analysis,
   defaultPrecision,
   xLabel,
@@ -44,21 +52,16 @@ const Analysis = ({
   graphType,
   startsAtOne,
 }) => {
-  const { accession } = match.params;
+  const accession = useContext(AccessionCtx);
 
   const { loading, payload } = useAPI(
     `${BASE_PATH}${accession}/analyses/${analysis}/`,
   );
-  let pdbData;
-  if (analysis === 'fluctuation') {
-    pdbData = useNGLFile(
-      `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
-      { defaultRepresentation: false, ext: 'pdb' },
-    );
-  }
 
   const [hovered, setHovered] = useState(null);
-  const [selected, setSelected] = useState(new Set());
+  const [selected, setSelected] = useState(
+    analysis === 'fluctuation' ? new Set() : null,
+  );
 
   const nglViewRef = useRef(null);
   const rndRef = useRef(null);
@@ -98,46 +101,50 @@ const Analysis = ({
               yLabel={yLabel}
               type={graphType}
               startsAtOne={startsAtOne}
-              onHover={setHovered}
+              onHover={analysis === 'fluctuation' ? setHovered : undefined}
               hovered={hovered}
               onSelect={setSelected}
               selected={selected}
-              pdbData={pdbData}
             />
           )}
         </CardContent>
       </Card>
-      {analysis === 'fluctuation' && (
-        <Rnd
-          className={style.rnd}
-          default={defaultPosition}
-          data-rnd
-          bounds="body"
-          cancel="canvas, [data-popover]"
-          onResize={() => nglViewRef.current && nglViewRef.current.autoResize()}
-          onResizeStop={() => {
-            if (!nglViewRef.current) return;
-            nglViewRef.current.autoResize();
-            nglViewRef.current.autoResize.flush();
-          }}
-          ref={rndRef}
-        >
-          <Card className={style['floating-card']} elevation={4}>
-            <Suspense>
-              <NGLViewerWithControls
-                accession={accession}
-                metadata={metadata}
-                hovered={hovered}
-                selected={selected}
-                ref={nglViewRef}
-                pdbData={pdbData}
-                className={style['ngl-viewer-with-controls']}
-                startsPlaying={false}
-              />
-            </Suspense>
-          </Card>
-        </Rnd>
-      )}
+      <Rnd
+        className={cn(style.rnd, {
+          [style.hidden]:
+            analysis !== 'fluctuation' && !Number.isFinite(selected),
+        })}
+        default={defaultPosition}
+        data-rnd
+        bounds="body"
+        cancel="canvas, [data-popover]"
+        onResize={() => nglViewRef.current && nglViewRef.current.autoResize()}
+        onResizeStop={() => {
+          if (!nglViewRef.current) return;
+          nglViewRef.current.autoResize();
+          nglViewRef.current.autoResize.flush();
+        }}
+        ref={rndRef}
+      >
+        <Card className={style['floating-card']} elevation={4}>
+          <Suspense>
+            <NGLViewerWithControls
+              accession={accession}
+              hovered={hovered}
+              selected={selected}
+              ref={nglViewRef}
+              className={style['ngl-viewer-with-controls']}
+              startsPlaying={false}
+              noTrajectory={analysis !== 'fluctuation'}
+              requestedFrame={
+                analysis !== 'fluctuation' &&
+                Number.isFinite(selected) &&
+                selected
+              }
+            />
+          </Suspense>
+        </Card>
+      </Rnd>
     </Suspense>
   );
 };
