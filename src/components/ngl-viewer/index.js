@@ -64,13 +64,13 @@ const NGLViewer = memo(
       let frames = [];
       // multiple frames loaded, as a trajectory
       if (metadata && !noTrajectory) {
-        const frameStep = Math.floor(metadata.SNAPSHOTS / NUMBER_OF_FRAMES);
+        const frameStep = Math.floor(metadata.frameCount / NUMBER_OF_FRAMES);
         frames = Array.from({ length: NUMBER_OF_FRAMES }).map(
           (_, i) => i * frameStep,
         );
         // only one specific frame loaded
       } else if (metadata && noTrajectory && Number.isFinite(requestedFrame)) {
-        frames = [Math.floor(requestedFrame / 10)];
+        frames = [requestedFrame];
       }
 
       const {
@@ -188,12 +188,11 @@ const NGLViewer = memo(
 
         const component = stageRef.current.compList[0];
 
-        for (const trajectory of component.trajList) {
-          component.removeTrajectory(trajectory);
-        }
+        component.trajList.forEach(component.removeTrajectory.bind(component));
 
         const frames = component.addTrajectory(file);
         frames.signals.frameChanged.add(handleFrameChange);
+        frames.trajectory.setFrame(0);
         if (playing) frames.trajectory.player.play();
         return () => {
           frames.signals.frameChanged.remove(handleFrameChange);
