@@ -2,25 +2,13 @@ import useAPI from '../use-api';
 
 import { BASE_PATH } from '../../utils/constants';
 
-const COORDINATES_SIZE = 3; // x, y, z
-
-const getRangeFor = (frames, atomsPerFrame) => {
-  // frames = Array.from(frames);
+const getRangeFor = frames => {
   if (!frames || !frames.length) return;
-  const bytesPerFrames =
-    atomsPerFrame * COORDINATES_SIZE * Float32Array.BYTES_PER_ELEMENT;
-  const range = `bytes=${frames
-    .map(frame => {
-      const start = frame * bytesPerFrames;
-      const end = start + bytesPerFrames - 1;
-      return `${start}-${end}`;
-    })
-    .join(',')}`;
-  return range;
+  return `frames=${frames.map(frame => `${frame}-${frame}`).join(',')}`;
 };
 
 const useFrames = (accession, frames, atomsPerFrame) => {
-  const range = getRangeFor(frames, atomsPerFrame);
+  const range = getRangeFor(frames);
 
   const { loading, payload, error, previousPayload, progress } = useAPI(
     frames.length &&
