@@ -466,48 +466,58 @@ const Graph = ({
 
   useEffect(() => drawRef.current({ precision: pr, labels: lab }), [pr, lab]);
 
+  const handleChange = useCallback(({ target: { dataset: { key } } }) => {
+    if (!key) return;
+    setLabels(labels => {
+      const nextLabels = { ...labels, [key]: !labels[key] };
+      if (Object.values(nextLabels).some(Boolean)) return nextLabels;
+      // If all of the values would be false, keep the previous
+      return labels;
+    });
+  }, []);
+
+  const handleMouseOver = useCallback(
+    ({
+      target: {
+        dataset: { key },
+      },
+    }) => {
+      if (!key || type === 'dash' || !lab[key]) return;
+      drawRef.current({ hovered: key, precision: pr, labels: lab });
+    },
+    [pr, lab],
+  );
+
+  const handleMouseOut = useCallback(
+    ({
+      target: {
+        dataset: { key },
+      },
+    }) => {
+      if (!key || type === 'dash' || !lab[key]) return;
+      drawRef.current({ precision: pr, labels: lab });
+    },
+    [pr, lab],
+  );
+
+  const handleClick = useCallback(() => onSelect(new Set()), []);
+
+  const handlePrecisionChange = useCallback(
+    (_, value) => setPrecision(2 ** (9 - value)),
+    [],
+  );
+
   return (
     <>
       <div className={style['graph-container']} ref={containerRef} />
       <div className={style['graph-legend']}>
         {yEntries.map(([key]) => (
           <FormControlLabel
+            data-key={key}
             key={key}
-            onChange={useCallback(
-              () =>
-                setLabels(labels => {
-                  const nextLabels = { ...labels, [key]: !labels[key] };
-                  if (Object.values(nextLabels).some(Boolean))
-                    return nextLabels;
-                  // If all of the values would be false, keep the previous
-                  return labels;
-                }),
-              [],
-            )}
-            onMouseOver={
-              type === 'dash'
-                ? undefined
-                : useCallback(
-                    () =>
-                      lab[key] &&
-                      drawRef.current({
-                        hovered: key,
-                        precision: pr,
-                        labels: lab,
-                      }),
-                    [pr, lab],
-                  )
-            }
-            onMouseOut={
-              type === 'dash'
-                ? undefined
-                : useCallback(
-                    () =>
-                      lab[key] &&
-                      drawRef.current({ precision: pr, labels: lab }),
-                    [pr, lab],
-                  )
-            }
+            onChange={handleChange}
+            onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}
             control={
               <Checkbox
                 checked={lab[key]}
@@ -522,7 +532,7 @@ const Graph = ({
           <Button
             variant="contained"
             disabled={!selected.size}
-            onClick={useCallback(() => onSelect(new Set()), [])}
+            onClick={handleClick}
           >
             <DeleteIcon />
             <span>Clear selection</span>
@@ -540,10 +550,7 @@ const Graph = ({
             min={0}
             max={9}
             step={1}
-            onChange={useCallback(
-              (_, value) => setPrecision(2 ** (9 - value)),
-              [],
-            )}
+            onChange={handlePrecisionChange}
           />
         </div>
       )}
