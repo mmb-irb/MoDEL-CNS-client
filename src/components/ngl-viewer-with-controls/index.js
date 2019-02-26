@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useMemo,
   forwardRef,
   useImperativeHandle,
 } from 'react';
@@ -16,6 +17,9 @@ import {
   IconButton,
   Popover,
   Paper,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@material-ui/core';
 import {
   SkipPrevious,
@@ -35,6 +39,12 @@ import { Slider } from '@material-ui/lab';
 import NGLViewer from '../ngl-viewer';
 
 import useToggleState from '../../hooks/use-toggle-state';
+
+import connectionLevel, {
+  LOW,
+  MEDIUM,
+  HIGH,
+} from '../../utils/connection-level';
 
 import style from './style.module.css';
 
@@ -96,6 +106,19 @@ const NGLViewerWithControls = forwardRef(
     const [progress, setProgress] = useState(0);
     const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
     const [membraneOpacity, setMembraneOpacity] = useState(0.5);
+    const [nFrames, setNFrames] = useState(
+      useMemo(() => {
+        switch (connectionLevel()) {
+          case HIGH:
+            return 50;
+          case MEDIUM:
+            return 25;
+          case LOW:
+          default:
+            return 10;
+        }
+      }, []),
+    );
 
     // handlers
     const handleManualProgress = useCallback(
@@ -151,6 +174,7 @@ const NGLViewerWithControls = forwardRef(
             onProgress={setProgress}
             ref={viewerRef}
             noTrajectory={noTrajectory}
+            nFrames={nFrames}
             {...props}
           />
           {noTrajectory || (
@@ -231,6 +255,20 @@ const NGLViewerWithControls = forwardRef(
                 [],
               )}
             />
+            <FormControl>
+              <InputLabel>frames</InputLabel>
+              <Select
+                native
+                value={nFrames}
+                onChange={({ target: { value } }) => setNFrames(value)}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={500}>500</option>
+              </Select>
+            </FormControl>
           </div>
         </CardContent>
       </div>

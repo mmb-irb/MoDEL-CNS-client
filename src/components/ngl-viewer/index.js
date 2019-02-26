@@ -29,7 +29,7 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
 }, 100);
 
 const COORDINATES_NUMBER = 3;
-const NUMBER_OF_FRAMES = 25;
+const DEFAULT_NUMBER_OF_FRAMES = 25;
 
 const NGLViewer = memo(
   forwardRef(
@@ -42,6 +42,7 @@ const NGLViewer = memo(
         smooth,
         onProgress,
         noTrajectory,
+        nFrames = DEFAULT_NUMBER_OF_FRAMES,
         hovered,
         selected,
         requestedFrame,
@@ -64,10 +65,8 @@ const NGLViewer = memo(
       let frames = [];
       // multiple frames loaded, as a trajectory
       if (metadata && !noTrajectory) {
-        const frameStep = Math.floor(metadata.frameCount / NUMBER_OF_FRAMES);
-        frames = Array.from({ length: NUMBER_OF_FRAMES }).map(
-          (_, i) => i * frameStep,
-        );
+        const frameStep = Math.floor(metadata.frameCount / nFrames);
+        frames = Array.from({ length: nFrames }).map((_, i) => i * frameStep);
         // only one specific frame loaded
       } else if (metadata && noTrajectory && Number.isFinite(requestedFrame)) {
         frames = [requestedFrame];
@@ -168,6 +167,12 @@ const NGLViewer = memo(
         });
       }, [pdbFile, hovered, selected]);
 
+      // pause on loading
+      useEffect(() => {
+        if (!(pdbFile && stageRef.current.compList[0].trajList[0])) return;
+        stageRef.current.compList[0].trajList[0].trajectory.player.pause();
+      }, [pdbFile, loadingDCD]);
+
       // DCD file, trajectory
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
@@ -177,7 +182,7 @@ const NGLViewer = memo(
           boxes: [],
           type: 'Frames',
           coordinates: Array.from({
-            length: Number.isFinite(requestedFrame) ? 1 : NUMBER_OF_FRAMES,
+            length: Number.isFinite(requestedFrame) ? 1 : nFrames,
           }).map((_, i) =>
             view.subarray(
               i * pdbFile.atomCount * COORDINATES_NUMBER,
