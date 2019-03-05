@@ -1,0 +1,25 @@
+.title {
+  margin-top: 1ch;
+}
+
+.summary > div {
+  align-items: center;
+}
+
+.summary .icon {
+  margin-right: 1ch;
+}
+
+.details {
+  display: inherit;
+}
+
+.details > *:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+.details code {
+  background: #eee;
+  border-radius: 0.25ch;
+  padding: 0.5ch 0.75ch;
+}

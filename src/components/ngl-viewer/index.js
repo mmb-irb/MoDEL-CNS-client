@@ -129,7 +129,7 @@ const NGLViewer = memo(
 
         // main structure
         structureComponent.addRepresentation('cartoon', {
-          sele: 'not(hetero or water or ion)',
+          sele: 'polymer',
           name: 'structure',
         });
         // membrane
@@ -154,11 +154,20 @@ const NGLViewer = memo(
             previousRepresentation,
           );
         }
-        const atoms = Array.from(selected);
-        if (hovered) atoms.push(hovered);
+        let selectedPlusMaybeHovered;
+        if (hovered) {
+          selectedPlusMaybeHovered = new Set(selected);
+          selectedPlusMaybeHovered.add(hovered);
+        } else {
+          selectedPlusMaybeHovered = selected;
+        }
+        // TODO: select residues containing all the listed atoms
+        // TODO: and also put them in a representation
+        const atoms = Array.from(selectedPlusMaybeHovered);
         if (!atoms.length) return;
         // ngl starts counting at 0
         const sele = `@${atoms.map(atomNumber => atomNumber - 1).join(',')}`;
+        console.log({ sele });
         stageRef.current.compList[0].addRepresentation('spacefill', {
           sele,
           opacity: 0.75,

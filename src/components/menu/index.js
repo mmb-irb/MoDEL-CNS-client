@@ -99,6 +99,13 @@ export default () => (
               />
               <Tab
                 component={Link}
+                to={`/browse/${accession}/files`}
+                label="files"
+                value="files"
+                className={style['tab-link']}
+              />
+              <Tab
+                component={Link}
                 to={`/browse/${accession}/trajectory`}
                 label="trajectory"
                 value="trajectory"

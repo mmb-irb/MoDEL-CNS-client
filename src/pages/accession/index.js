@@ -12,6 +12,7 @@ import { BASE_PATH } from '../../utils/constants';
 const Overview = lazy(() =>
   import(/* webpackChunkName: 'overview' */ './overview'),
 );
+const Files = lazy(() => import(/* webpackChunkName: 'files' */ './files'));
 const Trajectory = lazy(() =>
   import(/* webpackChunkName: 'trajectory' */ './trajectory'),
 );
@@ -48,6 +49,15 @@ const SummarySwitch = () => {
               render={() => (
                 <Suspense fallback={loadingSpan}>
                   <Overview />
+                </Suspense>
+              )}
+            />
+            <Route
+              path="/browse/:accession/files"
+              exact
+              render={() => (
+                <Suspense fallback={loadingSpan}>
+                  <Files />
                 </Suspense>
               )}
             />
