@@ -10,6 +10,8 @@ import Icon from '@material-ui/core/Icon';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 
+import { BASE_PATH } from '../../utils/constants';
+
 import style from './style.module.css';
 
 const DEBOUNCE_DELAY = 500;
@@ -62,7 +64,7 @@ const Search = props => {
 };
 
 export default () => (
-  <menu>
+  <menu className={style.menu}>
     <div className={style.main}>
       <Button component={Link} color="inherit" to="/">
         Home
@@ -75,6 +77,14 @@ export default () => (
       </Button> */}
       <Button component={Link} color="inherit" to="/contact">
         Contact
+      </Button>
+      <Button
+        component="a"
+        color="inherit"
+        href={`${BASE_PATH}docs/`}
+        target="_blank"
+      >
+        REST API
       </Button>
       <Switch>
         <Route path="/browse" exact component={Search} />
@@ -89,6 +99,8 @@ export default () => (
               value={subPage}
               indicatorColor="secondary"
               textColor="secondary"
+              variant="scrollable"
+              scrollButtons="auto"
             >
               <Tab
                 component={Link}

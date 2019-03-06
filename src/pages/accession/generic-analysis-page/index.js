@@ -16,7 +16,7 @@ import useAPI from '../../../hooks/use-api';
 
 import { AccessionCtx } from '../../../contexts';
 
-import { BASE_PATH } from '../../../utils/constants';
+import { BASE_PATH_PROJECTS } from '../../../utils/constants';
 
 import style from './style.module.css';
 
@@ -55,7 +55,7 @@ const Analysis = ({
   const accession = useContext(AccessionCtx);
 
   const { loading, payload } = useAPI(
-    `${BASE_PATH}${accession}/analyses/${analysis}/`,
+    `${BASE_PATH_PROJECTS}${accession}/analyses/${analysis}/`,
   );
 
   const [hovered, setHovered] = useState(null);

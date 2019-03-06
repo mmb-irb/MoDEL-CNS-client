@@ -16,7 +16,7 @@ import { InsertDriveFile, ExpandMore, Assignment } from '@material-ui/icons';
 
 import formatNumber from '../../../utils/number-formatter';
 import getEstimate from '../../../utils/get-download-time-estimate';
-import { BASE_PATH, BASE_BASE_PATH } from '../../../utils/constants';
+import { BASE_PATH, BASE_PATH_PROJECTS } from '../../../utils/constants';
 
 import { ProjectCtx } from '../../../contexts';
 
@@ -47,7 +47,7 @@ const api = [
     {
       filename:
         'Especially for bigger files, consider using the programmatic API as documented',
-      url: BASE_BASE_PATH + 'docs/#/files',
+      url: BASE_PATH + 'docs/#/files',
       icon: <Assignment />,
     },
   ],
@@ -79,7 +79,8 @@ export default React.memo(() => {
               metadata: { frames, atoms } = {},
             }) => {
               const estimatedTime = getEstimate(length);
-              const href = url || `${BASE_PATH}${identifier}/files/${filename}`;
+              const href =
+                url || `${BASE_PATH_PROJECTS}${identifier}/files/${filename}`;
               return (
                 <ExpansionPanel key={md5 || filename}>
                   <ExpansionPanelSummary

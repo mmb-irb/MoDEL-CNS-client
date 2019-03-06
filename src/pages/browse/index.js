@@ -18,14 +18,14 @@ import Highlight from '../../components/highlight';
 
 import useAPI from '../../hooks/use-api';
 
-import { BASE_PATH } from '../../utils/constants';
+import { BASE_PATH_PROJECTS } from '../../utils/constants';
 
 import style from './style.module.css';
 
 export default ({ location }) => {
   const { search } = parse(location.search, { ignoreQueryPrefix: true });
 
-  const ApiUrl = `${BASE_PATH}${search ? `?search=${search}` : ''}`;
+  const ApiUrl = `${BASE_PATH_PROJECTS}${search ? `?search=${search}` : ''}`;
   const { loading, payload, error, previousPayload } = useAPI(ApiUrl);
 
   if (loading && !previousPayload) return 'loading';

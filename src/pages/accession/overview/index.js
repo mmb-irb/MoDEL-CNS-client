@@ -7,7 +7,7 @@ import {
   Typography,
   Chip,
 } from '@material-ui/core';
-import { Language } from '@material-ui/icons';
+import { Link } from '@material-ui/icons';
 
 import { ProjectCtx } from '../../../contexts';
 
@@ -99,8 +99,8 @@ export default React.memo(() => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <Language />
-          PDBe website
+          <Link />
+          &nbsp;PDBe website
         </Button>
         <Button
           component={'a'}
@@ -111,8 +111,8 @@ export default React.memo(() => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <Language />
-          RCSB website
+          <Link />
+          &nbsp;RCSB website
         </Button>
       </CardActions>
     </Card>

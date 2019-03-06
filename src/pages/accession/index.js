@@ -1,13 +1,17 @@
 import React, { Suspense, lazy, useContext } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+
+import { Typography, Button } from '@material-ui/core';
+import { Link } from '@material-ui/icons';
 
 import useAPI from '../../hooks/use-api';
 import useNGLFile from '../../hooks/use-ngl-file';
 
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
-import { BASE_PATH } from '../../utils/constants';
+import { BASE_PATH, BASE_PATH_PROJECTS } from '../../utils/constants';
+
+import style from './style.module.css';
 
 const Overview = lazy(() =>
   import(/* webpackChunkName: 'overview' */ './overview'),
@@ -31,9 +35,11 @@ const Error = ({ error }) => {
 const SummarySwitch = () => {
   const accession = useContext(AccessionCtx);
 
-  const { loading, payload, error } = useAPI(`${BASE_PATH}${accession}/`);
+  const { loading, payload, error } = useAPI(
+    `${BASE_PATH_PROJECTS}${accession}/`,
+  );
   const pdbData = useNGLFile(
-    `${BASE_PATH}${accession}/files/md.imaged.rot.dry.pdb`,
+    `${BASE_PATH_PROJECTS}${accession}/files/md.imaged.rot.dry.pdb`,
     { defaultRepresentation: false, ext: 'pdb' },
   );
 
@@ -73,7 +79,7 @@ const SummarySwitch = () => {
             <Route
               path="/browse/:accession/rmsd"
               exact
-              render={props => (
+              render={() => (
                 <Suspense fallback={loadingSpan}>
                   <GenericAnalysisPage
                     analysis="rmsd"
@@ -88,7 +94,7 @@ const SummarySwitch = () => {
             <Route
               path="/browse/:accession/rgyr"
               exact
-              render={props => (
+              render={() => (
                 <Suspense fallback={loadingSpan}>
                   <GenericAnalysisPage
                     analysis="rgyr"
@@ -103,7 +109,7 @@ const SummarySwitch = () => {
             <Route
               path="/browse/:accession/fluctuation"
               exact
-              component={props => (
+              component={() => (
                 <Suspense fallback={loadingSpan}>
                   <GenericAnalysisPage
                     analysis="fluctuation"
@@ -124,9 +130,48 @@ const SummarySwitch = () => {
   return <Error error={error || 'something wrong happened'} />;
 };
 
+const LinkSwitch = ({ accession, subPage }) => {
+  let end;
+  switch (subPage) {
+    case 'overview':
+    case 'trajectory':
+      end = '';
+      break;
+    case 'rgyr':
+    case 'rmsd':
+    case 'pca':
+    case 'fluctuation':
+      end = `analyses/${subPage}`;
+      break;
+    case 'files':
+      end = subPage;
+      break;
+    default:
+      end = '';
+  }
+  return (
+    <Button
+      component="a"
+      target="_blank"
+      href={`${BASE_PATH}current/projects/${accession}/${end}`}
+      className={style['link-to-api']}
+    >
+      <Link />
+      &nbsp;data in this page
+    </Button>
+  );
+};
+
 export default ({ match }) => (
   <AccessionCtx.Provider value={match.params.accession}>
-    <Typography variant="h4">Accession: {match.params.accession}</Typography>
+    <Typography variant="h4">
+      Accession: {match.params.accession}
+      <LinkSwitch
+        accession={match.params.accession}
+        subPage={match.params.subPage}
+      />
+    </Typography>
+
     <SummarySwitch />
   </AccessionCtx.Provider>
 );

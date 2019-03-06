@@ -40,7 +40,7 @@ const Root = () => (
             to="/browse/:accession/overview"
             exact
           />
-          <Route path="/browse/:accession" component={Accession} />
+          <Route path="/browse/:accession/:subPage" component={Accession} />
           <Route render={() => 404} />
         </Switch>
       </Main>

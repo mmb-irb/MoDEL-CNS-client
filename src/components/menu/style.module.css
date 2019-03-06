@@ -1,3 +1,9 @@
+.menu {
+  position: absolute;
+  left: 200px;
+  right: 0;
+}
+
 .main {
   display: flex;
   align-items: center;

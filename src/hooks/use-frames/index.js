@@ -1,6 +1,6 @@
 import useAPI from '../use-api';
 
-import { BASE_PATH } from '../../utils/constants';
+import { BASE_PATH_PROJECTS } from '../../utils/constants';
 
 const getRangeFor = frames => {
   if (!frames || !frames.length) return;
@@ -13,7 +13,7 @@ const useFrames = (accession, frames, atomsPerFrame) => {
   const { loading, payload, error, previousPayload, progress } = useAPI(
     frames.length &&
       atomsPerFrame &&
-      `${BASE_PATH}${accession}/files/trajectory.bin`,
+      `${BASE_PATH_PROJECTS}${accession}/files/trajectory.bin`,
     {
       bodyParser: 'arrayBuffer',
       range,
