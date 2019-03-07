@@ -2,6 +2,9 @@ export const BASE_PATH = window.location.origin.includes('localhost')
   ? 'http://localhost:8000/rest/'
   : 'https://mmb.irbbarcelona.org/webdev2/MoDEL-CNS/api/rest/';
 
+// export const BASE_PATH =
+//   'https://mmb.irbbarcelona.org/webdev2/MoDEL-CNS/api/rest/';
+
 export const BASE_PATH_PROJECTS = BASE_PATH + 'current/projects/';
 
 export const NICE_NAMES = new Map([
