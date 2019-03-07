@@ -12,8 +12,8 @@
     "ngl": "0.10.4",
     "pretty-bytes": "5.1.0",
     "qs": "6.6.0",
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
+    "react": "16.8.4",
+    "react-dom": "16.8.4",
     "react-rnd": "9.1.2",
     "react-router-dom": "4.3.1",
     "react-virtualized": "9.21.0",
@@ -60,6 +60,6 @@
     "lint-staged": "8.1.5",
     "prettier": "1.16.4",
     "prop-types": "15.7.2",
-    "react-scripts": "2.1.5"
+    "react-scripts": "2.1.8"
   }
 }
