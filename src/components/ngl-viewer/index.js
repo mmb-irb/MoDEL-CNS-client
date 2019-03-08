@@ -145,15 +145,27 @@ const NGLViewer = memo(
         if (!pdbFile || !(selected instanceof Set) || !(hovered || selected)) {
           return;
         }
-        const name = 'highlighted';
-        const previousRepresentation = stageRef.current.compList[0].reprList.find(
-          representation => representation.name === name,
+
+        const nameHighlight = 'highlighted';
+        const previousHighlightRepresentation = stageRef.current.compList[0].reprList.find(
+          representation => representation.name === nameHighlight,
         );
-        if (previousRepresentation) {
+        if (previousHighlightRepresentation) {
           stageRef.current.compList[0].removeRepresentation(
-            previousRepresentation,
+            previousHighlightRepresentation,
           );
         }
+
+        const nameContext = 'context';
+        const previousContextRepresentation = stageRef.current.compList[0].reprList.find(
+          representation => representation.name === nameContext,
+        );
+        if (previousContextRepresentation) {
+          stageRef.current.compList[0].removeRepresentation(
+            previousContextRepresentation,
+          );
+        }
+
         let selectedPlusMaybeHovered;
         if (hovered) {
           selectedPlusMaybeHovered = new Set(selected);
@@ -161,18 +173,32 @@ const NGLViewer = memo(
         } else {
           selectedPlusMaybeHovered = selected;
         }
-        // TODO: select residues containing all the listed atoms
-        // TODO: and also put them in a representation
+
         const atoms = Array.from(selectedPlusMaybeHovered);
         if (!atoms.length) return;
+
         // ngl starts counting at 0
-        const sele = `@${atoms.map(atomNumber => atomNumber - 1).join(',')}`;
-        console.log({ sele });
+        const seleHighlight = `@${atoms
+          .map(atomNumber => atomNumber - 1)
+          .join(',')}`;
         stageRef.current.compList[0].addRepresentation('spacefill', {
-          sele,
-          opacity: 0.75,
-          scale: 4,
-          name,
+          sele: seleHighlight,
+          opacity: 0.5,
+          scale: 1.5,
+          name: nameHighlight,
+        });
+
+        const seleContext = Array.from(
+          new Set(
+            atoms.map(
+              atomsNumber =>
+                pdbFile.atomStore.residueIndex[atomsNumber - 1] + 1,
+            ),
+          ),
+        ).join(' or ');
+        stageRef.current.compList[0].addRepresentation('ball+stick', {
+          sele: seleContext,
+          name: nameContext,
         });
       }, [pdbFile, hovered, selected]);
 
