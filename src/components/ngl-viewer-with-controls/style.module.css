@@ -50,6 +50,12 @@
   transition: none !important;
 }
 
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 [data-rnd] .controls button {
   padding: 0.5ch;
 }
