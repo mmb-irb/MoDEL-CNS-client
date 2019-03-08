@@ -8,17 +8,3 @@
   display: flex;
   align-items: center;
 }
-
-.search-active {
-  color: lime;
-}
-
-.search input {
-  color: lime;
-  letter-spacing: 0.15ch;
-  padding: 0.5ch;
-}
-
-.tab-link {
-  text-align: center;
-}

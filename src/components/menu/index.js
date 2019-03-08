@@ -1,67 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link, Switch, Route } from 'react-router-dom';
-import { parse, stringify } from 'qs';
-import { debounce } from 'lodash-es';
+import React, { lazy, Suspense } from 'react';
 
+import { Link, Switch, Route } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Icon from '@material-ui/core/Icon';
-import SearchIcon from '@material-ui/icons/Search';
-import TextField from '@material-ui/core/TextField';
 
 import { BASE_PATH } from '../../utils/constants';
 
 import style from './style.module.css';
 
-const DEBOUNCE_DELAY = 500;
+const ProjectMenu = lazy(() =>
+  import(/* webpackChunkName: 'project-menu' */ './project-menu'),
+);
 
-const updateLocation = debounce((history, location, search, value) => {
-  const { search: _search, ...nextSearchObject } = parse(search, {
-    ignoreQueryPrefix: true,
-  });
-  const shouldReplace = Boolean(_search) === Boolean(value);
-  if (value) nextSearchObject.search = value;
-  if (_search === value) return;
-  history[shouldReplace ? 'replace' : 'push']({
-    ...location,
-    search: stringify(nextSearchObject),
-  });
-}, DEBOUNCE_DELAY);
-
-const Search = props => {
-  const {
-    location: { search },
-    history,
-    location,
-  } = props;
-
-  const [value, setValue] = useState(
-    parse(search, { ignoreQueryPrefix: true }).search,
-  );
-
-  // make sure to cancel any upcoming location update if component unmounts
-  useEffect(() => updateLocation.cancel, []);
-
-  const handleChange = useCallback(({ target: { value } }) => {
-    setValue(value);
-
-    updateLocation(history, location, search, value);
-  }, []);
-
-  return (
-    <>
-      <Icon>
-        <SearchIcon className={value && style['search-active']} />
-      </Icon>
-      <TextField
-        value={value || ''}
-        onChange={handleChange}
-        className={style.search}
-      />
-    </>
-  );
-};
+const Search = lazy(() => import(/* webpackChunkName: 'search' */ './search'));
 
 export default () => (
   <menu className={style.menu}>
@@ -90,67 +40,27 @@ export default () => (
         REST API
       </Button>
       <Switch>
-        <Route path="/browse" exact component={Search} />
+        <Route
+          path="/browse"
+          exact
+          render={props => (
+            <Suspense fallback={null}>
+              <Search {...props} />
+            </Suspense>
+          )}
+        />
       </Switch>
     </div>
     <Switch>
-      <Route path="/browse/:accession/:subPage" exact>
-        {({ match }) => {
-          const { accession, subPage } = match.params;
-          return (
-            <Tabs
-              value={subPage}
-              indicatorColor="secondary"
-              textColor="secondary"
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              <Tab
-                component={Link}
-                to={`/browse/${accession}/overview`}
-                label="overview"
-                value="overview"
-                className={style['tab-link']}
-              />
-              <Tab
-                component={Link}
-                to={`/browse/${accession}/files`}
-                label="files"
-                value="files"
-                className={style['tab-link']}
-              />
-              <Tab
-                component={Link}
-                to={`/browse/${accession}/trajectory`}
-                label="trajectory"
-                value="trajectory"
-                className={style['tab-link']}
-              />
-              <Tab
-                component={Link}
-                to={`/browse/${accession}/rmsd`}
-                label="rmsd"
-                value="rmsd"
-                className={style['tab-link']}
-              />
-              <Tab
-                component={Link}
-                to={`/browse/${accession}/rgyr`}
-                label="rgyr"
-                value="rgyr"
-                className={style['tab-link']}
-              />
-              <Tab
-                component={Link}
-                to={`/browse/${accession}/fluctuation`}
-                label="fluctuation"
-                value="fluctuation"
-                className={style['tab-link']}
-              />
-            </Tabs>
-          );
-        }}
-      </Route>
+      <Route
+        path="/browse/:accession/:subPage"
+        exact
+        render={props => (
+          <Suspense fallback={null}>
+            <ProjectMenu params={props.match.params} />
+          </Suspense>
+        )}
+      />
     </Switch>
   </menu>
 );

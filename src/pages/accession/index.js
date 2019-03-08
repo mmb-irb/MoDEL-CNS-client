@@ -121,6 +121,7 @@ const SummarySwitch = () => {
                 </Suspense>
               )}
             />
+            <Route render={() => 404} />
           </Switch>
         </PdbCtx.Provider>
       </ProjectCtx.Provider>
