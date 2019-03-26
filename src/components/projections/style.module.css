@@ -1,0 +1,7 @@
+.graph-container {
+  height: 50vh;
+}
+
+.graph-container > svg {
+  cursor: crosshair;
+}

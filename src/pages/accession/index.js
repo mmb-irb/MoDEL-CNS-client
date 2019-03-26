@@ -23,6 +23,7 @@ const Trajectory = lazy(() =>
 const GenericAnalysisPage = lazy(() =>
   import(/* webpackChunkName: 'generic-analysis-page' */ './generic-analysis-page'),
 );
+const PCA = lazy(() => import(/* webpackChunkName: 'pca' */ './pca'));
 
 const loadingSpan = <span>Loading</span>;
 const Loading = () => loadingSpan;
@@ -73,6 +74,15 @@ const SummarySwitch = () => {
               render={props => (
                 <Suspense fallback={loadingSpan}>
                   <Trajectory {...props} />
+                </Suspense>
+              )}
+            />
+            <Route
+              path="/browse/:accession/pca"
+              exact
+              render={() => (
+                <Suspense fallback={loadingSpan}>
+                  <PCA />
                 </Suspense>
               )}
             />
