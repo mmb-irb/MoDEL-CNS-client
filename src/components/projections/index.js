@@ -64,10 +64,6 @@ const Projections = ({ data, projections }) => {
     drawRef.current({ processed });
   }, [data, projections]);
 
-  useEffect(() => {
-    data && drawRef.current();
-  }, [data]);
-
   return <div className={style['graph-container']} ref={containerRef} />;
 };
 
