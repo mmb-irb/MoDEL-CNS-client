@@ -8,16 +8,25 @@ const MARGIN = { top: 20, right: 50, bottom: 40, left: 50 };
 const MIN_DISPLAY_INDEX = 14; // display at least 14 components
 const MIN_DISPLAY_EXPL = 0.8; // display at least components for 80% explanation
 
-const EigenvalueGraph = ({ data, projections, setProjections }) => {
+const EigenvalueGraph = ({
+  data,
+  totalEigenvalue,
+  projections,
+  setProjections,
+}) => {
   const containerRef = useRef(null);
   const drawRef = useRef(noop);
   const processedRef = useRef(null);
+  const projectionsRef = useRef(projections);
 
   // should only be run once
   useEffect(() => {
     const graph = select(containerRef.current).append('svg');
 
-    drawRef.current = ({ processed = processedRef.current } = {}) => {
+    drawRef.current = ({
+      processed = processedRef.current,
+      projections = projectionsRef.current,
+    } = {}) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
@@ -80,7 +89,9 @@ const EigenvalueGraph = ({ data, projections, setProjections }) => {
         .enter()
         .append('rect')
         .attr('class', 'bar')
-        .on('click', (_, i) => {
+        .attr('fill-opacity', ({ hasProjection }) => (hasProjection ? 1 : 0.5))
+        .on('click', ({ hasProjection }, i) => {
+          if (!hasProjection) return;
           setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
         })
         .merge(bars)
@@ -89,6 +100,19 @@ const EigenvalueGraph = ({ data, projections, setProjections }) => {
         .attr('y', d => yEigen(d.eigenvalue))
         .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue))
         .attr('fill', ({ projection }) => (projection ? '#84b761' : '#67b7dc'));
+
+      // bar legends
+      const barLegends = graph.selectAll('text.bar-legend').data(projections);
+      barLegends
+        .enter()
+        .append('text')
+        .attr('class', 'bar-legend')
+        .attr('text-anchor', 'middle')
+        .text((_, i) => (i === 0 ? 'x' : 'y'))
+        .merge(barLegends)
+        .attr('y', () => height - MARGIN.bottom + 16)
+        .transition()
+        .attr('x', d => xEigen(d) + xEigen.bandwidth() / 2);
     };
 
     window.addEventListener('resize', drawRef.current);
@@ -98,20 +122,18 @@ const EigenvalueGraph = ({ data, projections, setProjections }) => {
 
   // data massaging
   useEffect(() => {
-    const eigenvalueTotal = Object.values(data).reduce(
-      (acc, { eigenvalue }) => acc + eigenvalue,
-      0,
-    );
-
     let acc = 0;
     const processed = [];
-    for (const [index, { eigenvalue }] of Object.values(data).entries()) {
+    for (const [index, { eigenvalue, data: projectionData }] of Object.values(
+      data,
+    ).entries()) {
       acc += eigenvalue;
-      const cumulativeExplained = acc / eigenvalueTotal;
+      const cumulativeExplained = acc / totalEigenvalue;
       processed.push({
         cumulativeExplained,
         eigenvalue,
         projection: projections.includes(index),
+        hasProjection: !!projectionData,
       });
       if (
         index >= MIN_DISPLAY_INDEX &&
@@ -122,9 +144,10 @@ const EigenvalueGraph = ({ data, projections, setProjections }) => {
     }
 
     processedRef.current = processed;
+    projectionsRef.current = projections;
 
-    drawRef.current({ processed });
-  }, [data, projections]);
+    drawRef.current({ processed, projections });
+  }, [data, totalEigenvalue, projections]);
 
   return <div className={style['graph-container']} ref={containerRef} />;
 };

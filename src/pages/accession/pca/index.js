@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { Card, CardContent, Typography } from '@material-ui/core';
 
 import EigenvalueGraph from '../../../components/eigenvalue-graph/index';
@@ -21,6 +21,19 @@ const PCA = () => {
 
   const [projections, setProjections] = useState([0, 1]);
 
+  const [explanation, totalEigenvalue] = useMemo(() => {
+    if (!payload) return [];
+    const values = Object.values(payload.y);
+    const totalEigenvalue = values.reduce(
+      (acc, component) => acc + component.eigenvalue,
+      0,
+    );
+    const explanation =
+      (values[projections[0]].eigenvalue + values[projections[1]].eigenvalue) /
+      totalEigenvalue;
+    return [explanation, totalEigenvalue];
+  }, [payload, projections]);
+
   if (loading) return 'loading';
 
   return (
@@ -30,6 +43,7 @@ const PCA = () => {
           <Typography variant="h6">PCA eigenvalues</Typography>
           <EigenvalueGraph
             data={payload.y}
+            totalEigenvalue={totalEigenvalue}
             projections={projections}
             setProjections={setProjections}
           />
@@ -38,6 +52,11 @@ const PCA = () => {
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">PCA projections</Typography>
+          <p>
+            Showing principal components {projections[0] + 1} and{' '}
+            {projections[1] + 1}, accounting for{' '}
+            {Math.round(explanation * 1000) / 10}% of explained variance
+          </p>
           <Projections data={payload.y} projections={projections} />
         </CardContent>
       </Card>
