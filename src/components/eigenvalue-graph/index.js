@@ -1,6 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import { noop } from 'lodash-es';
-import { select, scaleLinear, scaleBand, line, area } from 'd3';
+import {
+  select,
+  scaleLinear,
+  scaleBand,
+  line,
+  area,
+  axisBottom,
+  axisLeft,
+  axisRight,
+} from 'd3';
 
 import style from './style.module.css';
 
@@ -23,6 +32,12 @@ const EigenvalueGraph = ({
   useEffect(() => {
     const graph = select(containerRef.current).append('svg');
 
+    const axes = {
+      x: graph.append('g'),
+      yExpl: graph.append('g'),
+      yEigen: graph.append('g'),
+    };
+
     drawRef.current = ({
       processed = processedRef.current,
       projections = projectionsRef.current,
@@ -32,10 +47,17 @@ const EigenvalueGraph = ({
       graph.attr('width', width).attr('height', height);
 
       // x axis
-      const xEigen = scaleBand()
+      const x = scaleBand()
         .domain(processed.map((_, i) => i))
         .range([MARGIN.left, width - MARGIN.right])
         .padding(0.1);
+
+      // visual x axis
+      const xAxis = g =>
+        g
+          .attr('transform', `translate(0, ${height - MARGIN.bottom})`)
+          .call(axisBottom(x));
+      axes.x.call(xAxis);
 
       // explained variance
       // y axis
@@ -44,9 +66,16 @@ const EigenvalueGraph = ({
         .range([height - MARGIN.bottom, MARGIN.top])
         .nice();
 
+      // visual y axis
+      const yExplAxis = g =>
+        g
+          .attr('transform', `translate(${width - MARGIN.right}, 0)`)
+          .call(axisRight(yExpl).ticks(11, '.2f'));
+      axes.yExpl.call(yExplAxis);
+
       // lines
       const lineFn = line()
-        .x((_, i) => xEigen(i) + xEigen.bandwidth() / 2)
+        .x((_, i) => x(i) + x.bandwidth() / 2)
         .y(yExpl);
 
       const explLine = graph.selectAll('path.line').data([processed]);
@@ -62,7 +91,7 @@ const EigenvalueGraph = ({
 
       // areas
       const areaFn = area()
-        .x((_, i) => xEigen(i) + xEigen.bandwidth() / 2)
+        .x((_, i) => x(i) + x.bandwidth() / 2)
         .y0(height - MARGIN.bottom)
         .y1(d => yExpl(d));
 
@@ -83,6 +112,13 @@ const EigenvalueGraph = ({
         .range([height - MARGIN.bottom, MARGIN.top])
         .nice();
 
+      // visual y axis
+      const yEigenAxis = g =>
+        g
+          .attr('transform', `translate(${MARGIN.left}, 0)`)
+          .call(axisLeft(yEigen).ticks(11));
+      axes.yEigen.call(yEigenAxis);
+
       // bars
       const bars = graph.selectAll('rect.bar').data(processed);
       bars
@@ -95,11 +131,27 @@ const EigenvalueGraph = ({
           setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
         })
         .merge(bars)
-        .attr('x', (_, i) => xEigen(i))
-        .attr('width', xEigen.bandwidth())
+        .attr('x', (_, i) => x(i))
+        .attr('width', x.bandwidth())
         .attr('y', d => yEigen(d.eigenvalue))
         .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue))
         .attr('fill', ({ projection }) => (projection ? '#84b761' : '#67b7dc'));
+      // full-height bars (for click and hover handlers)
+      const clickBars = graph.selectAll('rect.click-bar').data(processed);
+      bars
+        .enter()
+        .append('rect')
+        .attr('class', 'click-bar')
+        .attr('opacity', 0)
+        .on('click', ({ hasProjection }, i) => {
+          if (!hasProjection) return;
+          setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
+        })
+        .merge(clickBars)
+        .attr('x', (_, i) => x(i))
+        .attr('width', x.bandwidth())
+        .attr('y', MARGIN.top)
+        .attr('height', height - MARGIN.top - MARGIN.bottom);
 
       // bar legends
       const barLegends = graph.selectAll('text.bar-legend').data(projections);
@@ -110,9 +162,9 @@ const EigenvalueGraph = ({
         .attr('text-anchor', 'middle')
         .text((_, i) => (i === 0 ? 'x' : 'y'))
         .merge(barLegends)
-        .attr('y', () => height - MARGIN.bottom + 16)
+        .attr('y', height - 8)
         .transition()
-        .attr('x', d => xEigen(d) + xEigen.bandwidth() / 2);
+        .attr('x', d => x(d) + x.bandwidth() / 2);
     };
 
     window.addEventListener('resize', drawRef.current);
