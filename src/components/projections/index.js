@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { noop, zip } from 'lodash-es';
-import { select, scaleLinear } from 'd3';
+import { select, scaleLinear, axisLeft, axisBottom } from 'd3';
 
 import style from './style.module.css';
 
-const MARGIN = { top: 20, right: 30, bottom: 20, left: 30 };
+const MARGIN = { top: 5, right: 5, bottom: 5, left: 5 };
 
 const Projections = ({ data, projections }) => {
   const containerRef = useRef(null);
@@ -13,6 +13,31 @@ const Projections = ({ data, projections }) => {
 
   useEffect(() => {
     const graph = select(containerRef.current).append('svg');
+    const filter = graph
+      .append('defs')
+      .append('filter')
+      .attr('id', 'goo-effect');
+    filter
+      .append('feGaussianBlur')
+      .attr('in', 'SoureGraphic')
+      .attr('stdDeviation', 1)
+      .attr('result', 'blur');
+    filter
+      .append('feColorMatrix')
+      .attr('in', 'blur')
+      .attr('mode', 'matrix')
+      .attr('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -7')
+      .attr('result', 'goo');
+    filter
+      .append('feBlend')
+      .attr('in', 'SourceGraphic')
+      .attr('in2', 'goo');
+
+    const refs = {
+      xAxis: graph.append('g').attr('class', style.axis),
+      yAxis: graph.append('g').attr('class', style.axis),
+      dataPoints: graph.append('g').attr('class', style['data-points']),
+    };
 
     drawRef.current = ({ processed = processedRef.current } = {}) => {
       // container size
@@ -29,19 +54,31 @@ const Projections = ({ data, projections }) => {
         .domain(processedRef.current.yMinMax)
         .range([height - MARGIN.bottom, MARGIN.top]);
 
+      // visual x axis
+      const xAxis = g =>
+        g
+          .attr('transform', `translate(0, ${y(0)})`)
+          .call(axisBottom(x).tickFormat(d => (d === 0 ? null : d)));
+      refs.xAxis.transition().call(xAxis);
+
+      // visual y axis
+      const yAxis = g =>
+        g
+          .attr('transform', `translate(${x(0)}, 0)`)
+          .call(axisLeft(y).tickFormat(d => (d === 0 ? null : d)));
+      refs.yAxis.transition().call(yAxis);
+
       // data points
-      const points = graph.selectAll('circle.point').data(processed.data);
+      const points = refs.dataPoints.selectAll('circle').data(processed.data);
       points
         .enter()
         .append('circle')
-        .attr('class', 'point')
-        .attr('fill', '#84b761')
-        .attr('fill-opacity', 1)
         .attr('r', Math.min(width, height) / 250)
         .attr('cx', ([d]) => x(d))
         .attr('cy', ([, d]) => y(d))
         .merge(points)
         .transition()
+        .duration(() => 250 + (Math.random() - 0.5) * 500)
         .attr('cx', ([d]) => x(d))
         .attr('cy', ([, d]) => y(d));
     };

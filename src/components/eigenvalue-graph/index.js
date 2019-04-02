@@ -9,6 +9,7 @@ import {
   axisBottom,
   axisLeft,
   axisRight,
+  event,
 } from 'd3';
 
 import style from './style.module.css';
@@ -32,10 +33,18 @@ const EigenvalueGraph = ({
   useEffect(() => {
     const graph = select(containerRef.current).append('svg');
 
-    const axes = {
-      x: graph.append('g'),
-      yExpl: graph.append('g'),
-      yEigen: graph.append('g'),
+    const refs = {
+      xAxis: graph.append('g').attr('class', style.axis),
+      yExplAxis: graph.append('g').attr('class', style.axis),
+      yEigenAxis: graph.append('g').attr('class', style.axis),
+      barLegend: graph.append('g').attr('class', style['bar-legend']),
+      explanationArea: graph.append('g').attr('class', style.explanation),
+      visualBars: graph
+        .append('g')
+        .attr('class', `${style.visual} ${style.bars}`),
+      targetBars: graph
+        .append('g')
+        .attr('class', `${style.target} ${style.bars}`),
     };
 
     drawRef.current = ({
@@ -56,8 +65,8 @@ const EigenvalueGraph = ({
       const xAxis = g =>
         g
           .attr('transform', `translate(0, ${height - MARGIN.bottom})`)
-          .call(axisBottom(x));
-      axes.x.call(xAxis);
+          .call(axisBottom(x).tickFormat(d => d + 1));
+      refs.xAxis.call(xAxis);
 
       // explained variance
       // y axis
@@ -68,26 +77,31 @@ const EigenvalueGraph = ({
 
       // visual y axis
       const yExplAxis = g =>
-        g
-          .attr('transform', `translate(${width - MARGIN.right}, 0)`)
-          .call(axisRight(yExpl).ticks(11, '.2f'));
-      axes.yExpl.call(yExplAxis);
+        g.attr('transform', `translate(${width - MARGIN.right}, 0)`).call(
+          axisRight(yExpl)
+            .tickFormat(d => `${d * 100}%`)
+            .ticks(11),
+        );
+      refs.yExplAxis.call(yExplAxis);
 
       // lines
       const lineFn = line()
         .x((_, i) => x(i) + x.bandwidth() / 2)
         .y(yExpl);
 
-      const explLine = graph.selectAll('path.line').data([processed]);
+      const explLine = refs.explanationArea
+        .selectAll(`path.${style['top-line']}`)
+        .data([processed]);
       explLine
         .enter()
         .append('path')
-        .attr('class', 'line')
-        .attr('fill', 'none')
-        .attr('stroke', '#fdd400')
-        .attr('stroke-width', 1.5)
+        .attr('class', style['top-line'])
+        .attr('opacity', 0)
         .merge(explLine)
-        .attr('d', d => lineFn(d.map(item => item.cumulativeExplained)));
+        .attr('d', d => lineFn(d.map(item => item.cumulativeExplained)))
+        .transition()
+        .duration(2000)
+        .attr('opacity', 1);
 
       // areas
       const areaFn = area()
@@ -95,15 +109,19 @@ const EigenvalueGraph = ({
         .y0(height - MARGIN.bottom)
         .y1(d => yExpl(d));
 
-      const explArea = graph.selectAll('path.area').data([processed]);
+      const explArea = refs.explanationArea
+        .selectAll(`path.${style.area}`)
+        .data([processed]);
       explArea
         .enter()
         .append('path')
-        .attr('class', 'area')
-        .attr('fill', '#fdd400')
-        .attr('fill-opacity', 0.1)
+        .attr('class', style.area)
+        .attr('opacity', 0)
         .merge(explArea)
-        .attr('d', d => areaFn(d.map(item => item.cumulativeExplained)));
+        .attr('d', d => areaFn(d.map(item => item.cumulativeExplained)))
+        .transition()
+        .duration(2000)
+        .attr('opacity', 1);
 
       // eigenvalue
       // y axis
@@ -117,25 +135,29 @@ const EigenvalueGraph = ({
         g
           .attr('transform', `translate(${MARGIN.left}, 0)`)
           .call(axisLeft(yEigen).ticks(11));
-      axes.yEigen.call(yEigenAxis);
+      refs.yEigenAxis.call(yEigenAxis);
 
       // bars
-      const bars = graph.selectAll('rect.bar').data(processed);
+      const bars = refs.visualBars.selectAll('rect').data(processed);
       bars
         .enter()
         .append('rect')
-        .attr('class', 'bar')
-        .attr('fill-opacity', ({ hasProjection }) => (hasProjection ? 1 : 0.5))
-        .on('click', ({ hasProjection }, i) => {
-          if (!hasProjection) return;
-          setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
-        })
+        .attr('y', yEigen(0))
+        .attr('height', 0)
         .merge(bars)
+        .attr(
+          'class',
+          ({ hasProjection, projected }) =>
+            `${hasProjection ? style['has-projection'] : ''} ${
+              projected ? style.projected : ''
+            }`.trim() || null,
+        )
         .attr('x', (_, i) => x(i))
         .attr('width', x.bandwidth())
+        .transition()
+        .delay((_, i) => i * 50)
         .attr('y', d => yEigen(d.eigenvalue))
-        .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue))
-        .attr('fill', ({ projection }) => (projection ? '#84b761' : '#67b7dc'));
+        .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue));
       // full-height bars (for click and hover handlers)
       const clickBars = graph.selectAll('rect.click-bar').data(processed);
       bars
@@ -154,13 +176,11 @@ const EigenvalueGraph = ({
         .attr('height', height - MARGIN.top - MARGIN.bottom);
 
       // bar legends
-      const barLegends = graph.selectAll('text.bar-legend').data(projections);
+      const barLegends = refs.barLegend.selectAll('text').data(projections);
       barLegends
         .enter()
         .append('text')
-        .attr('class', 'bar-legend')
-        .attr('text-anchor', 'middle')
-        .text((_, i) => (i === 0 ? 'x' : 'y'))
+        .text((_, i) => (i === 0 ? '↔' : '↕'))
         .merge(barLegends)
         .attr('y', height - 8)
         .transition()
@@ -184,7 +204,7 @@ const EigenvalueGraph = ({
       processed.push({
         cumulativeExplained,
         eigenvalue,
-        projection: projections.includes(index),
+        projected: projections.includes(index),
         hasProjection: !!projectionData,
       });
       if (

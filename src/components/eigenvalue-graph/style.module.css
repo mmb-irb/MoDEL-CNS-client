@@ -5,3 +5,41 @@
 .graph-container > svg {
   cursor: crosshair;
 }
+
+.graph-container .axis,
+.graph-container .bar-legend {
+  opacity: 0.1;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.graph-container:hover .axis,
+.graph-container:hover .bar-legend {
+  opacity: 1;
+}
+
+.bar-legend {
+  text-anchor: middle;
+}
+
+.visual.bars {
+  fill: #67b7dc;
+}
+
+.visual.bars :not(.has-projection) {
+  fill-opacity: 0.5;
+}
+
+.visual.bars .projected {
+  fill: #84b761;
+}
+
+.explanation .top-line {
+  fill: none;
+  stroke: #fdd400;
+  stroke-width: 1.5;
+}
+
+.explanation .area {
+  fill: #fdd400;
+  fill-opacity: 0.1;
+}

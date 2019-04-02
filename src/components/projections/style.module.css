@@ -5,3 +5,18 @@
 .graph-container > svg {
   cursor: crosshair;
 }
+
+.graph-container .axis {
+  opacity: 0.1;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.graph-container:hover .axis {
+  opacity: 1;
+}
+
+.data-points {
+  fill-opacity: 0.75;
+  fill: #84b761;
+  /* filter: url(#goo-effect); */
+}

@@ -53,8 +53,8 @@ const PCA = () => {
         <CardContent>
           <Typography variant="h6">PCA projections</Typography>
           <p>
-            Showing principal components {projections[0] + 1} and{' '}
-            {projections[1] + 1}, accounting for{' '}
+            Showing principal components {projections[0] + 1} ↔ and{' '}
+            {projections[1] + 1} ↕, accounting for{' '}
             {Math.round(explanation * 1000) / 10}% of explained variance
           </p>
           <Projections data={payload.y} projections={projections} />
