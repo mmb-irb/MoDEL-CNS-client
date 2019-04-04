@@ -14,7 +14,7 @@ import {
 
 import style from './style.module.css';
 
-const MARGIN = { top: 20, right: 20, bottom: 20, left: 20 };
+const MARGIN = { top: 20, right: 40, bottom: 20, left: 20 };
 const MIN_DISPLAY_INDEX = 14; // display at least 14 components
 const MIN_DISPLAY_EXPL = 0.8; // display at least components for 80% explanation
 
@@ -78,11 +78,9 @@ const EigenvalueGraph = ({
 
       // visual y axis
       const yExplAxis = g =>
-        g.attr('transform', `translate(${width - MARGIN.right}, 0)`).call(
-          axisRight(yExpl)
-            .tickFormat(d => `${d * 100}%`)
-            .ticks(11),
-        );
+        g
+          .attr('transform', `translate(${width - MARGIN.right}, 0)`)
+          .call(axisRight(yExpl).tickFormat(d => `${d * 100}%`));
       refs.yExplAxis.call(yExplAxis);
 
       // lines
