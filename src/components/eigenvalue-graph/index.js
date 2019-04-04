@@ -14,7 +14,7 @@ import {
 
 import style from './style.module.css';
 
-const MARGIN = { top: 20, right: 40, bottom: 20, left: 20 };
+const MARGIN = { top: 20, right: 40, bottom: 30, left: 20 };
 const MIN_DISPLAY_INDEX = 14; // display at least 14 components
 const MIN_DISPLAY_EXPL = 0.8; // display at least components for 80% explanation
 
@@ -214,7 +214,7 @@ const EigenvalueGraph = ({
         .append('text')
         .text((_, i) => (i === 0 ? '↔' : '↕'))
         .merge(barLegends)
-        .attr('y', height - 8)
+        .attr('y', height)
         .transition()
         .attr('x', d => x(d) + x.bandwidth() / 2);
     };
