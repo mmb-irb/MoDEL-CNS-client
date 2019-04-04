@@ -9,7 +9,6 @@ import {
   axisBottom,
   axisLeft,
   axisRight,
-  event,
 } from 'd3';
 
 import style from './style.module.css';
@@ -159,17 +158,18 @@ const EigenvalueGraph = ({
         .attr('y', d => yEigen(d.eigenvalue))
         .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue));
       // full-height bars (for click and hover handlers)
-      const clickBars = graph.selectAll('rect.click-bar').data(processed);
-      bars
+      const clickBars = refs.targetBars.selectAll('rect').data(processed);
+      clickBars
         .enter()
         .append('rect')
-        .attr('class', 'click-bar')
-        .attr('opacity', 0)
         .on('click', ({ hasProjection }, i) => {
           if (!hasProjection) return;
           setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
         })
         .merge(clickBars)
+        .attr('class', ({ hasProjection }) =>
+          hasProjection ? style['has-projection'] : '' || null,
+        )
         .attr('x', (_, i) => x(i))
         .attr('width', x.bandwidth())
         .attr('y', MARGIN.top)
@@ -221,7 +221,39 @@ const EigenvalueGraph = ({
     drawRef.current({ processed, projections });
   }, [data, totalEigenvalue, projections]);
 
-  return <div className={style['graph-container']} ref={containerRef} />;
+  const components = Object.values(data);
+
+  return (
+    <>
+      <div className={style['graph-container']} ref={containerRef} />
+      <div className={style['info-box']}>
+        <div>
+          <p>x axis - principal component {projections[0] + 1}</p>
+          <p>
+            eigenvalue: {components[projections[0]].eigenvalue}
+            <br />
+            explained variance:{' '}
+            {Math.round(
+              (components[projections[0]].eigenvalue / totalEigenvalue) * 1000,
+            ) / 10}
+            %
+          </p>
+        </div>
+        <div>
+          <p>y axis - principal component {projections[1] + 1}</p>
+          <p>
+            eigenvalue: {components[projections[1]].eigenvalue}
+            <br />
+            explained variance:{' '}
+            {Math.round(
+              (components[projections[1]].eigenvalue / totalEigenvalue) * 1000,
+            ) / 10}
+            %
+          </p>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default EigenvalueGraph;

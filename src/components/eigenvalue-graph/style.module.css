@@ -33,6 +33,14 @@
   fill: #84b761;
 }
 
+.target.bars {
+  fill: transparent;
+}
+
+.target.bars > :not(.has-projection) {
+  cursor: not-allowed;
+}
+
 .explanation .top-line {
   fill: none;
   stroke: #fdd400;
@@ -42,4 +50,19 @@
 .explanation .area {
   fill: #fdd400;
   fill-opacity: 0.1;
+}
+
+.info-box {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.info-box > * {
+  flex-grow: 1;
+}
+
+.info-box > :not(:last-child) {
+  border-right: solid gray 1px;
+  margin-right: 1ch;
 }
