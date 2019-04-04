@@ -9,11 +9,12 @@ import {
   axisBottom,
   axisLeft,
   axisRight,
+  event,
 } from 'd3';
 
 import style from './style.module.css';
 
-const MARGIN = { top: 20, right: 50, bottom: 40, left: 50 };
+const MARGIN = { top: 20, right: 20, bottom: 20, left: 20 };
 const MIN_DISPLAY_INDEX = 14; // display at least 14 components
 const MIN_DISPLAY_EXPL = 0.8; // display at least components for 80% explanation
 
@@ -24,6 +25,7 @@ const EigenvalueGraph = ({
   setProjections,
 }) => {
   const containerRef = useRef(null);
+  const tooltipRef = useRef(null);
   const drawRef = useRef(noop);
   const processedRef = useRef(null);
   const projectionsRef = useRef(projections);
@@ -159,13 +161,38 @@ const EigenvalueGraph = ({
         .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue));
       // full-height bars (for click and hover handlers)
       const clickBars = refs.targetBars.selectAll('rect').data(processed);
-      clickBars
+      const clickBarsEnter = clickBars
         .enter()
         .append('rect')
         .on('click', ({ hasProjection }, i) => {
           if (!hasProjection) return;
           setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
         })
+        .on('mousemove', (d, i) => {
+          tooltipRef.current.innerHTML = `
+          <div>
+            <p>Principal component ${i + 1}</p>
+            <p>Eigenvalue: ${d.eigenvalue}</p>
+            <p>
+              Explained variance: ${Math.round(
+                (d.eigenvalue / totalEigenvalue) * 1000,
+              ) / 10}%
+            </p>
+            <p>
+              Cumulative explained variance: ${Math.round(
+                d.cumulativeExplained * 1000,
+              ) / 10}%
+            </p>
+            <p>Projection data is ${d.hasProjection ? '' : 'not'} available</p>
+          </div>
+          `.trim();
+          tooltipRef.current.style.display = 'inline-block';
+          const { width, height } = tooltipRef.current.getBoundingClientRect();
+          tooltipRef.current.style.transform = `translate(${event.pageX -
+            width / 2}px, ${event.pageY - height - 5}px)`;
+        })
+        .on('mouseout', () => (tooltipRef.current.style.display = 'none'));
+      clickBarsEnter
         .merge(clickBars)
         .attr('class', ({ hasProjection }) =>
           hasProjection ? style['has-projection'] : '' || null,
@@ -174,6 +201,13 @@ const EigenvalueGraph = ({
         .attr('width', x.bandwidth())
         .attr('y', MARGIN.top)
         .attr('height', height - MARGIN.top - MARGIN.bottom);
+      clickBarsEnter
+        .append('title')
+        .text(({ hasProjection }) =>
+          hasProjection
+            ? null
+            : 'No projection data available for this component',
+        );
 
       // bar legends
       const barLegends = refs.barLegend.selectAll('text').data(projections);
@@ -228,11 +262,15 @@ const EigenvalueGraph = ({
       <div className={style['graph-container']} ref={containerRef} />
       <div className={style['info-box']}>
         <div>
-          <p>x axis - principal component {projections[0] + 1}</p>
           <p>
-            eigenvalue: {components[projections[0]].eigenvalue}
+            First selected projection:
             <br />
-            explained variance:{' '}
+            principal component {projections[0] + 1}
+          </p>
+          <p>
+            Eigenvalue: {components[projections[0]].eigenvalue}
+            <br />
+            Explained variance:{' '}
             {Math.round(
               (components[projections[0]].eigenvalue / totalEigenvalue) * 1000,
             ) / 10}
@@ -240,11 +278,15 @@ const EigenvalueGraph = ({
           </p>
         </div>
         <div>
-          <p>y axis - principal component {projections[1] + 1}</p>
           <p>
-            eigenvalue: {components[projections[1]].eigenvalue}
+            Second selected projection:
             <br />
-            explained variance:{' '}
+            principal component {projections[1] + 1}
+          </p>
+          <p>
+            Eigenvalue: {components[projections[1]].eigenvalue}
+            <br />
+            Explained variance:{' '}
             {Math.round(
               (components[projections[1]].eigenvalue / totalEigenvalue) * 1000,
             ) / 10}
@@ -252,6 +294,7 @@ const EigenvalueGraph = ({
           </p>
         </div>
       </div>
+      <div className={style.tooltip} ref={tooltipRef} />
     </>
   );
 };
