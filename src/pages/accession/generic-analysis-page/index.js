@@ -13,6 +13,7 @@ import { Card, CardContent, Typography } from '@material-ui/core';
 import cn from 'classnames';
 
 import useAPI from '../../../hooks/use-api';
+import useToggleState from '../../../hooks/use-toggle-state';
 
 import { AccessionCtx } from '../../../contexts';
 
@@ -30,18 +31,7 @@ const NGLViewerWithControls = lazy(() =>
   import(/* webpackChunkName: 'ngl-viewer-with-controls' */ '../../../components/ngl-viewer-with-controls'),
 );
 
-const defaultPosition = (() => {
-  const MARGIN = 25;
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  const dimension = Math.min(windowWidth / 4, windowHeight / 4);
-  return {
-    x: windowWidth - dimension - MARGIN,
-    y: windowHeight - 1.5 * dimension - MARGIN,
-    width: dimension,
-    height: 1.5 * dimension,
-  };
-})();
+const MIN_NGL_DIMENSION = 150;
 
 const Analysis = ({
   analysis,
@@ -63,22 +53,45 @@ const Analysis = ({
     analysis === 'fluctuation' ? new Set() : null,
   );
 
+  const [wasDisplayed, toggleWasDisplayed] = useToggleState(false);
+
   const nglViewRef = useRef(null);
   const rndRef = useRef(null);
 
   useEffect(() => {
-    // imperative way to have rnd component positionned
-    rndRef.current &&
-      rndRef.current.updatePosition({
-        x: defaultPosition.x,
-        y: defaultPosition.y,
-      });
-    // hacky way to have viewer visible (otherwise sometimes it stays blank)
-    setTimeout(
-      () => nglViewRef.current && nglViewRef.current.autoResize(),
-      500,
-    );
+    // // imperative way to have rnd component positionned
+    // rndRef.current &&
+    //   rndRef.current.updatePosition({
+    //     x: defaultPosition.x,
+    //     y: defaultPosition.y,
+    //   });
+    // // hacky way to have viewer visible (otherwise sometimes it stays blank)
+    // setTimeout(
+    //   () => nglViewRef.current && nglViewRef.current.autoResize(),
+    //   500,
+    // );
   }, []);
+
+  useEffect(() => {
+    if (wasDisplayed || !Number.isFinite(selected)) return;
+    toggleWasDisplayed(true);
+
+    const MARGIN = 25;
+    const { innerWidth, innerHeight, scrollY } = window;
+    const dimension = Math.max(
+      Math.min(innerWidth / 4, innerHeight / 4),
+      MIN_NGL_DIMENSION,
+    );
+    rndRef.current.updateSize({
+      width: dimension,
+      height: 1.25 * dimension,
+    });
+    rndRef.current.updatePosition({
+      x: innerWidth - dimension - MARGIN,
+      y: innerHeight - 1.5 * dimension - MARGIN + scrollY,
+    });
+    // nglViewRef.current && nglViewRef.current.autoResize();
+  }, [selected, wasDisplayed]);
 
   return (
     <Suspense fallback={<span>Loading</span>}>
@@ -114,7 +127,6 @@ const Analysis = ({
           [style.hidden]:
             analysis !== 'fluctuation' && !Number.isFinite(selected),
         })}
-        default={defaultPosition}
         data-rnd
         bounds="body"
         cancel="canvas, [data-popover]"
@@ -126,24 +138,26 @@ const Analysis = ({
         }}
         ref={rndRef}
       >
-        <Card className={style['floating-card']} elevation={4}>
-          <Suspense>
-            <NGLViewerWithControls
-              accession={accession}
-              hovered={hovered}
-              selected={selected}
-              ref={nglViewRef}
-              className={style['ngl-viewer-with-controls']}
-              startsPlaying={false}
-              noTrajectory={analysis !== 'fluctuation'}
-              requestedFrame={
-                analysis !== 'fluctuation' &&
-                Number.isFinite(selected) &&
-                selected
-              }
-            />
-          </Suspense>
-        </Card>
+        {Number.isFinite(selected) && (
+          <Card className={style['floating-card']} elevation={4}>
+            <Suspense fallback={null}>
+              <NGLViewerWithControls
+                accession={accession}
+                hovered={hovered}
+                selected={selected}
+                ref={nglViewRef}
+                className={style['ngl-viewer-with-controls']}
+                startsPlaying={false}
+                noTrajectory={analysis !== 'fluctuation'}
+                requestedFrame={
+                  analysis !== 'fluctuation' &&
+                  Number.isFinite(selected) &&
+                  selected
+                }
+              />
+            </Suspense>
+          </Card>
+        )}
       </Rnd>
     </Suspense>
   );

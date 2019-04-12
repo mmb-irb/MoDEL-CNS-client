@@ -12,6 +12,14 @@ import {
   event,
 } from 'd3';
 
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from '@material-ui/core';
+
 import style from './style.module.css';
 
 const MARGIN = { top: 20, right: 40, bottom: 30, left: 20 };
@@ -33,6 +41,19 @@ const EigenvalueGraph = ({
   // should only be run once
   useEffect(() => {
     const graph = select(containerRef.current).append('svg');
+    graph
+      .append('defs')
+      .append('clipPath')
+      .attr('id', 'clip-reveal')
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('height', '100%')
+      .attr('width', 0)
+      // transition on first display, uncover from left to right
+      .transition()
+      .duration(50 * 43)
+      .attr('width', '100%');
 
     const refs = {
       xAxis: graph.append('g').attr('class', style.axis),
@@ -78,12 +99,14 @@ const EigenvalueGraph = ({
 
       // visual y axis
       const yExplAxis = g =>
-        g
-          .attr('transform', `translate(${width - MARGIN.right}, 0)`)
-          .call(axisRight(yExpl).tickFormat(d => `${d * 100}%`));
+        g.attr('transform', `translate(${width - MARGIN.right}, 0)`).call(
+          axisRight(yExpl)
+            .ticks(6)
+            .tickFormat(d => `${d * 100}%`),
+        );
       refs.yExplAxis.call(yExplAxis);
 
-      // lines
+      // line
       const lineFn = line()
         .x((_, i) => x(i) + x.bandwidth() / 2)
         .y(yExpl);
@@ -95,6 +118,7 @@ const EigenvalueGraph = ({
         .enter()
         .append('path')
         .attr('class', style['top-line'])
+        .attr('clip-path', 'url(#clip-reveal)')
         .attr('opacity', 0)
         .merge(explLine)
         .attr('d', d => lineFn(d.map(item => item.cumulativeExplained)))
@@ -102,7 +126,7 @@ const EigenvalueGraph = ({
         .duration(2000)
         .attr('opacity', 1);
 
-      // areas
+      // area
       const areaFn = area()
         .x((_, i) => x(i) + x.bandwidth() / 2)
         .y0(height - MARGIN.bottom)
@@ -115,6 +139,7 @@ const EigenvalueGraph = ({
         .enter()
         .append('path')
         .attr('class', style.area)
+        .attr('clip-path', 'url(#clip-reveal)')
         .attr('opacity', 0)
         .merge(explArea)
         .attr('d', d => areaFn(d.map(item => item.cumulativeExplained)))
@@ -133,7 +158,7 @@ const EigenvalueGraph = ({
       const yEigenAxis = g =>
         g
           .attr('transform', `translate(${MARGIN.left}, 0)`)
-          .call(axisLeft(yEigen).ticks(11));
+          .call(axisLeft(yEigen).ticks(5));
       refs.yEigenAxis.call(yEigenAxis);
 
       // bars
@@ -159,9 +184,11 @@ const EigenvalueGraph = ({
         .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue));
       // full-height bars (for click and hover handlers)
       const clickBars = refs.targetBars.selectAll('rect').data(processed);
-      const clickBarsEnter = clickBars
+      clickBars
         .enter()
         .append('rect')
+        .attr('y', 0)
+        .attr('height', '100%')
         .on('click', ({ hasProjection }, i) => {
           if (!hasProjection) return;
           setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
@@ -189,23 +216,13 @@ const EigenvalueGraph = ({
           tooltipRef.current.style.transform = `translate(${event.pageX -
             width / 2}px, ${event.pageY - height - 5}px)`;
         })
-        .on('mouseout', () => (tooltipRef.current.style.display = 'none'));
-      clickBarsEnter
+        .on('mouseout', () => (tooltipRef.current.style.display = 'none'))
         .merge(clickBars)
         .attr('class', ({ hasProjection }) =>
           hasProjection ? style['has-projection'] : '' || null,
         )
         .attr('x', (_, i) => x(i))
-        .attr('width', x.bandwidth())
-        .attr('y', MARGIN.top)
-        .attr('height', height - MARGIN.top - MARGIN.bottom);
-      clickBarsEnter
-        .append('title')
-        .text(({ hasProjection }) =>
-          hasProjection
-            ? null
-            : 'No projection data available for this component',
-        );
+        .attr('width', x.bandwidth());
 
       // bar legends
       const barLegends = refs.barLegend.selectAll('text').data(projections);
@@ -255,43 +272,55 @@ const EigenvalueGraph = ({
 
   const components = Object.values(data);
 
+  const orderedProjections = [...projections].sort();
+  const axes = ['first (x axis)', 'second (y axis)'];
+  if (orderedProjections[0] !== projections[0]) axes.reverse();
+
   return (
     <>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Projection (see below)</TableCell>
+            <TableCell>Principal component</TableCell>
+            <TableCell>Eigenvalue</TableCell>
+            <TableCell>Explained variance</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>{axes[0]}</TableCell>
+            <TableCell>{orderedProjections[0] + 1}</TableCell>
+            <TableCell>
+              {components[orderedProjections[0]].eigenvalue}
+            </TableCell>
+            <TableCell>
+              {Math.round(
+                (components[orderedProjections[0]].eigenvalue /
+                  totalEigenvalue) *
+                  1000,
+              ) / 10}{' '}
+              %
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{axes[1]}</TableCell>
+            <TableCell>{orderedProjections[1] + 1}</TableCell>
+            <TableCell>
+              {components[orderedProjections[1]].eigenvalue}
+            </TableCell>
+            <TableCell>
+              {Math.round(
+                (components[orderedProjections[1]].eigenvalue /
+                  totalEigenvalue) *
+                  1000,
+              ) / 10}{' '}
+              %
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
       <div className={style['graph-container']} ref={containerRef} />
-      <div className={style['info-box']}>
-        <div>
-          <p>
-            First selected projection:
-            <br />
-            principal component {projections[0] + 1}
-          </p>
-          <p>
-            Eigenvalue: {components[projections[0]].eigenvalue}
-            <br />
-            Explained variance:{' '}
-            {Math.round(
-              (components[projections[0]].eigenvalue / totalEigenvalue) * 1000,
-            ) / 10}
-            %
-          </p>
-        </div>
-        <div>
-          <p>
-            Second selected projection:
-            <br />
-            principal component {projections[1] + 1}
-          </p>
-          <p>
-            Eigenvalue: {components[projections[1]].eigenvalue}
-            <br />
-            Explained variance:{' '}
-            {Math.round(
-              (components[projections[1]].eigenvalue / totalEigenvalue) * 1000,
-            ) / 10}
-            %
-          </p>
-        </div>
-      </div>
       <div className={style.tooltip} ref={tooltipRef} />
     </>
   );

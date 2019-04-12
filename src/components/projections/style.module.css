@@ -2,8 +2,10 @@
   height: 50vh;
 }
 
-.graph-container > svg {
+.graph-container > svg,
+.graph-container > canvas {
   cursor: crosshair;
+  position: absolute;
 }
 
 .graph-container .axis {
@@ -15,8 +17,66 @@
   opacity: 1;
 }
 
-.data-points {
-  fill-opacity: 0.75;
-  fill: #84b761;
-  /* filter: url(#goo-effect); */
+.legend {
+  margin: 2ch auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.legend .color-scale {
+  display: flex;
+  align-items: stretch;
+}
+
+.legend .color-scale > * {
+  margin: 0 0.5ch;
+  position: relative;
+}
+
+.legend .color-scale canvas {
+  cursor: none;
+  height: 100%;
+  width: 50vw;
+  max-width: 750px;
+  border-radius: 0.75ch;
+}
+
+.legend .color-scale .cursor {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  opacity: 0;
+  border-width: 0 2px;
+  border-style: solid;
+  border-color: white;
+}
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  display: none;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid gray;
+  padding: 0.5ch;
+  border-radius: 0.5ch;
+}
+
+.tooltip > * {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tooltip p {
+  margin: 0;
+}
+
+.tooltip p:first-child {
+  margin: 1ch 0;
 }

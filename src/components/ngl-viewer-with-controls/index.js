@@ -255,20 +255,22 @@ const NGLViewerWithControls = forwardRef(
                 [],
               )}
             />
-            <FormControl>
-              <InputLabel>frames</InputLabel>
-              <Select
-                native
-                value={nFrames}
-                onChange={({ target: { value } }) => setNFrames(value)}
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-                <option value={500}>500</option>
-              </Select>
-            </FormControl>
+            {noTrajectory || (
+              <FormControl>
+                <InputLabel>frames</InputLabel>
+                <Select
+                  native
+                  value={nFrames}
+                  onChange={({ target: { value } }) => setNFrames(value)}
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={500}>500</option>
+                </Select>
+              </FormControl>
+            )}
           </div>
         </CardContent>
       </div>

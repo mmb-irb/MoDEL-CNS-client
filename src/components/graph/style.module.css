@@ -2,12 +2,9 @@
   height: 50vh;
 }
 
-.graph-container > svg {
-  cursor: crosshair;
-}
-
 .graph-container > svg,
 .graph-container > canvas {
+  cursor: crosshair;
   position: absolute;
 }
 
