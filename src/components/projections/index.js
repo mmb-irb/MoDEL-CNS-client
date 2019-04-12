@@ -52,7 +52,7 @@ const movePoints = ({
   if (t) t.stop();
   t = timer(elapsed => {
     context.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    context.fillRect(0, 0, width, height);
+    context.fillRect(0, 0, width * dPR, height * dPR);
     if (elapsed >= maxTime) {
       t.stop();
       context.clearRect(0, 0, width, height);
@@ -158,7 +158,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
         .duration(!isFirstTime && maxDelay + maxDuration)
         .call(yAxis);
 
-      const radius = Math.min(width, height) / 250;
+      const radius = (dPR * Math.min(width, height)) / 250;
       // hover circle
       refs.hover.attr('r', radius * 5);
 
