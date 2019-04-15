@@ -22,8 +22,8 @@ const Home = () => (
           <strong>Human Brain Project</strong>.
         </Typography>
         <Typography variant="h5">
-          <strong>MoDEL_CNS</strong> expands the <strong>M</strong>
-          olecular <strong>D</strong>
+          <strong>MoDEL_CNS</strong> expands the <strong>Mo</strong>
+          lecular <strong>D</strong>
           ynamics <strong>E</strong>
           xtended <strong>L</strong>
           ibrary (

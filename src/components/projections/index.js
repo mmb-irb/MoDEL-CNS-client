@@ -14,6 +14,7 @@ import {
   timer,
   voronoi,
   event,
+  brush,
 } from 'd3';
 
 import style from './style.module.css';
@@ -66,6 +67,15 @@ const movePoints = ({
       );
       dataPoint.currentX = dataPoint.interpolateX(easedProgress);
       dataPoint.currentY = dataPoint.interpolateY(easedProgress);
+      // skip out-of-screen points
+      if (
+        dataPoint.currentX < 0 ||
+        dataPoint.currentX > width ||
+        dataPoint.currentY < 0 ||
+        dataPoint.currentY > height
+      ) {
+        continue;
+      }
       const point = {
         context,
         x: dataPoint.currentX,
@@ -92,13 +102,19 @@ const Projections = ({ data, projections, step, setSelected }) => {
 
     const context = canvas.node().getContext('2d');
 
+    const brushInstance = brush();
+
     const refs = {
+      xScale: scaleLinear(),
+      yScale: scaleLinear(),
       xAxis: graph.append('g').attr('class', style.axis),
       yAxis: graph.append('g').attr('class', style.axis),
       dataPoints: graph.append('g').attr('class', style['data-points']),
       hover: graph.append('circle').attr('fill', 'transparent'),
       legendCanvas: select(legendRef.current).select('canvas'),
       legendCursor: select(legendRef.current).select(`.${style.cursor}`),
+      brush: brushInstance,
+      brushElement: graph.append('g').attr('class', 'brush'),
     };
 
     const reset = () => {
@@ -108,13 +124,13 @@ const Projections = ({ data, projections, step, setSelected }) => {
       refs.legendCursor.style('opacity', 0);
     };
 
-    const handleClick = ({ datumIndex }) =>
+    const handleClick = ({ datumIndex } = {}) =>
       setSelected(selected => {
         const target = datumIndex * step;
         return target === selected ? null : target;
       });
 
-    drawRef.current = ({ processed = processedRef.current } = {}) => {
+    drawRef.current = ({ processed = processedRef.current, brushing } = {}) => {
       if (!processed) return;
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
@@ -122,25 +138,33 @@ const Projections = ({ data, projections, step, setSelected }) => {
       canvas.attr('width', width * dPR).attr('height', height * dPR);
       canvas.style('width', `${width}px`).style('height', `${height}px`);
 
+      refs.brushElement.call(refs.brush);
+
       const isFirstTime = !dataPointsRef.current;
 
       // x axis
-      const x = scaleLinear()
-        .domain(processed.xMinMax)
-        .range([MARGIN.left, width - MARGIN.right]);
+      refs.xScale.range([MARGIN.left, width - MARGIN.right]);
+      if (!brushing) refs.xScale.domain(processed.xMinMax);
 
       // y axis
-      const y = scaleLinear()
-        .domain(processed.yMinMax)
-        .range([height - MARGIN.bottom, MARGIN.top]);
+      refs.yScale.range([height - MARGIN.bottom, MARGIN.top]);
+      if (!brushing) refs.yScale.domain(processed.yMinMax);
 
       // visual x axis
       const xAxis = g =>
-        g.attr('transform', `translate(0, ${y(0)})`).call(
-          axisBottom(x)
-            .ticks(Math.round(width / 75))
-            .tickFormat(d => (d === 0 ? null : d)),
-        );
+        g
+          .attr(
+            'transform',
+            `translate(0, ${Math.min(
+              Math.max(0, refs.yScale(0)),
+              height - 20,
+            )})`,
+          )
+          .call(
+            axisBottom(refs.xScale)
+              .ticks(Math.round(width / 75))
+              .tickFormat(d => (d === 0 ? null : d)),
+          );
       refs.xAxis
         .transition()
         .duration(!isFirstTime && maxDelay + maxDuration)
@@ -148,15 +172,43 @@ const Projections = ({ data, projections, step, setSelected }) => {
 
       // visual y axis
       const yAxis = g =>
-        g.attr('transform', `translate(${x(0)}, 0)`).call(
-          axisLeft(y)
-            .ticks(Math.round(height / 75))
-            .tickFormat(d => (d === 0 ? null : d)),
-        );
+        g
+          .attr(
+            'transform',
+            `translate(${Math.min(
+              Math.max(30, refs.xScale(0)),
+              width - 1,
+            )}, 0)`,
+          )
+          .call(
+            axisLeft(refs.yScale)
+              .ticks(Math.round(height / 75))
+              .tickFormat(d => (d === 0 ? null : d)),
+          );
       refs.yAxis
         .transition()
         .duration(!isFirstTime && maxDelay + maxDuration)
         .call(yAxis);
+
+      refs.brush.on('end', () => {
+        const { selection } = event;
+        if (!selection) return;
+        refs.xScale.domain(
+          [selection[0][0], selection[1][0]].map(
+            refs.xScale.invert,
+            refs.xScale,
+          ),
+        );
+        refs.yScale.domain(
+          [selection[1][1], selection[0][1]].map(
+            refs.yScale.invert,
+            refs.yScale,
+          ),
+        );
+        // remove visual brush rectangle
+        refs.brushElement.call(refs.brush.move, null);
+        drawRef.current({ brushing: true });
+      });
 
       const radius = (dPR * Math.min(width, height)) / 250;
       // hover circle
@@ -166,8 +218,8 @@ const Projections = ({ data, projections, step, setSelected }) => {
       let maxTime = 0;
       dataPointsRef.current = processed.data.map(
         ({ x: xValue, y: yValue, fill }, i, { length }) => {
-          const xPoint = x(xValue) * dPR;
-          const yPoint = y(yValue) * dPR;
+          const xPoint = refs.xScale(xValue) * dPR;
+          const yPoint = refs.yScale(yValue) * dPR;
           const delay = (i * maxDelay * (isFirstTime ? 3 : 1)) / length;
           const duration =
             random(minDuration, maxDuration) * (isFirstTime ? 3 : 1);
@@ -178,14 +230,14 @@ const Projections = ({ data, projections, step, setSelected }) => {
             currentY: null,
             interpolateX: interpolate(
               isFirstTime
-                ? x(0) * dPR
+                ? refs.xScale(0) * dPR
                 : dataPointsRef.current[i].currentX ||
                     dataPointsRef.current[i].x,
               xPoint,
             ),
             interpolateY: interpolate(
               isFirstTime
-                ? y(0) * dPR
+                ? refs.yScale(0) * dPR
                 : dataPointsRef.current[i].currentY ||
                     dataPointsRef.current[i].y,
               yPoint,
@@ -211,11 +263,12 @@ const Projections = ({ data, projections, step, setSelected }) => {
 
       // voronoi diagram (to detect closest points to mouse)
       const voronoiDiagram = voronoi()
-        .x(d => x(d.x))
-        .y(d => y(d.y))
+        .x(d => refs.xScale(d.x))
+        .y(d => refs.yScale(d.y))
         .size([width, height])(processed.data);
 
-      const handleHover = ({ datumIndex, datum }) => {
+      const handleHover = ({ datumIndex, datum } = {}) => {
+        if (!datumIndex) return;
         const { scrollX, scrollY } = window;
         const { left, top } = containerRef.current.getBoundingClientRect();
         tooltipRef.current.innerHTML = `
@@ -231,13 +284,17 @@ const Projections = ({ data, projections, step, setSelected }) => {
         `.trim();
         tooltipRef.current.style.display = 'inline-block';
         const { width, height } = tooltipRef.current.getBoundingClientRect();
-        tooltipRef.current.style.transform = `translate(${x(datum.x) +
+        tooltipRef.current.style.transform = `translate(${refs.xScale(datum.x) +
           left +
           scrollX -
-          width / 2}px, ${y(datum.y) + top + scrollY - height - 15}px)`;
+          width / 2}px, ${refs.yScale(datum.y) +
+          top +
+          scrollY -
+          height -
+          15}px)`;
         refs.hover
-          .attr('cx', x(datum.x))
-          .attr('cy', y(datum.y))
+          .attr('cx', refs.xScale(datum.x))
+          .attr('cy', refs.yScale(datum.y))
           .attr('fill', datum.fill);
         refs.legendCursor.style(
           'left',
@@ -258,11 +315,15 @@ const Projections = ({ data, projections, step, setSelected }) => {
           // threshold
           20,
         );
-        if (!point) return reset();
-        const datumIndex = processed.data.findIndex(
-          datum => datum === point.data,
-        );
-        handler({ datumIndex, datum: point.data });
+        if (point) {
+          const datumIndex = processed.data.findIndex(
+            datum => datum === point.data,
+          );
+          handler({ datumIndex, datum: point.data });
+        } else {
+          reset();
+          handler();
+        }
       };
 
       graph
@@ -333,7 +394,11 @@ const Projections = ({ data, projections, step, setSelected }) => {
 
   return (
     <>
-      <div className={style['graph-container']} ref={containerRef} />
+      <div
+        className={style['graph-container']}
+        onDoubleClick={drawRef.current}
+        ref={containerRef}
+      />
       <div className={style.legend}>
         <p>position in simulation:</p>
         <div className={style['color-scale']}>
