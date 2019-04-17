@@ -391,7 +391,7 @@ const Graph = ({
               `translate(0, ${
                 d === 'x'
                   ? height - MARGIN.bottom
-                  : y(yData[d].data[closestIndex]) + 2.5
+                  : (y(yData[d].data[closestIndex]) || 0) + 2.5
               })`,
           )
           .attr('opacity', d => (d === 'x' || labels[d] ? 1 : 0))
