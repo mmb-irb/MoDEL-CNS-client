@@ -138,7 +138,7 @@ const Analysis = ({
         }}
         ref={rndRef}
       >
-        {Number.isFinite(selected) && (
+        {(Number.isFinite(selected) || selected.size) && (
           <Card className={style['floating-card']} elevation={4}>
             <Suspense fallback={null}>
               <NGLViewerWithControls
