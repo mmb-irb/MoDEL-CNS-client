@@ -46,6 +46,7 @@ const NGLViewer = memo(
         hovered,
         selected,
         requestedFrame,
+        darkBackground,
       },
       ref,
     ) => {
@@ -84,6 +85,13 @@ const NGLViewer = memo(
         stageRef.current = stage;
         return () => stageRef.current.dispose();
       }, []);
+
+      // background
+      useEffect(() => {
+        stageRef.current.viewer.setBackground(
+          darkBackground ? 'black' : 'white',
+        );
+      }, [darkBackground]);
 
       // frames
       const handleFrameChange = useCallback(frame => {
@@ -332,6 +340,7 @@ const NGLViewer = memo(
           className={cn(className, style.container, {
             [style['loading-pdb']]: loadingPDB,
             [style['loading-trajectory']]: !noTrajectory && loadingDCD,
+            [style['light-theme']]: !darkBackground,
           })}
           data-loading={
             loadingPDB || (!noTrajectory && loadingDCD)

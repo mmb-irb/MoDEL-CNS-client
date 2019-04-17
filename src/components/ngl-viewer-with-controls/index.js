@@ -33,6 +33,7 @@ import {
   BurstMode,
   Videocam,
   Flip,
+  InvertColors,
 } from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 
@@ -101,6 +102,7 @@ const NGLViewerWithControls = forwardRef(
     const [playing, togglePlaying] = useToggleState(startsPlaying);
     const [spinning, toggleSpinning] = useToggleState(false);
     const [smooth, toggleSmooth] = useToggleState(false);
+    const [darkBackground, toggleDarkBackground] = useToggleState(true);
 
     // states
     const [progress, setProgress] = useState(0);
@@ -175,6 +177,7 @@ const NGLViewerWithControls = forwardRef(
             ref={viewerRef}
             noTrajectory={noTrajectory}
             nFrames={nFrames}
+            darkBackground={darkBackground}
             {...props}
           />
           {noTrajectory || (
@@ -245,6 +248,12 @@ const NGLViewerWithControls = forwardRef(
               disabled={!playing}
             >
               {smooth ? <BurstMode /> : <Videocam />}
+            </IconButton>
+            <IconButton
+              title="Invert background color"
+              onClick={toggleDarkBackground}
+            >
+              <InvertColors />
             </IconButton>
             <OpacitySlider
               className={style['opacity-slider']}

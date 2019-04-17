@@ -4,13 +4,19 @@
   background: black;
   position: relative;
 }
+.container.light-theme {
+  background: white;
+}
 
 .container[data-loading]::before {
   content: attr(data-loading);
   color: white;
-  background: black;
   padding-top: 1ch;
   padding-left: 1ch;
+}
+
+.container[data-loading].light-theme::before {
+  color: black;
 }
 
 .container::before,
