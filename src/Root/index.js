@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import { sleep, schedule } from 'timing-functions';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 import lightGreen from '@material-ui/core/colors/lightGreen';
@@ -10,9 +11,13 @@ import Main from '../layout/main';
 const Header = lazy(() =>
   import(/* webpackChunkName: 'header' */ '../layout/header'),
 );
-const Footer = lazy(() =>
-  import(/* webpackChunkName: 'footer' */ '../layout/footer'),
-);
+const Footer = lazy(async () => {
+  await schedule(100);
+  const module = await import(/* webpackChunkName: 'footer' */ '../layout/footer');
+  await sleep(1000);
+  await schedule(500);
+  return module;
+});
 
 // Pages
 const Home = lazy(() => import(/* webpackChunkName: 'home' */ '../pages/home'));

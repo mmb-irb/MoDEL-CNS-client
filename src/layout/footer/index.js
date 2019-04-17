@@ -6,6 +6,14 @@ import style from './style.module.css';
 import logoHBP from '../../images/logo-hbp.png';
 import logoIRB from '../../images/logo-irb.png';
 
+for (const img of [logoHBP, logoIRB]) {
+  const el = document.createElement('link');
+  el.rel = 'preload';
+  el.as = 'image';
+  el.href = img;
+  document.head.appendChild(el);
+}
+
 const Footer = React.memo(() => (
   <footer>
     <Paper position="static">
