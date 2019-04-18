@@ -45,7 +45,6 @@
   align-self: stretch;
   padding-bottom: 1em;
   cursor: crosshair;
-  transform: translateY(-2px);
   opacity: 0.75;
   transition-property: transform, opacity;
   transition-duration: 250ms;
@@ -60,7 +59,12 @@
 }
 
 .progress > * {
+  border-radius: 0.5ch;
   height: 1ch;
+}
+
+.progress.dark > * {
+  border-radius: 0 0 1ch 1ch;
 }
 
 .progress * {

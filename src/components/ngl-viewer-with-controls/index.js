@@ -182,7 +182,7 @@ const NGLViewerWithControls = forwardRef(
           />
           {noTrajectory || (
             <div
-              className={style.progress}
+              className={cn(style.progress, { [style.dark]: darkBackground })}
               onClick={handleManualProgress}
               onMouseMove={handleManualProgress}
             >
