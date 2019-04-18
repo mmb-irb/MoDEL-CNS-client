@@ -34,6 +34,8 @@ import {
   Videocam,
   Flip,
   InvertColors,
+  Layers,
+  LayersClear,
 } from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 
@@ -103,6 +105,7 @@ const NGLViewerWithControls = forwardRef(
     const [spinning, toggleSpinning] = useToggleState(false);
     const [smooth, toggleSmooth] = useToggleState(false);
     const [darkBackground, toggleDarkBackground] = useToggleState(true);
+    const [perspective, togglePerspective] = useToggleState(false);
 
     // states
     const [progress, setProgress] = useState(0);
@@ -178,6 +181,7 @@ const NGLViewerWithControls = forwardRef(
             noTrajectory={noTrajectory}
             nFrames={nFrames}
             darkBackground={darkBackground}
+            perspective={perspective}
             {...props}
           />
           {noTrajectory || (
@@ -257,6 +261,14 @@ const NGLViewerWithControls = forwardRef(
               })}
             >
               <InvertColors />
+            </IconButton>
+            <IconButton
+              title={`Switch to ${
+                perspective ? 'ortographic' : 'perspective'
+              } view`}
+              onClick={togglePerspective}
+            >
+              {perspective ? <Layers /> : <LayersClear />}
             </IconButton>
             <OpacitySlider
               className={style['opacity-slider']}

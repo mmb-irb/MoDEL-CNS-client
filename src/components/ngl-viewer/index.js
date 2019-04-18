@@ -47,6 +47,7 @@ const NGLViewer = memo(
         selected,
         requestedFrame,
         darkBackground,
+        perspective,
       },
       ref,
     ) => {
@@ -92,6 +93,13 @@ const NGLViewer = memo(
           darkBackground ? 'black' : 'white',
         );
       }, [darkBackground]);
+
+      // perspective
+      useEffect(() => {
+        stageRef.current.viewer.setCamera(
+          perspective ? 'perspective' : 'orthographic',
+        );
+      }, [perspective]);
 
       // frames
       const handleFrameChange = useCallback(frame => {
