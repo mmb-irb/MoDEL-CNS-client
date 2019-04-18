@@ -7,6 +7,23 @@
   margin-top: 1.5em;
 }
 
+.background-toggle {
+  perspective: 25px;
+}
+
+.background-toggle:hover > * {
+  will-change: transform;
+}
+
+.background-toggle > * {
+  transform: rotateY(0);
+  transition: transform ease-in-out 0.5s;
+}
+
+.background-toggle.dark > * {
+  transform: rotateY(0.5turn);
+}
+
 .card-content {
   flex: 1;
   display: flex;

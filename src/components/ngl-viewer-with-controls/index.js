@@ -252,6 +252,9 @@ const NGLViewerWithControls = forwardRef(
             <IconButton
               title="Invert background color"
               onClick={toggleDarkBackground}
+              className={cn(style['background-toggle'], {
+                [style['dark']]: darkBackground,
+              })}
             >
               <InvertColors />
             </IconButton>
