@@ -117,9 +117,10 @@ const Projections = ({ data, projections, step, setSelected }) => {
       brushElement: graph.append('g').attr('class', 'brush'),
     };
 
-    const reset = () => {
+    const reset = ({ onlyTooltip } = {}) => {
       tooltipRef.current.style.display = 'none';
       refs.hover.attr('fill', 'transparent');
+      if (onlyTooltip) return;
       refs.legendCursor.style('left', '');
       refs.legendCursor.style('opacity', 0);
     };
@@ -268,7 +269,20 @@ const Projections = ({ data, projections, step, setSelected }) => {
         .size([width, height])(processed.data);
 
       const handleHover = ({ datumIndex, datum } = {}) => {
-        if (!datumIndex) return;
+        if (!Number.isInteger(datumIndex)) return;
+        // bottom cursor
+        refs.legendCursor.style(
+          'left',
+          `calc(${(100 * datumIndex) / processed.data.length}% - 4px)`,
+        );
+        refs.legendCursor.style('opacity', 1);
+
+        // would tooltip be visible?
+        const x = refs.xScale(datum.x);
+        if (x < 0 || x > width) return reset({ onlyTooltip: true });
+        const y = refs.yScale(datum.y);
+        if (y < 0 || y > height) return reset({ onlyTooltip: true });
+        // yes, then display tooltip
         const { scrollX, scrollY } = window;
         const { left, top } = containerRef.current.getBoundingClientRect();
         tooltipRef.current.innerHTML = `
@@ -281,26 +295,17 @@ const Projections = ({ data, projections, step, setSelected }) => {
           datum.y
         }</p>
           </div>
-        `.trim();
+        `;
         tooltipRef.current.style.display = 'inline-block';
-        const { width, height } = tooltipRef.current.getBoundingClientRect();
-        tooltipRef.current.style.transform = `translate(${refs.xScale(datum.x) +
+        const rect = tooltipRef.current.getBoundingClientRect();
+        tooltipRef.current.style.transform = `translate(${x +
           left +
           scrollX -
-          width / 2}px, ${refs.yScale(datum.y) +
-          top +
-          scrollY -
-          height -
-          15}px)`;
+          rect.width / 2}px, ${y + top + scrollY - rect.height - 15}px)`;
         refs.hover
-          .attr('cx', refs.xScale(datum.x))
-          .attr('cy', refs.yScale(datum.y))
+          .attr('cx', x)
+          .attr('cy', y)
           .attr('fill', datum.fill);
-        refs.legendCursor.style(
-          'left',
-          `calc(${(100 * datumIndex) / processed.data.length}% - 4px)`,
-        );
-        refs.legendCursor.style('opacity', 1);
       };
 
       const handleGraphEventWith = handler => () => {

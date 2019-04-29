@@ -195,22 +195,24 @@ const EigenvalueGraph = ({
         })
         .on('mousemove', (d, i) => {
           tooltipRef.current.innerHTML = `
-          <div>
-            <p>Principal component ${i + 1}</p>
-            <p>Eigenvalue: ${d.eigenvalue}</p>
-            <p>
-              Explained variance: ${Math.round(
-                (d.eigenvalue / totalEigenvalue) * 1000,
-              ) / 10}%
-            </p>
-            <p>
-              Cumulative explained variance: ${Math.round(
-                d.cumulativeExplained * 1000,
-              ) / 10}%
-            </p>
-            <p>Projection data is ${d.hasProjection ? '' : 'not'} available</p>
-          </div>
-          `.trim();
+            <div>
+              <p>Principal component ${i + 1}</p>
+              <p>Eigenvalue: ${d.eigenvalue}</p>
+              <p>
+                Explained variance: ${Math.round(
+                  (d.eigenvalue / totalEigenvalue) * 1000,
+                ) / 10}%
+              </p>
+              <p>
+                Cumulative explained variance: ${Math.round(
+                  d.cumulativeExplained * 1000,
+                ) / 10}%
+              </p>
+              <p>Projection data is ${
+                d.hasProjection ? '' : 'not'
+              } available</p>
+            </div>
+          `;
           tooltipRef.current.style.display = 'inline-block';
           const { width, height } = tooltipRef.current.getBoundingClientRect();
           tooltipRef.current.style.transform = `translate(${event.pageX -
