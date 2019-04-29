@@ -59,21 +59,12 @@ const Analysis = ({
   const rndRef = useRef(null);
 
   useEffect(() => {
-    // // imperative way to have rnd component positionned
-    // rndRef.current &&
-    //   rndRef.current.updatePosition({
-    //     x: defaultPosition.x,
-    //     y: defaultPosition.y,
-    //   });
-    // // hacky way to have viewer visible (otherwise sometimes it stays blank)
-    // setTimeout(
-    //   () => nglViewRef.current && nglViewRef.current.autoResize(),
-    //   500,
-    // );
-  }, []);
-
-  useEffect(() => {
-    if (wasDisplayed || !Number.isFinite(selected)) return;
+    if (wasDisplayed) return;
+    if (selected instanceof Set) {
+      if (!selected.size) return;
+    } else if (!Number.isFinite(selected)) {
+      return;
+    }
     toggleWasDisplayed(true);
 
     const MARGIN = 25;
@@ -138,7 +129,7 @@ const Analysis = ({
         }}
         ref={rndRef}
       >
-        {(Number.isFinite(selected) || selected.size) && (
+        {Number.isFinite(selected) || (selected && selected.size) ? (
           <Card className={style['floating-card']} elevation={4}>
             <Suspense fallback={null}>
               <NGLViewerWithControls
@@ -157,7 +148,7 @@ const Analysis = ({
               />
             </Suspense>
           </Card>
-        )}
+        ) : null}
       </Rnd>
     </Suspense>
   );

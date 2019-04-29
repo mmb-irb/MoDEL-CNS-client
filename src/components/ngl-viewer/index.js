@@ -10,6 +10,7 @@ import React, {
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
 import { Stage } from 'ngl';
+import { frame } from 'timing-functions';
 
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
@@ -82,16 +83,37 @@ const NGLViewer = memo(
 
       // Stage creation and removal on mounting and unmounting
       useEffect(() => {
+        // set-up
         const stage = new Stage(containerRef.current);
         stageRef.current = stage;
+        // clean-up
         return () => stageRef.current.dispose();
       }, []);
 
-      // background
+      // background (with transition)
       useEffect(() => {
-        stageRef.current.viewer.setBackground(
-          darkBackground ? 'black' : 'white',
-        );
+        const beginning = Date.now();
+        let duration = 1000;
+        (async () => {
+          while (true) {
+            await frame();
+            let currentTick = Date.now() - beginning;
+            // exit condition from while true loop
+            if (currentTick > duration) break;
+            if (darkBackground) currentTick = duration - currentTick;
+            const color = `#${Math.round((currentTick * 0xff) / duration)
+              .toString('16')
+              .padStart(2, '0')
+              .repeat(3)}`;
+            stageRef.current.viewer.setBackground(color);
+          }
+          await frame();
+          stageRef.current.viewer.setBackground(
+            darkBackground ? 'black' : 'white',
+          );
+        })();
+        // set duration to 0 to cancel possibly ongoing loop
+        return () => (duration = 0);
       }, [darkBackground]);
 
       // perspective

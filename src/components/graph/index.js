@@ -407,9 +407,13 @@ const Graph = ({
                 ],
               );
               if (!atom) return +number.toFixed(2);
-              return `${+number.toFixed(2)}: ${atom.atomname} - ${
-                atom.element
-              }`;
+              const residue = pdbDataRef.current.file.residueMap.get(
+                pdbDataRef.current.file.atomStore.residueIndex[
+                  number - (startsAtOne ? step : 0)
+                ],
+              );
+              if (!residue) return +number.toFixed(2);
+              return `${residue.resname} - ${atom.atomname}`;
             } else {
               return yData[d].data[closestIndex];
             }
