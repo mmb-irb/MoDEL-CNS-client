@@ -122,7 +122,7 @@ export default ({ location, history }) => {
                       search: search.search,
                       page: page + 1 === DEFAULT_PAGE ? undefined : page + 1,
                       limit:
-                        +search.limit === DEFAULT_LIMIT
+                        !search.limit || +search.limit === DEFAULT_LIMIT
                           ? undefined
                           : +search.limit,
                     }),
@@ -137,7 +137,6 @@ export default ({ location, history }) => {
                     }),
                   });
                 }}
-                SelectProps={{ native: true }}
               />
             </TableRow>
           </TableFooter>
