@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { noop, zip, random } from 'lodash-es';
+import { noop, zip, random, debounce } from 'lodash-es';
 import {
   select,
   scaleLinear,
@@ -8,85 +8,27 @@ import {
   scaleSequential,
   interpolateViridis,
   rgb,
-  easeElastic,
-  easeCubicInOut,
   interpolate,
-  timer,
   voronoi,
   event,
   brush,
 } from 'd3';
 
-import style from './style.module.css';
+import movePoints from './move-points';
+import getDrawLegend from './get-draw-legend';
 
-const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
+import style from './style.module.css';
 
 // device pixel ratio (for "retina" screens)
 const dPR = window.devicePixelRatio || 1;
 
+const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
+
 // animation constants
-const maxDelay = 500;
-const [minDuration, maxDuration] = [375, 625];
+const MAX_DELAY = 500;
+const [MIN_DURATION, MAX_DURATION] = [375, 625];
 
-// easing for start animation (looks like a spring coming out of the centre)
-const customElastic = easeElastic.amplitude(1).period(0.5);
-
-const drawPoint = ({ context, x, y, radius, fill }) => {
-  context.fillStyle = fill;
-  context.beginPath();
-  context.arc(x, y, radius, 0, 2 * Math.PI);
-  context.fill();
-};
-
-// timer instance variable
-let t;
-
-const movePoints = ({
-  context,
-  dataPoints,
-  width,
-  height,
-  maxTime,
-  firstTime,
-  radius,
-}) => {
-  if (t) t.stop();
-  t = timer(elapsed => {
-    context.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    context.fillRect(0, 0, width * dPR, height * dPR);
-    if (elapsed >= maxTime) {
-      t.stop();
-      context.clearRect(0, 0, width, height);
-    }
-    for (const dataPoint of dataPoints) {
-      const easedProgress = Math.max(
-        0,
-        (firstTime ? customElastic : easeCubicInOut)(
-          Math.min((elapsed - dataPoint.delay) / dataPoint.duration, 1),
-        ),
-      );
-      dataPoint.currentX = dataPoint.interpolateX(easedProgress);
-      dataPoint.currentY = dataPoint.interpolateY(easedProgress);
-      // skip out-of-screen points
-      if (
-        dataPoint.currentX < 0 ||
-        dataPoint.currentX > width ||
-        dataPoint.currentY < 0 ||
-        dataPoint.currentY > height
-      ) {
-        continue;
-      }
-      const point = {
-        context,
-        x: dataPoint.currentX,
-        y: dataPoint.currentY,
-        radius,
-        fill: dataPoint.fill,
-      };
-      drawPoint(point);
-    }
-  });
-};
+const colorScale = scaleSequential(interpolateViridis);
 
 const Projections = ({ data, projections, step, setSelected }) => {
   const containerRef = useRef(null);
@@ -116,6 +58,10 @@ const Projections = ({ data, projections, step, setSelected }) => {
       brush: brushInstance,
       brushElement: graph.append('g').attr('class', 'brush'),
     };
+    refs.drawLegend = debounce(
+      getDrawLegend(refs.legendCanvas.node().getContext('2d')),
+      MAX_DELAY,
+    );
 
     const reset = ({ onlyTooltip } = {}) => {
       tooltipRef.current.style.display = 'none';
@@ -133,6 +79,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
 
     drawRef.current = ({ processed = processedRef.current, brushing } = {}) => {
       if (!processed) return;
+
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
@@ -168,7 +115,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
           );
       refs.xAxis
         .transition()
-        .duration(!isFirstTime && maxDelay + maxDuration)
+        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
         .call(xAxis);
 
       // visual y axis
@@ -188,7 +135,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
           );
       refs.yAxis
         .transition()
-        .duration(!isFirstTime && maxDelay + maxDuration)
+        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
         .call(yAxis);
 
       refs.brush.on('end', () => {
@@ -211,9 +158,18 @@ const Projections = ({ data, projections, step, setSelected }) => {
         drawRef.current({ brushing: true });
       });
 
-      const radius = (dPR * Math.min(width, height)) / 250;
+      const radiusScale =
+        Math.log(
+          Math.max(
+            (processed.xMinMax[1] - processed.xMinMax[0]) /
+              (refs.xScale.domain()[1] - refs.xScale.domain()[0]),
+            (processed.yMinMax[1] - processed.yMinMax[0]) /
+              (refs.yScale.domain()[1] - refs.yScale.domain()[0]),
+          ),
+        ) + 1;
+      const radius = (dPR * Math.min(width, height) * radiusScale) / 250;
       // hover circle
-      refs.hover.attr('r', radius * 5);
+      refs.hover.attr('r', radius + 5);
 
       // data points
       let maxTime = 0;
@@ -221,14 +177,16 @@ const Projections = ({ data, projections, step, setSelected }) => {
         ({ x: xValue, y: yValue, fill }, i, { length }) => {
           const xPoint = refs.xScale(xValue) * dPR;
           const yPoint = refs.yScale(yValue) * dPR;
-          const delay = (i * maxDelay * (isFirstTime ? 3 : 1)) / length;
+          const delay = (i * MAX_DELAY * (isFirstTime ? 3 : 1)) / length;
           const duration =
-            random(minDuration, maxDuration) * (isFirstTime ? 3 : 1);
+            random(MIN_DURATION, MAX_DURATION) * (isFirstTime ? 3 : 1);
           const time = delay + duration;
+          // update maxTime if needed
           if (maxTime < time) maxTime = time;
           return {
             currentX: null,
             currentY: null,
+            currentRadius: null,
             interpolateX: interpolate(
               isFirstTime
                 ? refs.xScale(0) * dPR
@@ -242,6 +200,10 @@ const Projections = ({ data, projections, step, setSelected }) => {
                 : dataPointsRef.current[i].currentY ||
                     dataPointsRef.current[i].y,
               yPoint,
+            ),
+            interpolateRadius: interpolate(
+              isFirstTime ? 0 : dataPointsRef.current[i].currentRadius,
+              radius,
             ),
             delay,
             duration,
@@ -259,7 +221,6 @@ const Projections = ({ data, projections, step, setSelected }) => {
         height,
         maxTime,
         firstTime: isFirstTime,
-        radius,
       });
 
       // voronoi diagram (to detect closest points to mouse)
@@ -347,6 +308,8 @@ const Projections = ({ data, projections, step, setSelected }) => {
         handler({ datumIndex, datum: processed.data[datumIndex] });
       };
 
+      refs.drawLegend(processed.data, refs.xScale, refs.yScale, width, height);
+
       refs.legendCanvas
         .on('mousemove', handleLegendEventWith(handleHover))
         .on('mouseout', reset)
@@ -355,36 +318,28 @@ const Projections = ({ data, projections, step, setSelected }) => {
 
     window.addEventListener('resize', drawRef.current);
 
-    return () => window.removeEventListener('resize', drawRef.current);
+    return () => {
+      // clean up
+      refs.drawLegend && refs.drawLegend.cancel();
+      window.removeEventListener('resize', drawRef.current);
+    };
   }, []);
 
   useEffect(() => {
     const values = Object.values(data);
 
-    // colour scale
-    const colorScale = scaleSequential(interpolateViridis).domain([
-      0,
-      values[0].data.length,
-    ]);
+    const colorScaleWithDomain = colorScale.domain([0, values[0].data.length]);
 
-    // legend scale
-    const legendContext = legendRef.current.children[0].getContext('2d');
-    const legendImage = legendContext.createImageData(200, 1);
-
-    const legendScale = scaleLinear()
-      .range([0, 199])
-      .domain(colorScale.domain());
-    for (let i = 0; i < 200; i++) {
-      const color = rgb(colorScale(legendScale.invert(i)));
-      legendImage.data[4 * i] = color.r;
-      legendImage.data[4 * i + 1] = color.g;
-      legendImage.data[4 * i + 2] = color.b;
-      legendImage.data[4 * i + 3] = 255;
-    }
-    legendContext.putImageData(legendImage, 0, 0);
     const processed = {
       data: zip(values[projections[0]].data, values[projections[1]].data).map(
-        ([x, y], i) => ({ x, y, fill: colorScale(i) }),
+        ([x, y], i) => {
+          const hex = colorScaleWithDomain(i);
+          return {
+            x,
+            y,
+            fill: { hex, ...rgb(hex) },
+          };
+        },
       ),
       xMinMax: [values[projections[0]].min, values[projections[0]].max],
       yMinMax: [values[projections[1]].min, values[projections[1]].max],
@@ -409,7 +364,10 @@ const Projections = ({ data, projections, step, setSelected }) => {
         <div className={style['color-scale']}>
           <div>start</div>
           <div ref={legendRef}>
-            <canvas height="1" width="200" />
+            <canvas
+              height="1"
+              width={data ? Object.values(data)[0].data.length : 0}
+            />
             <div className={style.cursor} />
           </div>
           <div>end</div>
