@@ -42,7 +42,6 @@ const Projections = ({ data, projections, step, setSelected }) => {
   const processedRef = useRef(null);
   const tooltipRef = useRef(null);
   const delaunayDiagramRef = useRef({ find() {} });
-  const voronoiDiagramRef = useRef({ find: () => {} });
 
   useEffect(() => {
     const canvas = select(containerRef.current).append('canvas');
