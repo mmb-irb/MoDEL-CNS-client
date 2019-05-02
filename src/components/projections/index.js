@@ -266,7 +266,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
         refs.hover
           .attr('cx', x)
           .attr('cy', y)
-          .attr('fill', datum.fill);
+          .attr('fill', datum.fill.hex);
       };
 
       const handleGraphEventWith = handler => () => {
