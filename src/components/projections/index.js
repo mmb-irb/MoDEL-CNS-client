@@ -13,6 +13,8 @@ import {
   event,
   brush,
 } from 'd3';
+import { Delaunay } from 'd3-delaunay';
+import { schedule, sleep } from 'timing-functions';
 
 import movePoints from './move-points';
 import getDrawLegend from './get-draw-legend';
@@ -21,6 +23,9 @@ import style from './style.module.css';
 
 // device pixel ratio (for "retina" screens)
 const dPR = window.devicePixelRatio || 1;
+
+// delaunay diagram detection threshold
+const THRESHOLD = 20;
 
 const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
 
@@ -37,6 +42,8 @@ const Projections = ({ data, projections, step, setSelected }) => {
   const dataPointsRef = useRef(null);
   const processedRef = useRef(null);
   const tooltipRef = useRef(null);
+  const delaunayDiagramRef = useRef({ find() {} });
+  const voronoiDiagramRef = useRef({ find: () => {} });
 
   useEffect(() => {
     const canvas = select(containerRef.current).append('canvas');
@@ -223,11 +230,16 @@ const Projections = ({ data, projections, step, setSelected }) => {
         firstTime: isFirstTime,
       });
 
-      // voronoi diagram (to detect closest points to mouse)
-      const voronoiDiagram = voronoi()
-        .x(d => refs.xScale(d.x))
-        .y(d => refs.yScale(d.y))
-        .size([width, height])(processed.data);
+      (async () => {
+        // delay a bit, to prioritise drawing
+        await sleep(MAX_DELAY + MAX_DURATION);
+        await schedule(100);
+        delaunayDiagramRef.current = Delaunay.from(
+          processed.data,
+          d => refs.xScale(d.x),
+          d => refs.yScale(d.y),
+        );
+      })();
 
       const handleHover = ({ datumIndex, datum } = {}) => {
         if (!Number.isInteger(datumIndex)) return;
@@ -273,23 +285,29 @@ const Projections = ({ data, projections, step, setSelected }) => {
         const { scrollX, scrollY } = window;
         const { left, top } = containerRef.current.getBoundingClientRect();
         const { pageX, pageY } = event;
-        const point = voronoiDiagram.find(
-          // x
-          pageX - left - scrollX,
-          // y
-          pageY - top - scrollY,
+        const mouseX = pageX - left - scrollX;
+        const mouseY = pageY - top - scrollY;
+        const datumIndex = delaunayDiagramRef.current.find(
+          mouseX,
+          mouseY,
           // threshold
           20,
         );
-        if (point) {
-          const datumIndex = processed.data.findIndex(
-            datum => datum === point.data,
-          );
-          handler({ datumIndex, datum: point.data });
-        } else {
-          reset();
-          handler();
+        const datum = datumIndex && processed.data[datumIndex];
+        if (datum) {
+          const datumX = refs.xScale(datum.x);
+          const datumY = refs.yScale(datum.y);
+          // is within threshold?
+          if (
+            Math.sqrt(
+              Math.abs(datumX - mouseX) ** 2 + Math.abs(datumY - mouseY) ** 2,
+            ) <= THRESHOLD
+          ) {
+            return handler({ datumIndex, datum });
+          }
         }
+        reset();
+        handler();
       };
 
       graph
@@ -334,11 +352,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
       data: zip(values[projections[0]].data, values[projections[1]].data).map(
         ([x, y], i) => {
           const hex = colorScaleWithDomain(i);
-          return {
-            x,
-            y,
-            fill: { hex, ...rgb(hex) },
-          };
+          return { x, y, fill: { hex, ...rgb(hex) } };
         },
       ),
       xMinMax: [values[projections[0]].min, values[projections[0]].max],
