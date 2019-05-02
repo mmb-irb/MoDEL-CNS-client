@@ -9,12 +9,11 @@ import {
   interpolateViridis,
   rgb,
   interpolate,
-  voronoi,
   event,
   brush,
 } from 'd3';
 import { Delaunay } from 'd3-delaunay';
-import { schedule, sleep } from 'timing-functions';
+import { schedule, sleep, frame } from 'timing-functions';
 
 import movePoints from './move-points';
 import getDrawLegend from './get-draw-legend';
@@ -65,9 +64,10 @@ const Projections = ({ data, projections, step, setSelected }) => {
       brush: brushInstance,
       brushElement: graph.append('g').attr('class', 'brush'),
     };
+    // debounce it to prevent redrawing that too much
     refs.drawLegend = debounce(
       getDrawLegend(refs.legendCanvas.node().getContext('2d')),
-      MAX_DELAY,
+      MAX_DELAY + MAX_DURATION,
     );
 
     const reset = ({ onlyTooltip } = {}) => {
@@ -84,8 +84,12 @@ const Projections = ({ data, projections, step, setSelected }) => {
         return target === selected ? null : target;
       });
 
-    drawRef.current = ({ processed = processedRef.current, brushing } = {}) => {
+    drawRef.current = async ({
+      processed = processedRef.current,
+      brushing,
+    } = {}) => {
       if (!processed) return;
+      await frame();
 
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
