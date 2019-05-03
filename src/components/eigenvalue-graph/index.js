@@ -271,26 +271,29 @@ const EigenvalueGraph = ({
     <>
       <div className={style['graph-container']} ref={containerRef} />
       <div className={style.tooltip} ref={tooltipRef} />
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Principal component</TableCell>
-            <TableCell>Eigenvalue</TableCell>
-            <TableCell>Explained variance</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {projections.map(p => (
-            <TableRow key={p}>
-              <TableCell>{p + 1}</TableCell>
-              <TableCell>{components[p].eigenvalue}</TableCell>
-              <TableCell>
-                {round((components[p].eigenvalue / totalEigenvalue) * 100, 1)} %
-              </TableCell>
+      {!!projections.length && (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Principal component</TableCell>
+              <TableCell>Eigenvalue</TableCell>
+              <TableCell>Explained variance</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {projections.map(p => (
+              <TableRow key={p}>
+                <TableCell>{p + 1}</TableCell>
+                <TableCell>{components[p].eigenvalue}</TableCell>
+                <TableCell>
+                  {round((components[p].eigenvalue / totalEigenvalue) * 100, 1)}{' '}
+                  %
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </>
   );
 };
