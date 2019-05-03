@@ -6,14 +6,12 @@
   cursor: crosshair;
 }
 
-.graph-container .axis,
-.graph-container .bar-legend {
+.graph-container .axis {
   opacity: 0.1;
   transition: opacity 0.25s ease-in-out;
 }
 
-.graph-container:hover .axis,
-.graph-container:hover .bar-legend {
+.graph-container:hover .axis {
   opacity: 1;
 }
 

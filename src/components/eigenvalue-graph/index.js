@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { noop } from 'lodash-es';
+import { noop, round } from 'lodash-es';
 import {
   select,
   scaleLinear,
@@ -22,7 +22,7 @@ import {
 
 import style from './style.module.css';
 
-const MARGIN = { top: 20, right: 40, bottom: 30, left: 20 };
+const MARGIN = { top: 20, right: 40, bottom: 20, left: 20 };
 const MIN_DISPLAY_INDEX = 14; // display at least 14 components
 const MIN_DISPLAY_EXPL = 0.8; // display at least components for 80% explanation
 
@@ -59,7 +59,6 @@ const EigenvalueGraph = ({
       xAxis: graph.append('g').attr('class', style.axis),
       yExplAxis: graph.append('g').attr('class', style.axis),
       yEigenAxis: graph.append('g').attr('class', style.axis),
-      barLegend: graph.append('g').attr('class', style['bar-legend']),
       explanationArea: graph.append('g').attr('class', style.explanation),
       visualBars: graph
         .append('g')
@@ -191,7 +190,12 @@ const EigenvalueGraph = ({
         .attr('height', '100%')
         .on('click', ({ hasProjection }, i) => {
           if (!hasProjection) return;
-          setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
+          // setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
+          setProjections(projections => {
+            const set = new Set(projections);
+            set[set.has(i) ? 'delete' : 'add'](i);
+            return Array.from(set).sort();
+          });
         })
         .on('mousemove', (d, i) => {
           tooltipRef.current.innerHTML = `
@@ -225,17 +229,6 @@ const EigenvalueGraph = ({
         )
         .attr('x', (_, i) => x(i))
         .attr('width', x.bandwidth());
-
-      // bar legends
-      const barLegends = refs.barLegend.selectAll('text').data(projections);
-      barLegends
-        .enter()
-        .append('text')
-        .text((_, i) => (i === 0 ? '↔' : '↕'))
-        .merge(barLegends)
-        .attr('y', height)
-        .transition()
-        .attr('x', d => x(d) + x.bandwidth() / 2);
     };
 
     window.addEventListener('resize', drawRef.current);
@@ -274,56 +267,30 @@ const EigenvalueGraph = ({
 
   const components = Object.values(data);
 
-  const orderedProjections = [...projections].sort();
-  const axes = ['first (x axis)', 'second (y axis)'];
-  if (orderedProjections[0] !== projections[0]) axes.reverse();
-
   return (
     <>
+      <div className={style['graph-container']} ref={containerRef} />
+      <div className={style.tooltip} ref={tooltipRef} />
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Projection (see below)</TableCell>
             <TableCell>Principal component</TableCell>
             <TableCell>Eigenvalue</TableCell>
             <TableCell>Explained variance</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow>
-            <TableCell>{axes[0]}</TableCell>
-            <TableCell>{orderedProjections[0] + 1}</TableCell>
-            <TableCell>
-              {components[orderedProjections[0]].eigenvalue}
-            </TableCell>
-            <TableCell>
-              {Math.round(
-                (components[orderedProjections[0]].eigenvalue /
-                  totalEigenvalue) *
-                  1000,
-              ) / 10}{' '}
-              %
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{axes[1]}</TableCell>
-            <TableCell>{orderedProjections[1] + 1}</TableCell>
-            <TableCell>
-              {components[orderedProjections[1]].eigenvalue}
-            </TableCell>
-            <TableCell>
-              {Math.round(
-                (components[orderedProjections[1]].eigenvalue /
-                  totalEigenvalue) *
-                  1000,
-              ) / 10}{' '}
-              %
-            </TableCell>
-          </TableRow>
+          {projections.map(p => (
+            <TableRow key={p}>
+              <TableCell>{p + 1}</TableCell>
+              <TableCell>{components[p].eigenvalue}</TableCell>
+              <TableCell>
+                {round((components[p].eigenvalue / totalEigenvalue) * 100, 1)} %
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
-      <div className={style['graph-container']} ref={containerRef} />
-      <div className={style.tooltip} ref={tooltipRef} />
     </>
   );
 };

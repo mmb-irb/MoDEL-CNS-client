@@ -10,6 +10,7 @@ import React, {
 import { Card, CardContent, Typography } from '@material-ui/core';
 import { sleep, schedule } from 'timing-functions';
 import cn from 'classnames';
+import { round } from 'lodash-es';
 
 import { Rnd } from 'react-rnd';
 
@@ -25,10 +26,14 @@ import { BASE_PATH_PROJECTS } from '../../../utils/constants';
 import style from './style.module.css';
 
 const NGLViewerWithControls = lazy(() =>
-  import(/* webpackChunkName: 'ngl-viewer-with-controls' */ '../../../components/ngl-viewer-with-controls'),
+  import(
+    /* webpackChunkName: 'ngl-viewer-with-controls' */ '../../../components/ngl-viewer-with-controls'
+  ),
 );
 const Projections = lazy(() =>
-  import(/* webpackChunkName: 'projections' */ '../../../components/projections'),
+  import(
+    /* webpackChunkName: 'projections' */ '../../../components/projections'
+  ),
 );
 
 const MIN_NGL_DIMENSION = 150;
@@ -45,6 +50,33 @@ const nglPlaceholder = (
   />
 );
 
+const PlainTextExplanation = ({ projections, explanation }) => {
+  if (!projections.length) {
+    return `No projection selected, please select one or multiple projections to
+    visualise its related data. Only the darker blue bars correspond to
+    projections for which data has been calculated.`;
+  }
+  let projectionText;
+  if (projections.length === 1) {
+    projectionText = projections[0] + 1;
+  } else if (projections.length === 2) {
+    projectionText = `${projections[0] + 1} and ${projections[1] + 1}`;
+  } else {
+    projectionText = projections.reduce(
+      (acc, projection, i, { length }) =>
+        `${acc}${acc ? ',' : ''}${i === length - 1 ? ' and' : ''} ${projection +
+          1}`,
+      '',
+    );
+  }
+  return `Selected principal component${
+    projections.length > 1 ? 's' : ''
+  } ${projectionText}, accounting for ${round(
+    explanation * 100,
+    1,
+  )}% of explained variance`;
+};
+
 const PCA = () => {
   const accession = useContext(AccessionCtx);
 
@@ -52,10 +84,9 @@ const PCA = () => {
     `${BASE_PATH_PROJECTS}${accession}/analyses/pca/`,
   );
 
-  const [projections, setProjections] = useState([0, 1]);
+  const [projections, setProjections] = useState([]);
   const [selected, setSelected] = useState(null);
 
-  const [hadEnoughTime, toggleHadEnoughTime] = useToggleState(false);
   const [wasDisplayed, toggleWasDisplayed] = useToggleState(null);
 
   const nglViewRef = useRef(null);
@@ -63,27 +94,21 @@ const PCA = () => {
 
   const [explanation, totalEigenvalue] = useMemo(() => {
     if (!payload) return [];
+
     const values = Object.values(payload.y);
+
     const totalEigenvalue = values.reduce(
       (acc, component) => acc + component.eigenvalue,
       0,
     );
+
     const explanation =
-      (values[projections[0]].eigenvalue + values[projections[1]].eigenvalue) /
-      totalEigenvalue;
+      projections.reduce(
+        (acc, projection) => acc + values[projection].eigenvalue,
+        0,
+      ) / totalEigenvalue;
     return [explanation, totalEigenvalue];
   }, [payload, projections]);
-
-  useEffect(() => {
-    let stillMounted = true;
-    sleep(100)
-      .then(() => schedule(1000))
-      .then(() => {
-        if (!stillMounted) return;
-        toggleHadEnoughTime();
-      });
-    return () => (stillMounted = false);
-  }, []);
 
   useEffect(() => {
     if (wasDisplayed || !Number.isFinite(selected)) return;
@@ -125,11 +150,12 @@ const PCA = () => {
         <CardContent>
           <Typography variant="h6">PCA projections</Typography>
           <p>
-            Showing principal components {projections[0] + 1} ↔ and{' '}
-            {projections[1] + 1} ↕, accounting for{' '}
-            {Math.round(explanation * 1000) / 10}% of explained variance
+            <PlainTextExplanation
+              projections={projections}
+              explanation={explanation}
+            />
           </p>
-          {hadEnoughTime ? (
+          {projections.length === 2 && (
             <Suspense fallback={projectionPlaceholder}>
               <Projections
                 step={payload.step}
@@ -138,8 +164,6 @@ const PCA = () => {
                 setSelected={setSelected}
               />
             </Suspense>
-          ) : (
-            projectionPlaceholder
           )}
         </CardContent>
       </Card>

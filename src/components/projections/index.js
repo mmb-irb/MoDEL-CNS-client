@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { noop, zip, random, debounce } from 'lodash-es';
+import { noop, zip, random, debounce, clamp } from 'lodash-es';
 import {
   select,
   scaleLinear,
@@ -14,6 +14,7 @@ import {
 } from 'd3';
 import { Delaunay } from 'd3-delaunay';
 import { schedule, sleep, frame } from 'timing-functions';
+import cn from 'classnames';
 
 import movePoints from './move-points';
 import getDrawLegend from './get-draw-legend';
@@ -26,7 +27,7 @@ const dPR = window.devicePixelRatio || 1;
 // delaunay diagram detection threshold
 const THRESHOLD = 20;
 
-const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
+const MARGIN = { top: 10, right: 10, bottom: 25, left: 25 };
 
 // animation constants
 const MAX_DELAY = 500;
@@ -56,6 +57,14 @@ const Projections = ({ data, projections, step, setSelected }) => {
       yScale: scaleLinear(),
       xAxis: graph.append('g').attr('class', style.axis),
       yAxis: graph.append('g').attr('class', style.axis),
+      xAxisLegend: graph
+        .append('text')
+        .attr('class', cn(style.axis, style['legend-text']))
+        .text(`← principal component ${projections[0] + 1} →`),
+      yAxisLegend: graph
+        .append('text')
+        .attr('class', cn(style.axis, style['legend-text']))
+        .text(`← principal component ${projections[1] + 1} →`),
       dataPoints: graph.append('g').attr('class', style['data-points']),
       hover: graph.append('circle').attr('fill', 'transparent'),
       legendCanvas: select(legendRef.current).select('canvas'),
@@ -63,6 +72,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
       brush: brushInstance,
       brushElement: graph.append('g').attr('class', 'brush'),
     };
+
     // debounce it to prevent redrawing that too much
     refs.drawLegend = debounce(
       getDrawLegend(refs.legendCanvas.node().getContext('2d')),
@@ -113,10 +123,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
         g
           .attr(
             'transform',
-            `translate(0, ${Math.min(
-              Math.max(0, refs.yScale(0)),
-              height - 20,
-            )})`,
+            `translate(0, ${clamp(refs.yScale(0), 0, height - 32)})`,
           )
           .call(
             axisBottom(refs.xScale)
@@ -128,15 +135,17 @@ const Projections = ({ data, projections, step, setSelected }) => {
         .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
         .call(xAxis);
 
+      refs.xAxisLegend
+        .transition()
+        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .attr('transform', `translate(${width / 2}, ${height - 5})`);
+
       // visual y axis
       const yAxis = g =>
         g
           .attr(
             'transform',
-            `translate(${Math.min(
-              Math.max(30, refs.xScale(0)),
-              width - 1,
-            )}, 0)`,
+            `translate(${clamp(refs.xScale(0), 30, width - 1)}, 0)`,
           )
           .call(
             axisLeft(refs.yScale)
@@ -147,6 +156,11 @@ const Projections = ({ data, projections, step, setSelected }) => {
         .transition()
         .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
         .call(yAxis);
+
+      refs.yAxisLegend
+        .transition()
+        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .attr('transform', `translate(5, ${height / 2}) rotate(90)`);
 
       refs.brush.on('end', () => {
         const { selection } = event;
@@ -187,9 +201,9 @@ const Projections = ({ data, projections, step, setSelected }) => {
         ({ x: xValue, y: yValue, fill }, i, { length }) => {
           const xPoint = refs.xScale(xValue) * dPR;
           const yPoint = refs.yScale(yValue) * dPR;
-          const delay = (i * MAX_DELAY * (isFirstTime ? 3 : 1)) / length;
+          const delay = (i * MAX_DELAY * (isFirstTime ? 2 : 1)) / length;
           const duration =
-            random(MIN_DURATION, MAX_DURATION) * (isFirstTime ? 3 : 1);
+            random(MIN_DURATION, MAX_DURATION) * (isFirstTime ? 2 : 1);
           const time = delay + duration;
           // update maxTime if needed
           if (maxTime < time) maxTime = time;
@@ -230,7 +244,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
         width,
         height,
         maxTime,
-        firstTime: isFirstTime,
+        isFirstTime,
       });
 
       (async () => {
@@ -290,12 +304,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
         const { pageX, pageY } = event;
         const mouseX = pageX - left - scrollX;
         const mouseY = pageY - top - scrollY;
-        const datumIndex = delaunayDiagramRef.current.find(
-          mouseX,
-          mouseY,
-          // threshold
-          20,
-        );
+        const datumIndex = delaunayDiagramRef.current.find(mouseX, mouseY);
         const datum = datumIndex && processed.data[datumIndex];
         if (datum) {
           const datumX = refs.xScale(datum.x);

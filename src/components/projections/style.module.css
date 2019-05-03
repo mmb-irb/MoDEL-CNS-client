@@ -17,6 +17,10 @@
   opacity: 1;
 }
 
+.legend-text {
+  text-anchor: middle;
+}
+
 .legend {
   margin: 2ch auto 0;
   display: flex;
