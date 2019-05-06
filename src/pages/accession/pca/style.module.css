@@ -2,6 +2,16 @@
   margin: 1em 0;
 }
 
+.placeholder .ngl-viewer-with-controls {
+  background: black;
+  width: calc(100% - 2em);
+  margin: 1em 1em 3em 1em;
+}
+
+.placeholder .projection {
+  height: calc(50vh + 6em);
+}
+
 .rnd {
   z-index: 1;
   opacity: 1;

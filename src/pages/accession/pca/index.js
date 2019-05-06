@@ -38,16 +38,11 @@ const Projections = lazy(() =>
 
 const MIN_NGL_DIMENSION = 150;
 
-const projectionPlaceholder = <div style={{ height: 'calc(50vh + 6em)' }} />;
+const projectionPlaceholder = (
+  <div className={cn(style.placeholder, style.projection)} />
+);
 const nglPlaceholder = (
-  <div
-    className={style['ngl-viewer-with-controls']}
-    style={{
-      background: 'black',
-      width: 'calc(100% - 2em)',
-      margin: '1em 1em 3em 1em',
-    }}
-  />
+  <div className={cn(style.placeholder, style['ngl-viewer-with-controls'])} />
 );
 
 const PlainTextExplanation = ({ projections, explanation }) => {
