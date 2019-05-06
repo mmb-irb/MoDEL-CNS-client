@@ -161,6 +161,7 @@ const NGLViewerWithControls = forwardRef(
 
     useImperativeHandle(ref, () => ({
       autoResize: viewerRef.current.autoResize,
+      centerFocus: viewerRef.current.centerFocus,
     }));
 
     return (

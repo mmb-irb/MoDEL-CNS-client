@@ -41,10 +41,10 @@ const MIN_NGL_DIMENSION = 150;
 const projectionPlaceholder = <div style={{ height: 'calc(50vh + 6em)' }} />;
 const nglPlaceholder = (
   <div
+    className={style['ngl-viewer-with-controls']}
     style={{
       background: 'black',
       width: 'calc(100% - 2em)',
-      height: 'calc(100% - 4em)',
       margin: '1em 1em 3em 1em',
     }}
   />
@@ -107,6 +107,8 @@ const PCA = () => {
         (acc, projection) => acc + values[projection].eigenvalue,
         0,
       ) / totalEigenvalue;
+
+    setSelected(null);
     return [explanation, totalEigenvalue];
   }, [payload, projections]);
 
@@ -128,7 +130,10 @@ const PCA = () => {
       x: innerWidth - dimension - MARGIN,
       y: innerHeight - 1.5 * dimension - MARGIN + scrollY,
     });
-    // nglViewRef.current && nglViewRef.current.autoResize();
+    sleep(250).then(() => {
+      console.log('centering focus');
+      nglViewRef.current && nglViewRef.current.centerFocus();
+    });
   }, [selected, wasDisplayed]);
 
   if (loading) return 'loading';
@@ -155,6 +160,17 @@ const PCA = () => {
               explanation={explanation}
             />
           </p>
+          {projections.length === 1 && (
+            <Suspense fallback={nglPlaceholder}>
+              <NGLViewerWithControls
+                accession={accession}
+                className={style['ngl-viewer-with-controls']}
+                startsPlaying={false}
+                noTrajectory
+                requestedFrame={1}
+              />
+            </Suspense>
+          )}
           {projections.length === 2 && (
             <Suspense fallback={projectionPlaceholder}>
               <Projections
