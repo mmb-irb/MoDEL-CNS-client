@@ -8,7 +8,7 @@ import React, {
   Suspense,
 } from 'react';
 import { Card, CardContent, Typography } from '@material-ui/core';
-import { sleep, schedule } from 'timing-functions';
+import { sleep } from 'timing-functions';
 import cn from 'classnames';
 import { round } from 'lodash-es';
 
