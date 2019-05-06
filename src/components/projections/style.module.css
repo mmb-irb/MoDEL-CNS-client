@@ -52,7 +52,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 8px;
+  width: 9px; /* 4 px margin + 1 px target + 4 px margin */
   opacity: 0;
   border-width: 0 2px;
   border-style: solid;
