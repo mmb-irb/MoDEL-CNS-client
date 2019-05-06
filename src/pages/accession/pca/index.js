@@ -130,10 +130,9 @@ const PCA = () => {
       x: innerWidth - dimension - MARGIN,
       y: innerHeight - 1.5 * dimension - MARGIN + scrollY,
     });
-    sleep(250).then(() => {
-      console.log('centering focus');
-      nglViewRef.current && nglViewRef.current.centerFocus();
-    });
+    sleep(250).then(
+      () => nglViewRef.current && nglViewRef.current.centerFocus(),
+    );
   }, [selected, wasDisplayed]);
 
   if (loading) return 'loading';
