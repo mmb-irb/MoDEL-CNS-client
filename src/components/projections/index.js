@@ -305,7 +305,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
         const mouseX = pageX - left - scrollX;
         const mouseY = pageY - top - scrollY;
         const datumIndex = delaunayDiagramRef.current.find(mouseX, mouseY);
-        const datum = datumIndex && processed.data[datumIndex];
+        const datum = processed.data[datumIndex];
         if (datum) {
           const datumX = refs.xScale(datum.x);
           const datumY = refs.yScale(datum.y);
