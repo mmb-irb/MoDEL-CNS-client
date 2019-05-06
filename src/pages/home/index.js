@@ -10,7 +10,7 @@ const Home = () => (
   <>
     <Card className={style.card}>
       <CardContent className={style['card-content']}>
-        <img src={homeImage} alt="home page" />
+        <img src={homeImage} loading="eager" alt="home page" />
         <Typography variant="h5">
           <strong>MoDEL_CNS</strong> is a platform designed to provide
           web-access to <strong>atomistic-MD trajectories</strong> for relevant{' '}

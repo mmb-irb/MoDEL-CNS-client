@@ -100,6 +100,7 @@ export default ({ location, history }) => {
                           1,
                           2,
                         )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`}
+                      loading="lazy"
                       alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
                     />
                   </TableCell>

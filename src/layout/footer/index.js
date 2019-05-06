@@ -23,14 +23,24 @@ const Footer = React.memo(() => (
           target="_blank"
           rel="noreferrer noopener"
         >
-          <img height="100px" src={logoHBP} alt="Human Brain Project website" />
+          <img
+            height="100px"
+            src={logoHBP}
+            loading="lazy"
+            alt="Human Brain Project website"
+          />
         </a>
         <a
           href="https://www.irbbarcelona.org/"
           target="_blank"
           rel="noreferrer noopener"
         >
-          <img height="100px" src={logoIRB} alt="IRB Barcelona website" />
+          <img
+            height="100px"
+            src={logoIRB}
+            loading="lazy"
+            alt="IRB Barcelona website"
+          />
         </a>
       </Toolbar>
     </Paper>

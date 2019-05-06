@@ -11,6 +11,8 @@ const Header = () => (
       <img
         src={logo}
         width="200px"
+        height="102.5px"
+        loading="lazy"
         alt="MoDEL - Centra Nervous System - Logo"
       />
       <Menu />
