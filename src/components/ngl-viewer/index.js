@@ -124,16 +124,20 @@ const NGLViewer = memo(
       }, [perspective]);
 
       // frames
-      const handleFrameChange = useCallback(frame => {
-        if (!onProgress) return;
-        const progress = clamp(
-          frame /
-            (stageRef.current.compList[0].trajList[0].trajectory.numframes - 1),
-          0,
-          1,
-        );
-        onProgress(progress);
-      }, []);
+      const handleFrameChange = useCallback(
+        frame => {
+          if (!onProgress) return;
+          const progress = clamp(
+            frame /
+              (stageRef.current.compList[0].trajList[0].trajectory.numframes -
+                1),
+            0,
+            1,
+          );
+          onProgress(progress);
+        },
+        [onProgress],
+      );
 
       // Resize logic
       // declare handler
@@ -153,7 +157,7 @@ const NGLViewer = memo(
           handleResize.cancel();
           window.removeEventListener('resize', handleResize);
         };
-      }, []);
+      }, [handleResize]);
 
       // PDB file, base structure
       useEffect(() => {
@@ -271,11 +275,10 @@ const NGLViewer = memo(
         const frames = component.addTrajectory(file);
         frames.signals.frameChanged.add(handleFrameChange);
         frames.trajectory.setFrame(0);
-        if (playing) frames.trajectory.player.play();
         return () => {
           frames.signals.frameChanged.remove(handleFrameChange);
         };
-      }, [requestedFrame, pdbFile, dcdPayload]);
+      }, [requestedFrame, pdbFile, dcdPayload, handleFrameChange, nFrames]);
 
       // play/pause
       useEffect(() => {
@@ -283,7 +286,7 @@ const NGLViewer = memo(
         stageRef.current.compList[0].trajList[0].trajectory.player[
           playing ? 'play' : 'pause'
         ]();
-      }, [playing]);
+      }, [pdbFile, dcdPayload, playing]);
 
       // spinning
       useEffect(() => {
@@ -314,9 +317,10 @@ const NGLViewer = memo(
 
       // to avoid sometimes when it's not rendering after loading
       useEffect(() => {
+        if (!(pdbFile && dcdPayload)) return;
         handleResize();
         return handleResize.cancel;
-      }, [pdbFile, dcdPayload]);
+      }, [pdbFile, dcdPayload, handleResize]);
 
       // Expose public methods and getters/setters
       useImperativeHandle(
@@ -362,7 +366,7 @@ const NGLViewer = memo(
             }
           },
         }),
-        [pdbFile, dcdPayload],
+        [pdbFile, dcdPayload, handleResize],
       );
       return (
         <div

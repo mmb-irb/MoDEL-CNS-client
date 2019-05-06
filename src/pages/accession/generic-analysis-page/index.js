@@ -22,13 +22,17 @@ import { BASE_PATH_PROJECTS } from '../../../utils/constants';
 import style from './style.module.css';
 
 const StatisticsTable = lazy(() =>
-  import(/* webpackChunkName: 'statistics-table' */ '../../../components/statistics-table'),
+  import(
+    /* webpackChunkName: 'statistics-table' */ '../../../components/statistics-table'
+  ),
 );
 const Graph = lazy(() =>
   import(/* webpackChunkName: 'graph' */ '../../../components/graph'),
 );
 const NGLViewerWithControls = lazy(() =>
-  import(/* webpackChunkName: 'ngl-viewer-with-controls' */ '../../../components/ngl-viewer-with-controls'),
+  import(
+    /* webpackChunkName: 'ngl-viewer-with-controls' */ '../../../components/ngl-viewer-with-controls'
+  ),
 );
 
 const MIN_NGL_DIMENSION = 150;
@@ -82,7 +86,7 @@ const Analysis = ({
       y: innerHeight - 1.5 * dimension - MARGIN + scrollY,
     });
     // nglViewRef.current && nglViewRef.current.autoResize();
-  }, [selected, wasDisplayed]);
+  }, [selected, wasDisplayed, toggleWasDisplayed]);
 
   return (
     <Suspense fallback={<span>Loading</span>}>

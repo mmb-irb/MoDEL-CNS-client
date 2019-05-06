@@ -37,11 +37,14 @@ const Search = props => {
   // make sure to cancel any upcoming location update if component unmounts
   useEffect(() => updateLocation.cancel, []);
 
-  const handleChange = useCallback(({ target: { value } }) => {
-    setValue(value);
+  const handleChange = useCallback(
+    ({ target: { value } }) => {
+      setValue(value);
 
-    updateLocation(history, location, search, value);
-  }, []);
+      updateLocation(history, location, search, value);
+    },
+    [history, location, search],
+  );
 
   return (
     <>

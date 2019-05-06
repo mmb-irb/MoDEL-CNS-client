@@ -19,6 +19,7 @@ export default ({
 }) => {
   if (t) t.stop();
   t = timer(elapsed => {
+    // console.time('drawing');
     // clean up the canvas before drawing everything else
     // using white, but opacity 0.25, to keep a shadow of the previous drawings
     // to give the illusion of movement
@@ -61,5 +62,6 @@ export default ({
       );
       context.fill();
     }
+    // console.timeEnd('drawing');
   });
 };

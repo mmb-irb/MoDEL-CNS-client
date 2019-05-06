@@ -353,9 +353,10 @@ const Projections = ({ data, projections, step, setSelected }) => {
       refs.drawLegend && refs.drawLegend.cancel();
       window.removeEventListener('resize', drawRef.current);
     };
-  }, []);
+  }, [projections, setSelected, step]);
 
   useEffect(() => {
+    console.time('processing');
     const values = Object.values(data);
 
     const colorScaleWithDomain = colorScale.domain([0, values[0].data.length]);
@@ -376,6 +377,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
     processedRef.current = processed;
 
     drawRef.current({ processed });
+    console.timeEnd('processing');
   }, [data, projections, step]);
 
   return (

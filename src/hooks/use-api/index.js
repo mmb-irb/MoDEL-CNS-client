@@ -26,9 +26,17 @@ const handleProgress = async (setState, response, resolution, canceledRef) => {
   if (!canceledRef.current) setState(state => ({ ...state, progress: 1 }));
 };
 
+const emptyArgs = {};
+const emptyOptions = {};
+
 const useAPI = (
   url,
-  { bodyParser = 'json', fetchOptions = {}, withProgress = false, range } = {},
+  {
+    bodyParser = 'json',
+    fetchOptions = emptyOptions,
+    withProgress = false,
+    range,
+  } = emptyArgs,
 ) => {
   const [state, setState] = useState({
     loading: !!url,
@@ -122,7 +130,7 @@ const useAPI = (
       canceledRef.current = true;
       controller.abort();
     };
-  }, [url, range]);
+  }, [url, range, bodyParser, withProgress, fetchOptions]);
 
   return state;
 };

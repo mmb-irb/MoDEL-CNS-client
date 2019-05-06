@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { autoLoad } from 'ngl';
 
-const useNGLFile = (url, options) => {
+const useNGLFile = (url, { defaultRepresentation, ext }) => {
   const [state, setState] = useState({
     loading: !!url,
     file: null,
@@ -25,7 +25,7 @@ const useNGLFile = (url, options) => {
       file: null,
       error: null,
     });
-    autoLoad(url, options).then(
+    autoLoad(url, { defaultRepresentation, ext }).then(
       file => {
         if (canceledRef.current) return;
         setState({
@@ -45,7 +45,7 @@ const useNGLFile = (url, options) => {
     );
 
     return () => (canceledRef.current = true);
-  }, [url]);
+  }, [url, defaultRepresentation, ext]);
 
   return { ...state };
 };

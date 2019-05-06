@@ -460,7 +460,8 @@ const Graph = ({
     window.addEventListener('resize', drawRef.current);
 
     return () => window.removeEventListener('resize', drawRef.current);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Maybe might need to double-check that and remove the exception
 
   useEffect(() => {
     selectedRef.current = selected;
@@ -489,7 +490,7 @@ const Graph = ({
       if (!key || type === 'dash' || !lab[key]) return;
       drawRef.current({ hovered: key, precision: pr, labels: lab });
     },
-    [pr, lab],
+    [pr, lab, type],
   );
 
   const handleMouseOut = useCallback(
@@ -501,14 +502,14 @@ const Graph = ({
       if (!key || type === 'dash' || !lab[key]) return;
       drawRef.current({ precision: pr, labels: lab });
     },
-    [pr, lab],
+    [pr, lab, type],
   );
 
-  const handleClick = useCallback(() => onSelect(new Set()), []);
+  const handleClick = useCallback(() => onSelect(new Set()), [onSelect]);
 
   const handlePrecisionChange = useCallback(
     (_, value) => setPrecision(2 ** (9 - value)),
-    [],
+    [setPrecision],
   );
 
   return (

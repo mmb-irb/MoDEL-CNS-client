@@ -136,7 +136,7 @@ const NGLViewerWithControls = forwardRef(
           ((clientX - x) / width) * viewerRef.current.totalFrames,
         );
       },
-      [],
+      [togglePlaying],
     );
 
     const handleFrameChange = useCallback(
@@ -145,7 +145,7 @@ const NGLViewerWithControls = forwardRef(
         togglePlaying(false);
         viewerRef.current.currentFrame += value;
       },
-      [viewerRef.current],
+      [togglePlaying],
     );
 
     const handleFullscreenChange = useCallback(
@@ -157,12 +157,16 @@ const NGLViewerWithControls = forwardRef(
     useEffect(() => {
       screenfull.on('change', handleFullscreenChange);
       return () => screenfull.off('change', handleFullscreenChange);
-    }, []);
+    }, [handleFullscreenChange]);
 
-    useImperativeHandle(ref, () => ({
-      autoResize: viewerRef.current.autoResize,
-      centerFocus: viewerRef.current.centerFocus,
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        autoResize: viewerRef.current.autoResize,
+        centerFocus: viewerRef.current.centerFocus,
+      }),
+      [],
+    );
 
     return (
       <div
@@ -203,7 +207,9 @@ const NGLViewerWithControls = forwardRef(
               <>
                 <IconButton
                   title="Previous frame"
-                  onClick={useCallback(() => handleFrameChange(-1), [])}
+                  onClick={useCallback(() => handleFrameChange(-1), [
+                    handleFrameChange,
+                  ])}
                 >
                   <SkipPrevious />
                 </IconButton>
@@ -215,7 +221,9 @@ const NGLViewerWithControls = forwardRef(
                 </IconButton>
                 <IconButton
                   title="Next frame"
-                  onClick={useCallback(() => handleFrameChange(1), [])}
+                  onClick={useCallback(() => handleFrameChange(1), [
+                    handleFrameChange,
+                  ])}
                 >
                   <SkipNext />
                 </IconButton>

@@ -128,7 +128,7 @@ const PCA = () => {
     sleep(250).then(
       () => nglViewRef.current && nglViewRef.current.centerFocus(),
     );
-  }, [selected, wasDisplayed]);
+  }, [selected, wasDisplayed, toggleWasDisplayed]);
 
   if (loading) return 'loading';
 

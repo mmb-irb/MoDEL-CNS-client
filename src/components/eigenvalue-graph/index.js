@@ -36,7 +36,6 @@ const EigenvalueGraph = ({
   const tooltipRef = useRef(null);
   const drawRef = useRef(noop);
   const processedRef = useRef(null);
-  const projectionsRef = useRef(projections);
 
   // should only be run once
   useEffect(() => {
@@ -68,10 +67,7 @@ const EigenvalueGraph = ({
         .attr('class', `${style.target} ${style.bars}`),
     };
 
-    drawRef.current = ({
-      processed = processedRef.current,
-      projections = projectionsRef.current,
-    } = {}) => {
+    drawRef.current = ({ processed = processedRef.current } = {}) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
@@ -234,7 +230,7 @@ const EigenvalueGraph = ({
     window.addEventListener('resize', drawRef.current);
 
     return () => window.removeEventListener('resize', drawRef.current);
-  }, []);
+  }, [data, setProjections, totalEigenvalue]);
 
   // data massaging
   useEffect(() => {
@@ -260,9 +256,8 @@ const EigenvalueGraph = ({
     }
 
     processedRef.current = processed;
-    projectionsRef.current = projections;
 
-    drawRef.current({ processed, projections });
+    drawRef.current({ processed });
   }, [data, totalEigenvalue, projections]);
 
   const components = Object.values(data);
