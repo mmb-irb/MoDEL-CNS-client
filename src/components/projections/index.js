@@ -7,7 +7,6 @@ import {
   axisBottom,
   scaleSequential,
   interpolateViridis,
-  rgb,
   interpolate,
   event,
   brush,
@@ -197,6 +196,9 @@ const Projections = ({ data, projections, step, setSelected }) => {
 
       // data points
       let maxTime = 0;
+      const currentRadius = isFirstTime
+        ? 0
+        : dataPointsRef.current.currentRadius;
       dataPointsRef.current = processed.data.map(
         ({ x: xValue, y: yValue, fill }, i, { length }) => {
           const xPoint = refs.xScale(xValue) * dPR;
@@ -225,10 +227,6 @@ const Projections = ({ data, projections, step, setSelected }) => {
                     dataPointsRef.current[i].y,
               yPoint,
             ),
-            interpolateRadius: interpolate(
-              isFirstTime ? 0 : dataPointsRef.current[i].currentRadius,
-              radius,
-            ),
             delay,
             duration,
             x: xPoint,
@@ -237,7 +235,13 @@ const Projections = ({ data, projections, step, setSelected }) => {
           };
         },
       );
+      // same radius interpolation for all the points, so keep only one
+      dataPointsRef.current.interpolateRadius = interpolate(
+        currentRadius,
+        radius,
+      );
 
+      // will trigger a timer animate points
       movePoints({
         context,
         dataPoints: dataPointsRef.current,
@@ -246,17 +250,6 @@ const Projections = ({ data, projections, step, setSelected }) => {
         maxTime,
         isFirstTime,
       });
-
-      (async () => {
-        // delay a bit, to prioritise drawing
-        await sleep(MAX_DELAY + MAX_DURATION);
-        await schedule(100);
-        delaunayDiagramRef.current = Delaunay.from(
-          processed.data,
-          d => refs.xScale(d.x),
-          d => refs.yScale(d.y),
-        );
-      })();
 
       const handleHover = ({ datumIndex, datum } = {}) => {
         if (!Number.isInteger(datumIndex)) return;
@@ -304,7 +297,10 @@ const Projections = ({ data, projections, step, setSelected }) => {
         const { pageX, pageY } = event;
         const mouseX = pageX - left - scrollX;
         const mouseY = pageY - top - scrollY;
-        const datumIndex = delaunayDiagramRef.current.find(mouseX, mouseY);
+        const datumIndex = delaunayDiagramRef.current.find(
+          refs.xScale.invert(mouseX),
+          refs.yScale.invert(mouseY),
+        );
         const datum = processed.data[datumIndex];
         if (datum) {
           const datumX = refs.xScale(datum.x);
@@ -356,18 +352,20 @@ const Projections = ({ data, projections, step, setSelected }) => {
   }, [projections, setSelected, step]);
 
   useEffect(() => {
-    console.time('processing');
     const values = Object.values(data);
 
     const colorScaleWithDomain = colorScale.domain([0, values[0].data.length]);
 
+    const zipped = zip(
+      values[projections[0]].data,
+      values[projections[1]].data,
+    );
     const processed = {
-      data: zip(values[projections[0]].data, values[projections[1]].data).map(
-        ([x, y], i) => {
-          const hex = colorScaleWithDomain(i);
-          return { x, y, fill: { hex, ...rgb(hex) } };
-        },
-      ),
+      data: zipped.map(([x, y], i) => ({
+        x: Math.random() * 4 - 2 + x,
+        y: Math.random() * 4 - 2 + y,
+        fill: colorScaleWithDomain(i),
+      })),
       xMinMax: [values[projections[0]].min, values[projections[0]].max],
       yMinMax: [values[projections[1]].min, values[projections[1]].max],
       step,
@@ -377,7 +375,14 @@ const Projections = ({ data, projections, step, setSelected }) => {
     processedRef.current = processed;
 
     drawRef.current({ processed });
-    console.timeEnd('processing');
+
+    // calculate Delaunay graph to later find points from mouse position
+    (async () => {
+      // delay a bit, to prioritise drawing
+      await sleep(MAX_DELAY + MAX_DURATION);
+      await schedule(100);
+      delaunayDiagramRef.current = Delaunay.from(zipped);
+    })();
   }, [data, projections, step]);
 
   return (

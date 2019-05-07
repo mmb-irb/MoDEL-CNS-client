@@ -1,4 +1,5 @@
 import { timer, easeCubicInOut, easeElastic } from 'd3';
+import { clamp } from 'lodash-es';
 
 // device pixel ratio (for "retina" screens)
 const dPR = window.devicePixelRatio || 1;
@@ -19,18 +20,18 @@ export default ({
 }) => {
   if (t) t.stop();
   t = timer(elapsed => {
-    // console.time('drawing');
-    // clean up the canvas before drawing everything else
-    // using white, but opacity 0.25, to keep a shadow of the previous drawings
-    // to give the illusion of movement
-    context.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    context.fillRect(0, 0, width * dPR, height * dPR);
     // if we finished transitioning, clear completely the canvas
     if (elapsed >= maxTime) {
       t.stop();
-      context.clearRect(0, 0, width, height);
+      context.clearRect(0, 0, width * dPR, height * dPR);
+    } else {
+      // clean up the canvas before drawing everything else
+      // using white, but opacity 0.25, to keep a shadow of the previous drawings
+      // to give the illusion of movement
+      context.fillStyle = `rgba(255, 255, 255, 0.25)`;
+      context.fillRect(0, 0, width * dPR, height * dPR);
     }
-    // loop on every datapoint and draw them
+    // loop on every data point and draw them
     for (const dataPoint of dataPoints) {
       const easedProgress = Math.max(
         0,
@@ -38,30 +39,26 @@ export default ({
           Math.min((elapsed - dataPoint.delay) / dataPoint.duration, 1),
         ),
       );
+      // x
       dataPoint.currentX = dataPoint.interpolateX(easedProgress);
-      dataPoint.currentY = dataPoint.interpolateY(easedProgress);
-      dataPoint.currentRadius = dataPoint.interpolateRadius(easedProgress);
       // skip out-of-screen points
-      if (
-        dataPoint.currentX < 0 ||
-        dataPoint.currentX > width ||
-        dataPoint.currentY < 0 ||
-        dataPoint.currentY > height
-      ) {
-        continue;
-      }
+      if (dataPoint.currentX < 0 || dataPoint.currentX > width) continue;
+      dataPoint.currentY = dataPoint.interpolateY(easedProgress);
+      // y
+      dataPoints.currentRadius = dataPoints.interpolateRadius(easedProgress);
+      // skip out-of-screen points
+      if (dataPoint.currentY < 0 || dataPoint.currentY > height) continue;
       // draw point
-      context.fillStyle = dataPoint.fill.hex;
+      context.fillStyle = dataPoint.fill;
       context.beginPath();
       context.arc(
         dataPoint.currentX,
         dataPoint.currentY,
-        dataPoint.currentRadius,
+        dataPoints.currentRadius,
         0,
         2 * Math.PI,
       );
       context.fill();
     }
-    // console.timeEnd('drawing');
   });
 };
