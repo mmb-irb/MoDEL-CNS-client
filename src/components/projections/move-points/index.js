@@ -1,5 +1,4 @@
 import { timer, easeCubicInOut, easeElastic } from 'd3';
-import { clamp } from 'lodash-es';
 
 // device pixel ratio (for "retina" screens)
 const dPR = window.devicePixelRatio || 1;

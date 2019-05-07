@@ -362,8 +362,8 @@ const Projections = ({ data, projections, step, setSelected }) => {
     );
     const processed = {
       data: zipped.map(([x, y], i) => ({
-        x: Math.random() * 4 - 2 + x,
-        y: Math.random() * 4 - 2 + y,
+        x,
+        y,
         fill: colorScaleWithDomain(i),
       })),
       xMinMax: [values[projections[0]].min, values[projections[0]].max],
