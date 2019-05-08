@@ -10,6 +10,7 @@ import {
   interpolate,
   event,
   brush,
+  rgb,
 } from 'd3';
 import { Delaunay } from 'd3-delaunay';
 import { schedule, sleep, frame } from 'timing-functions';
@@ -361,11 +362,14 @@ const Projections = ({ data, projections, step, setSelected }) => {
       values[projections[1]].data,
     );
     const processed = {
-      data: zipped.map(([x, y], i) => ({
-        x,
-        y,
-        fill: colorScaleWithDomain(i),
-      })),
+      data: zipped.map(([x, y], i) => {
+        const hex = colorScaleWithDomain(i);
+        return {
+          x,
+          y,
+          fill: { hex, ...rgb(hex) },
+        };
+      }),
       xMinMax: [values[projections[0]].min, values[projections[0]].max],
       yMinMax: [values[projections[1]].min, values[projections[1]].max],
       step,

@@ -48,7 +48,7 @@ export default ({
       // skip out-of-screen points
       if (dataPoint.currentY < 0 || dataPoint.currentY > height) continue;
       // draw point
-      context.fillStyle = dataPoint.fill;
+      context.fillStyle = dataPoint.fill.hex;
       context.beginPath();
       context.arc(
         dataPoint.currentX,
