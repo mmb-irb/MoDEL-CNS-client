@@ -1,6 +1,7 @@
 import React, {
   useState,
   useCallback,
+  useMemo,
   useRef,
   useEffect,
   useContext,
@@ -62,7 +63,9 @@ const Graph = ({
 
   const yEntries = Object.entries(yData);
   const yKeys = yEntries.map(([key]) => key);
-  const [lab, setLabels] = useState(fromPairs(yKeys.map(key => [key, true])));
+  const [lab, setLabels] = useState(
+    useMemo(() => fromPairs(yKeys.map(key => [key, true])), [yKeys]),
+  );
   const [pr, setPrecision] = useState(defaultPrecision || 1);
 
   const prevLabels = useRef(lab);
