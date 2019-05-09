@@ -35,7 +35,7 @@ import style from './style.module.css';
 const MARGIN = { top: 20, right: 30, bottom: 40, left: 50 };
 const NUMBER_OF_DATA_POINTS_ON_SCREEN_AT_MAX_ZOOM = 100;
 
-const scheme = new ColormakerRegistry.schemes.element();
+const scheme = new ColormakerRegistry.schemes.element({});
 const dPR = window.devicePixelRatio || 1;
 
 const Graph = ({
