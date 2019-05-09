@@ -1,0 +1,12 @@
+.rnd {
+  z-index: 1;
+  pointer-events: initial;
+}
+
+.floating-card {
+  height: 100%;
+}
+
+.ngl-viewer-with-controls {
+  height: 100%;
+}

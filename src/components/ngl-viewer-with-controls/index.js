@@ -36,6 +36,7 @@ import {
   InvertColors,
   Layers,
   LayersClear,
+  Close,
 } from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 
@@ -95,7 +96,7 @@ const OpacitySlider = memo(({ value, handleChange, ...buttonProps }) => {
 });
 
 const NGLViewerWithControls = forwardRef(
-  ({ className, startsPlaying = true, noTrajectory, ...props }, ref) => {
+  ({ className, startsPlaying = true, noTrajectory, close, ...props }, ref) => {
     // references
     const containerRef = useRef(null);
     const viewerRef = useRef(null);
@@ -126,9 +127,11 @@ const NGLViewerWithControls = forwardRef(
     );
 
     // handlers
+    // handle click or click & drag progress bar
     const handleManualProgress = useCallback(
       ({ buttons, clientX, currentTarget, type }) => {
         if (!viewerRef.current) return;
+        // if mousemove event, but the main button is not pressed, bail
         if (type === 'mousemove' && buttons !== 1) return;
         const { x, width } = currentTarget.getBoundingClientRect();
         togglePlaying(false);
@@ -203,6 +206,11 @@ const NGLViewerWithControls = forwardRef(
             </div>
           )}
           <div className={style.controls}>
+            {close && (
+              <IconButton title="Close viewer" onClick={close}>
+                <Close />
+              </IconButton>
+            )}
             {noTrajectory || (
               <>
                 <IconButton

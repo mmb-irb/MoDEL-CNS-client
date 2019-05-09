@@ -298,6 +298,8 @@ const Projections = ({ data, projections, step, setSelected }) => {
         const { pageX, pageY } = event;
         const mouseX = pageX - left - scrollX;
         const mouseY = pageY - top - scrollY;
+        // invert the mouse position with the scale because we only computed the
+        // Delaunay graph once on the raw data for optimisation purposes
         const datumIndex = delaunayDiagramRef.current.find(
           refs.xScale.invert(mouseX),
           refs.yScale.invert(mouseY),

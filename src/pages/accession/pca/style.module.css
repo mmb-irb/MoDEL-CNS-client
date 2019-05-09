@@ -12,26 +12,6 @@
   height: calc(50vh + 6em);
 }
 
-.rnd {
-  z-index: 1;
-  opacity: 1;
-  transition: opacity 1s ease-in-out;
-  pointer-events: initial;
-}
-
-.rnd.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.floating-card {
-  height: 100%;
-}
-
-:not(.rnd) .ngl-viewer-with-controls {
+.ngl-viewer-with-controls {
   height: 50vh;
-}
-
-.rnd .ngl-viewer-with-controls {
-  height: 100%;
 }

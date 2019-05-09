@@ -84,8 +84,12 @@ const NGLViewer = memo(
       // Stage creation and removal on mounting and unmounting
       useEffect(() => {
         // set-up
-        const stage = new Stage(containerRef.current);
-        stageRef.current = stage;
+        stageRef.current = new Stage(containerRef.current);
+        frame().then(() => {
+          if (!stageRef.current) return;
+          stageRef.current.handleResize();
+          stageRef.current.autoView();
+        });
         // clean-up
         return () => stageRef.current.dispose();
       }, []);
