@@ -73,7 +73,7 @@ const NGLViewerInDND = memo(
                   : !analysis || (analysis !== 'fluctuation' && selected)
               }
               close={() => {
-                setRequestedFrame(null);
+                (setRequestedFrame || setSelected)(null);
                 setSelected(analysis === 'fluctuation' ? new Set() : null);
               }}
             />
