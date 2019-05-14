@@ -99,6 +99,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
     } = {}) => {
       if (!processed) return;
       await frame();
+      if (!containerRef.current) return;
 
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
