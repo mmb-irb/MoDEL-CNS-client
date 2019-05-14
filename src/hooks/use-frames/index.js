@@ -1,4 +1,5 @@
 import useAPI from '../use-api';
+import useProgress from '../use-progress';
 
 import { BASE_PATH_PROJECTS } from '../../utils/constants';
 
@@ -7,19 +8,19 @@ const getRangeFor = frames => {
   return `frames=${frames.map(frame => `${frame}-${frame}`).join(',')}`;
 };
 
-const useFrames = (accession, frames, atomsPerFrame) => {
+const useFrames = (accession, frames, atomsPerFrame, projection) => {
   const range = getRangeFor(frames);
 
-  const { loading, payload, error, previousPayload, progress } = useAPI(
+  const { loading, payload, error, previousPayload, response } = useAPI(
     frames.length &&
       atomsPerFrame &&
-      `${BASE_PATH_PROJECTS}${accession}/files/trajectory.bin`,
-    {
-      bodyParser: 'arrayBuffer',
-      range,
-      withProgress: true,
-    },
+      `${BASE_PATH_PROJECTS}${accession}/files/trajectory${
+        Number.isFinite(projection) ? `.pca-${projection + 1}` : ''
+      }.bin`,
+    { bodyParser: 'arrayBuffer', range },
   );
+
+  const progress = useProgress(response);
 
   return {
     loading,
