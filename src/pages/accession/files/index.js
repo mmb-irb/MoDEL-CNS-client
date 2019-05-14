@@ -69,7 +69,8 @@ export default React.memo(() => {
             &nbsp;⤷&nbsp;
             {key}
           </Typography>
-          {Array.from(set).map(
+          {Array.from(
+            set,
             ({
               filename,
               url,

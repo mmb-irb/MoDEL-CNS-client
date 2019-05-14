@@ -68,11 +68,11 @@ const NGLViewer = memo(
       // default, no frames loaded
       let frames = [];
       if (Number.isFinite(projection)) {
-        frames = Array.from({ length: 20 }).map((_, i) => i);
+        frames = Array.from({ length: 20 }, (_, i) => i);
         // multiple frames loaded, as a trajectory
       } else if (metadata && !noTrajectory) {
         const frameStep = Math.floor(metadata.frameCount / nFrames);
-        frames = Array.from({ length: nFrames }).map((_, i) => i * frameStep);
+        frames = Array.from({ length: nFrames }, (_, i) => i * frameStep);
         // only one specific frame loaded
       } else if (metadata && noTrajectory && Number.isFinite(requestedFrame)) {
         frames = [requestedFrame];
@@ -178,14 +178,14 @@ const NGLViewer = memo(
         originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
 
         // main structure
-        structureComponent.addRepresentation('cartoon', {
+        structureComponent.addRepresentation('licorice', {
           sele: 'polymer',
           name: 'structure',
         });
         // membrane
         structureComponent.addRepresentation('licorice', {
           sele: '(not polymer or hetero) and not (water or ion)',
-          opacity: 0.5,
+          opacity: 0,
           name: 'membrane',
         });
       }, [pdbFile]);
@@ -265,27 +265,32 @@ const NGLViewer = memo(
         const file = {
           boxes: [],
           type: 'Frames',
-          coordinates: Array.from({
-            length: Number.isFinite(projection)
-              ? 20
-              : Number.isFinite(requestedFrame)
-              ? 1
-              : nFrames,
-          }).map((_, i) => {
-            const out = new Float32Array(
-              pdbFile.atomCount * COORDINATES_NUMBER,
-            );
-            out.set(
-              view.subarray(
-                i * counts.atoms * COORDINATES_NUMBER,
-                (i + 1) * counts.atoms * COORDINATES_NUMBER,
-              ),
-            );
-            return out;
-          }),
+          coordinates: Array.from(
+            {
+              length: Number.isFinite(projection)
+                ? 20
+                : Number.isFinite(requestedFrame)
+                ? 1
+                : nFrames,
+            },
+            (_, i) => {
+              const out = new Float32Array(
+                pdbFile.atomCount * COORDINATES_NUMBER,
+              );
+              out.set(
+                view.subarray(
+                  i * counts.atoms * COORDINATES_NUMBER,
+                  (i + 1) * counts.atoms * COORDINATES_NUMBER,
+                ),
+              );
+              return out;
+            },
+          ),
         };
+        console.log(file);
 
         const component = stageRef.current.compList[0];
+        window.c = component;
 
         component.trajList.forEach(component.removeTrajectory.bind(component));
 
