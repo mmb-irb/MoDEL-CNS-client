@@ -96,7 +96,17 @@ const OpacitySlider = memo(({ value, handleChange, ...buttonProps }) => {
 });
 
 const NGLViewerWithControls = forwardRef(
-  ({ className, startsPlaying = true, noTrajectory, close, ...props }, ref) => {
+  (
+    {
+      className,
+      startsPlaying = true,
+      noTrajectory,
+      close,
+      projection,
+      ...props
+    },
+    ref,
+  ) => {
     // references
     const containerRef = useRef(null);
     const viewerRef = useRef(null);
@@ -190,6 +200,7 @@ const NGLViewerWithControls = forwardRef(
             nFrames={nFrames}
             darkBackground={darkBackground}
             perspective={perspective}
+            projection={projection}
             {...props}
           />
           {noTrajectory || (
@@ -296,7 +307,7 @@ const NGLViewerWithControls = forwardRef(
                 [],
               )}
             />
-            {noTrajectory || (
+            {(noTrajectory || !Number.isFinite(projection)) && (
               <FormControl>
                 <InputLabel>frames</InputLabel>
                 <Select

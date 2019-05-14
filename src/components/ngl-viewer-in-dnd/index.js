@@ -14,7 +14,15 @@ const NGLViewerWithControls = lazy(() =>
 const MIN_NGL_DIMENSION = 150;
 
 const NGLViewerInDND = memo(
-  ({ accession, hovered, analysis, selected, setSelected }) => {
+  ({
+    accession,
+    hovered,
+    analysis,
+    selected,
+    setSelected,
+    requestedFrame,
+    setRequestedFrame,
+  }) => {
     const nglViewRef = useRef(null);
     const rndRef = useRef(null);
 
@@ -60,11 +68,14 @@ const NGLViewerInDND = memo(
               startsPlaying={false}
               noTrajectory={!analysis || analysis !== 'fluctuation'}
               requestedFrame={
-                !analysis || (analysis !== 'fluctuation' && selected)
+                Number.isFinite(requestedFrame)
+                  ? requestedFrame
+                  : !analysis || (analysis !== 'fluctuation' && selected)
               }
-              close={() =>
-                setSelected(analysis === 'fluctuation' ? new Set() : null)
-              }
+              close={() => {
+                setRequestedFrame(null);
+                setSelected(analysis === 'fluctuation' ? new Set() : null);
+              }}
             />
           </Suspense>
         </Card>

@@ -43,6 +43,7 @@ const NGLViewer = memo(
         smooth,
         onProgress,
         noTrajectory,
+        projection,
         nFrames = DEFAULT_NUMBER_OF_FRAMES,
         hovered,
         selected,
@@ -66,8 +67,10 @@ const NGLViewer = memo(
 
       // default, no frames loaded
       let frames = [];
-      // multiple frames loaded, as a trajectory
-      if (metadata && !noTrajectory) {
+      if (Number.isFinite(projection)) {
+        frames = Array.from({ length: 20 }).map((_, i) => i);
+        // multiple frames loaded, as a trajectory
+      } else if (metadata && !noTrajectory) {
         const frameStep = Math.floor(metadata.frameCount / nFrames);
         frames = Array.from({ length: nFrames }).map((_, i) => i * frameStep);
         // only one specific frame loaded
@@ -79,7 +82,8 @@ const NGLViewer = memo(
         loading: loadingDCD,
         frameData: dcdPayload,
         progress: dcdProgress,
-      } = useFrames(accession, frames, pdbData.file && pdbData.file.atomCount);
+        counts,
+      } = useFrames(accession, frames, projection);
 
       // Stage creation and removal on mounting and unmounting
       useEffect(() => {
@@ -258,18 +262,27 @@ const NGLViewer = memo(
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
         const view = new Float32Array(dcdPayload);
-        window.view = view;
         const file = {
           boxes: [],
           type: 'Frames',
           coordinates: Array.from({
-            length: Number.isFinite(requestedFrame) ? 1 : nFrames,
-          }).map((_, i) =>
-            view.subarray(
-              i * pdbFile.atomCount * COORDINATES_NUMBER,
-              (i + 1) * pdbFile.atomCount * COORDINATES_NUMBER,
-            ),
-          ),
+            length: Number.isFinite(projection)
+              ? 20
+              : Number.isFinite(requestedFrame)
+              ? 1
+              : nFrames,
+          }).map((_, i) => {
+            const out = new Float32Array(
+              pdbFile.atomCount * COORDINATES_NUMBER,
+            );
+            out.set(
+              view.subarray(
+                i * counts.atoms * COORDINATES_NUMBER,
+                (i + 1) * counts.atoms * COORDINATES_NUMBER,
+              ),
+            );
+            return out;
+          }),
         };
 
         const component = stageRef.current.compList[0];
@@ -279,10 +292,20 @@ const NGLViewer = memo(
         const frames = component.addTrajectory(file);
         frames.signals.frameChanged.add(handleFrameChange);
         frames.trajectory.setFrame(0);
+
+        component.autoView();
         return () => {
           frames.signals.frameChanged.remove(handleFrameChange);
         };
-      }, [requestedFrame, pdbFile, dcdPayload, handleFrameChange, nFrames]);
+      }, [
+        requestedFrame,
+        pdbFile,
+        dcdPayload,
+        handleFrameChange,
+        nFrames,
+        counts.atoms,
+        projection,
+      ]);
 
       // play/pause
       useEffect(() => {

@@ -69,7 +69,7 @@ const PCA = () => {
   );
 
   const [projections, setProjections] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [requestedFrame, setRequestedFrame] = useState(null);
 
   const [explanation, totalEigenvalue] = useMemo(() => {
     if (!payload) return [];
@@ -87,7 +87,7 @@ const PCA = () => {
         0,
       ) / totalEigenvalue;
 
-    setSelected(null);
+    setRequestedFrame(null);
     return [explanation, totalEigenvalue];
   }, [payload, projections]);
 
@@ -130,17 +130,17 @@ const PCA = () => {
                 step={payload.step}
                 data={payload.y}
                 projections={projections}
-                setSelected={setSelected}
+                setRequestedFrame={setRequestedFrame}
               />
             </Suspense>
           )}
         </CardContent>
       </Card>
-      {Number.isFinite(selected) && (
+      {Number.isFinite(requestedFrame) && (
         <NGLViewerInDND
           accession={accession}
-          selected={selected}
-          setSelected={setSelected}
+          requestedFrame={requestedFrame}
+          setRequestedFrame={setRequestedFrame}
         />
       )}
     </>

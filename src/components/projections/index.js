@@ -35,7 +35,7 @@ const [MIN_DURATION, MAX_DURATION] = [375, 625];
 
 const colorScale = scaleSequential(interpolateViridis);
 
-const Projections = ({ data, projections, step, setSelected }) => {
+const Projections = ({ data, projections, step, setRequestedFrame }) => {
   const containerRef = useRef(null);
   const legendRef = useRef(null);
   const drawRef = useRef(noop);
@@ -88,9 +88,9 @@ const Projections = ({ data, projections, step, setSelected }) => {
     };
 
     const handleClick = ({ datumIndex } = {}) =>
-      setSelected(selected => {
+      setRequestedFrame(requestedFrame => {
         const target = datumIndex * step;
-        return target === selected ? null : target;
+        return target === requestedFrame ? null : target;
       });
 
     drawRef.current = async ({
@@ -352,7 +352,7 @@ const Projections = ({ data, projections, step, setSelected }) => {
       refs.drawLegend && refs.drawLegend.cancel();
       window.removeEventListener('resize', drawRef.current);
     };
-  }, [projections, setSelected, step]);
+  }, [projections, setRequestedFrame, step]);
 
   useEffect(() => {
     const values = Object.values(data);
