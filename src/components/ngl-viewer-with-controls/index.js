@@ -307,7 +307,7 @@ const NGLViewerWithControls = forwardRef(
                 [],
               )}
             />
-            {(!noTrajectory || Number.isFinite(projection)) && (
+            {!Number.isFinite(projection) && !noTrajectory && (
               <FormControl>
                 <InputLabel>frames</InputLabel>
                 <Select
