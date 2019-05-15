@@ -62,6 +62,7 @@ const NGLViewer = memo(
       const containerRef = useRef(null);
       const stageRef = useRef(null);
       const originalOritentationRef = useRef(null);
+      const firstTime = useRef(true);
 
       const { loading: loadingPDB, file: pdbFile } = pdbData;
 
@@ -102,6 +103,10 @@ const NGLViewer = memo(
       useEffect(() => {
         const beginning = Date.now();
         let duration = 1000;
+        if (firstTime.current) {
+          duration = 0;
+          firstTime.current = false;
+        }
         (async () => {
           while (true) {
             await frame();
@@ -322,7 +327,6 @@ const NGLViewer = memo(
         }
 
         const component = stageRef.current.compList[0];
-        window.c = component;
 
         component.trajList.forEach(component.removeTrajectory.bind(component));
 

@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import cn from 'classnames';
 import screenfull from 'screenfull';
+import { schedule } from 'timing-functions';
 
 import {
   CardContent,
@@ -40,6 +41,7 @@ import {
 } from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 
+import { get, set } from '../../utils/storage/index';
 import NGLViewer from '../ngl-viewer';
 
 import useToggleState from '../../hooks/use-toggle-state';
@@ -115,14 +117,20 @@ const NGLViewerWithControls = forwardRef(
     const [playing, togglePlaying] = useToggleState(startsPlaying);
     const [spinning, toggleSpinning] = useToggleState(false);
     const [smooth, toggleSmooth] = useToggleState(false);
-    const [darkBackground, toggleDarkBackground] = useToggleState(true);
-    const [perspective, togglePerspective] = useToggleState(false);
+    const [darkBackground, toggleDarkBackground] = useToggleState(
+      useMemo(() => get('dark-background', true), []),
+    );
+    const [perspective, togglePerspective] = useToggleState(
+      useMemo(() => get('perspective', false), []),
+    );
 
     // states
     const [progress, setProgress] = useState(0);
     const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
     const [membraneOpacity, setMembraneOpacity] = useState(
-      Number.isFinite(projection) ? 0 : 0.5,
+      Number.isFinite(projection)
+        ? 0
+        : useMemo(() => get('membrane-opacity', 0.5), []),
     );
     const [nFrames, setNFrames] = useState(
       useMemo(() => {
@@ -285,7 +293,12 @@ const NGLViewerWithControls = forwardRef(
             </IconButton>
             <IconButton
               title="Invert background color"
-              onClick={toggleDarkBackground}
+              onClick={() => {
+                toggleDarkBackground();
+                schedule(1000).then(() =>
+                  set('dark-background', !darkBackground),
+                );
+              }}
               className={cn(style['background-toggle'], {
                 [style['dark']]: darkBackground,
               })}
@@ -296,7 +309,10 @@ const NGLViewerWithControls = forwardRef(
               title={`Switch to ${
                 perspective ? 'ortographic' : 'perspective'
               } view`}
-              onClick={togglePerspective}
+              onClick={() => {
+                togglePerspective();
+                schedule(1000).then(() => set('perspective', !perspective));
+              }}
             >
               {perspective ? <Layers /> : <LayersClear />}
             </IconButton>
@@ -305,10 +321,12 @@ const NGLViewerWithControls = forwardRef(
                 className={style['opacity-slider']}
                 title="Change membrane opacity"
                 value={membraneOpacity * 100}
-                handleChange={useCallback(
-                  (_, value) => setMembraneOpacity(value / 100),
-                  [],
-                )}
+                handleChange={(_, value) => {
+                  setMembraneOpacity(value / 100);
+                  schedule(1000).then(() =>
+                    set('membrane-opacity', value / 100),
+                  );
+                }}
               />
             )}
 
