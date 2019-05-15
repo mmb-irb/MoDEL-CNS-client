@@ -121,7 +121,9 @@ const NGLViewerWithControls = forwardRef(
     // states
     const [progress, setProgress] = useState(0);
     const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
-    const [membraneOpacity, setMembraneOpacity] = useState(0.5);
+    const [membraneOpacity, setMembraneOpacity] = useState(
+      Number.isFinite(projection) ? 0 : 0.5,
+    );
     const [nFrames, setNFrames] = useState(
       useMemo(() => {
         switch (connectionLevel()) {
@@ -298,15 +300,18 @@ const NGLViewerWithControls = forwardRef(
             >
               {perspective ? <Layers /> : <LayersClear />}
             </IconButton>
-            <OpacitySlider
-              className={style['opacity-slider']}
-              title="Change membrane opacity"
-              value={membraneOpacity * 100}
-              handleChange={useCallback(
-                (_, value) => setMembraneOpacity(value / 100),
-                [],
-              )}
-            />
+            {!Number.isFinite(projection) && (
+              <OpacitySlider
+                className={style['opacity-slider']}
+                title="Change membrane opacity"
+                value={membraneOpacity * 100}
+                handleChange={useCallback(
+                  (_, value) => setMembraneOpacity(value / 100),
+                  [],
+                )}
+              />
+            )}
+
             {!Number.isFinite(projection) && !noTrajectory && (
               <FormControl>
                 <InputLabel>frames</InputLabel>

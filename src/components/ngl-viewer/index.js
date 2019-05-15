@@ -178,17 +178,23 @@ const NGLViewer = memo(
         originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
 
         // main structure
-        structureComponent.addRepresentation('licorice', {
-          sele: 'polymer',
+        structureComponent.addRepresentation('cartoon', {
+          sele: 'polymer and not hydrogen',
           name: 'structure',
         });
         // membrane
-        structureComponent.addRepresentation('licorice', {
-          sele: '(not polymer or hetero) and not (water or ion)',
-          opacity: 0,
-          name: 'membrane',
-        });
-      }, [pdbFile]);
+        const membraneRepresentation = structureComponent.addRepresentation(
+          'licorice',
+          {
+            sele: '(not polymer or hetero) and not (water or ion)',
+            opacity: 0.5,
+            name: 'membrane',
+          },
+        );
+        if (Number.isFinite(projection)) {
+          membraneRepresentation.setVisibility(false);
+        }
+      }, [pdbFile, projection]);
 
       // highlight hovered atoms from other components
       useEffect(() => {
@@ -265,29 +271,55 @@ const NGLViewer = memo(
         const file = {
           boxes: [],
           type: 'Frames',
-          coordinates: Array.from(
-            {
-              length: Number.isFinite(projection)
-                ? 20
-                : Number.isFinite(requestedFrame)
-                ? 1
-                : nFrames,
-            },
-            (_, i) => {
-              const out = new Float32Array(
-                pdbFile.atomCount * COORDINATES_NUMBER,
-              );
-              out.set(
-                view.subarray(
-                  i * counts.atoms * COORDINATES_NUMBER,
-                  (i + 1) * counts.atoms * COORDINATES_NUMBER,
-                ),
-              );
-              return out;
-            },
-          ),
+          coordinates: [],
         };
-        console.log(file);
+        let length = nFrames;
+        if (Number.isFinite(projection)) {
+          length = 20;
+        } else if (Number.isFinite(requestedFrame)) {
+          length = 1;
+        }
+        for (let i = 0; i < length; i++) {
+          const coordinates = new Float32Array(
+            pdbFile.atomCount * COORDINATES_NUMBER,
+          );
+          let k = 0;
+          if (Number.isFinite(projection)) {
+            // if it is a PCA projection
+            for (let j = 0; j < pdbFile.atomCount; j++) {
+              if (k < counts.atoms && pdbFile.getAtomProxy(j).element !== 'H') {
+                // getting value from trajectory
+                coordinates[j * COORDINATES_NUMBER] =
+                  view[
+                    i * counts.atoms * COORDINATES_NUMBER +
+                      k * COORDINATES_NUMBER
+                  ];
+                coordinates[j * COORDINATES_NUMBER + 1] =
+                  view[
+                    i * counts.atoms * COORDINATES_NUMBER +
+                      k * COORDINATES_NUMBER +
+                      1
+                  ];
+                coordinates[j * COORDINATES_NUMBER + 2] =
+                  view[
+                    i * counts.atoms * COORDINATES_NUMBER +
+                      k * COORDINATES_NUMBER +
+                      2
+                  ];
+                k++;
+              }
+            }
+          } else {
+            // if it is not a PCA projection
+            coordinates.set(
+              view.subarray(
+                i * counts.atoms * COORDINATES_NUMBER,
+                (i + 1) * counts.atoms * COORDINATES_NUMBER,
+              ),
+            );
+          }
+          file.coordinates.push(coordinates);
+        }
 
         const component = stageRef.current.compList[0];
         window.c = component;
@@ -336,7 +368,7 @@ const NGLViewer = memo(
           ).repr,
           membraneOpacity,
         );
-      }, [pdbFile, membraneOpacity]);
+      }, [pdbFile, membraneOpacity, projection]);
       useEffect(() => changeOpacity.cancel, []);
 
       // smoothing, player interpolation
