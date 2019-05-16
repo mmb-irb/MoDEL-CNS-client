@@ -1,5 +1,4 @@
 const getDownloadTimeEstimate = lengthInBytes => {
-  console.log(lengthInBytes);
   const speedInBytesPerSeconds =
     (window.navigator.connection.downlink / 8) * 1e6;
   const estimateTimeInSeconds = Math.round(
