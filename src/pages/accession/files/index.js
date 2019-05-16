@@ -79,7 +79,7 @@ export default React.memo(() => {
               length,
               metadata: { frames, atoms } = {},
             }) => {
-              const estimatedTime = getEstimate(length);
+              const estimatedTime = length && getEstimate(length);
               const href =
                 url || `${BASE_PATH_PROJECTS}${identifier}/files/${filename}`;
               return (
