@@ -126,7 +126,7 @@ export default React.memo(() => {
                         color={
                           estimatedTime.includes('minutes')
                             ? 'secondary'
-                            : 'textPrimary'
+                            : 'primary'
                         }
                       />
                     )}
