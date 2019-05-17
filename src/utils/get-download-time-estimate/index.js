@@ -1,4 +1,7 @@
 const getDownloadTimeEstimate = lengthInBytes => {
+  if (!(navigator && navigator.connection && navigator.connection.downlink)) {
+    return null;
+  }
   const speedInBytesPerSeconds =
     (window.navigator.connection.downlink / 8) * 1e6;
   const estimateTimeInSeconds = Math.round(
@@ -12,8 +15,4 @@ const getDownloadTimeEstimate = lengthInBytes => {
   }`;
 };
 
-export default (!('navigator' in window) ||
-!('connection' in window.navigator) ||
-!('downlink' in window.navigator.connection)
-  ? () => {}
-  : getDownloadTimeEstimate);
+export default getDownloadTimeEstimate;

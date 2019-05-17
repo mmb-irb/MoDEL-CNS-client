@@ -3,7 +3,7 @@ export const MEDIUM = Symbol('medium');
 export const HIGH = Symbol('high');
 
 const connectionLevel = () => {
-  if (!(navigator && 'connection' in navigator)) return MEDIUM;
+  if (!(navigator && navigator.connection)) return MEDIUM;
   const { effectiveType, saveData } = navigator.connection;
   if (saveData === true) return LOW;
   if (!effectiveType) return MEDIUM;

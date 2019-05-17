@@ -10,28 +10,23 @@ import style from './style.module.css';
 
 const DEBOUNCE_DELAY = 500;
 
-const updateLocation = debounce((history, location, search, value) => {
-  const { search: _search, ...nextSearchObject } = parse(search, {
+// debounced function, to avoid changing the URL too much while typing
+const updateLocation = debounce((history, value) => {
+  const { search, ...nextSearchObject } = parse(history.location.search, {
     ignoreQueryPrefix: true,
   });
-  const shouldReplace = Boolean(_search) === Boolean(value);
+  const shouldReplace = Boolean(search) === Boolean(value);
   if (value) nextSearchObject.search = value;
-  if (_search === value) return;
+  if (search === value) return;
   history[shouldReplace ? 'replace' : 'push']({
-    ...location,
+    ...history.location,
     search: stringify(nextSearchObject),
   });
 }, DEBOUNCE_DELAY);
 
-const Search = props => {
-  const {
-    location: { search },
-    history,
-    location,
-  } = props;
-
+const Search = ({ history }) => {
   const [value, setValue] = useState(
-    parse(search, { ignoreQueryPrefix: true }).search,
+    parse(history.location.search, { ignoreQueryPrefix: true }).search,
   );
 
   // make sure to cancel any upcoming location update if component unmounts
@@ -41,9 +36,9 @@ const Search = props => {
     ({ target: { value } }) => {
       setValue(value);
 
-      updateLocation(history, location, search, value);
+      updateLocation(history, value);
     },
-    [history, location, search],
+    [history],
   );
 
   return (

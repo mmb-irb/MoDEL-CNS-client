@@ -8,6 +8,7 @@ const getRegExFor = memoize(
   highlight =>
     new RegExp(
       `(${highlight
+        .toString()
         .trim()
         .split(spaces)
         .map(escapeRegExp)
@@ -17,13 +18,19 @@ const getRegExFor = memoize(
 );
 
 export default React.memo(({ highlight, children }) => {
-  if (!highlight || typeof children !== 'string') return children || null;
+  if (
+    !highlight ||
+    !children ||
+    !(typeof children === 'string' || Number.isFinite(children))
+  ) {
+    return children || null;
+  }
 
   const re = getRegExFor(highlight);
 
   return (
-    <span className={style.higlightable}>
-      {(children || '')
+    <span className={style.highlightable}>
+      {children
         .toString()
         .split(re)
         .filter(Boolean)

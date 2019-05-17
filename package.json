@@ -22,17 +22,37 @@
     "timing-functions": "0.2.2",
     "typeface-roboto": "0.0.54"
   },
+  "devDependencies": {
+    "enzyme": "3.9.0",
+    "enzyme-adapter-react-16": "1.13.0",
+    "enzyme-to-json": "3.3.5",
+    "husky": "2.3.0",
+    "lint-staged": "8.1.7",
+    "prettier": "1.17.1",
+    "prop-types": "15.7.2",
+    "react-scripts": "3.0.1",
+    "react-testing-library": "7.0.0"
+  },
   "homepage": ".",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --transformIgnorePatterns='node_modules/(?!lodash-es)'",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "coverageReporters": [
+      "text-summary",
+      "html"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-push": "CI=true npm test"
+      "pre-push": "CI=true npm test -- --coverage"
     }
   },
   "lint-staged": {
@@ -46,14 +66,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "devDependencies": {
-    "enzyme": "3.9.0",
-    "enzyme-adapter-react-16": "1.13.0",
-    "husky": "2.3.0",
-    "lint-staged": "8.1.7",
-    "prettier": "1.17.1",
-    "prop-types": "15.7.2",
-    "react-scripts": "3.0.1"
-  }
+  ]
 }

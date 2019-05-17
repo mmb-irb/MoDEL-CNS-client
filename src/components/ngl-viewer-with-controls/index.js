@@ -1,5 +1,4 @@
 import React, {
-  memo,
   useCallback,
   useState,
   useEffect,
@@ -16,8 +15,6 @@ import {
   CardContent,
   LinearProgress,
   IconButton,
-  Popover,
-  Paper,
   Select,
   FormControl,
   InputLabel,
@@ -33,13 +30,13 @@ import {
   CenterFocusStrong,
   BurstMode,
   Videocam,
-  Flip,
   InvertColors,
   Layers,
   LayersClear,
   Close,
 } from '@material-ui/icons';
-import { Slider } from '@material-ui/lab';
+
+import Slider from '../slider';
 
 import { get, set } from '../../utils/storage/index';
 import NGLViewer from '../ngl-viewer';
@@ -53,49 +50,6 @@ import connectionLevel, {
 } from '../../utils/connection-level';
 
 import style from './style.module.css';
-
-const OpacitySlider = memo(({ value, handleChange, ...buttonProps }) => {
-  // useState
-  const [element, setElement] = useState(null);
-
-  return (
-    <>
-      <IconButton
-        {...buttonProps}
-        onClick={useCallback(
-          ({ currentTarget }) => setElement(currentTarget),
-          [],
-        )}
-      >
-        <Flip />
-      </IconButton>
-      <Popover
-        open={!!element}
-        anchorEl={element}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        data-popover
-        container={screenfull.element || document.body}
-        onClose={useCallback(() => setElement(null), [])}
-      >
-        <Paper className={style['popover-paper']}>
-          <span>Membrane opacity:</span>
-          <Slider
-            value={value}
-            onChange={handleChange}
-            className={style['popover-slider']}
-          />
-        </Paper>
-      </Popover>
-    </>
-  );
-});
 
 const NGLViewerWithControls = forwardRef(
   (
@@ -317,8 +271,9 @@ const NGLViewerWithControls = forwardRef(
               {perspective ? <Layers /> : <LayersClear />}
             </IconButton>
             {!Number.isFinite(projection) && (
-              <OpacitySlider
+              <Slider
                 className={style['opacity-slider']}
+                label="Membrane label:"
                 title="Change membrane opacity"
                 value={membraneOpacity * 100}
                 handleChange={(_, value) => {
