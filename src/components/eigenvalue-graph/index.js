@@ -29,7 +29,7 @@ const MIN_DISPLAY_EXPL = 0.8; // display at least components for 80% explanation
 const EigenvalueGraph = ({
   data,
   totalEigenvalue,
-  projections,
+  projections = [],
   setProjections,
 }) => {
   const containerRef = useRef(null);
@@ -186,7 +186,6 @@ const EigenvalueGraph = ({
         .attr('height', '100%')
         .on('click', ({ hasProjection }, i) => {
           if (!hasProjection) return;
-          // setProjections(([one, two]) => (i === two ? [two, one] : [two, i]));
           setProjections(projections => {
             const set = new Set(projections);
             set[set.has(i) ? 'delete' : 'add'](i);

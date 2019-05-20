@@ -289,14 +289,15 @@ const Graph = ({
           .attr('stroke-width', d => (hovered === d ? 3 : 1.5));
 
         // selected
-        const width = Math.max(1, x(precision * step) - x(0));
-        selectedRect
-          .attr('width', () => width)
-          .attr('x', () =>
-            Number.isInteger(selected) ? x(selected * step) - width / 2 : 0,
-          )
-          .attr('opacity', selected === null ? 0 : 1);
-
+        if (selectedRect) {
+          const width = Math.max(1, x(precision * step) - x(0));
+          selectedRect
+            .attr('width', () => width)
+            .attr('x', () =>
+              Number.isInteger(selected) ? x(selected * step) - width / 2 : 0,
+            )
+            .attr('opacity', selected === null ? 0 : 1);
+        }
         // if type of graph is dash
       } else if (type === 'dash' && canvasContext) {
         const dashWidth = Math.max(1, x(1) - x(0));
@@ -306,7 +307,7 @@ const Graph = ({
           if (!labels[key]) continue;
           // selected areas
           canvasContext.fillStyle = '#c8c8c8';
-          for (const atom of selected) {
+          for (const atom of selected || []) {
             // skip the ones not in view
             if (atom < minIndex || atom > maxIndex) continue;
             canvasContext.fillRect(
@@ -326,7 +327,7 @@ const Graph = ({
             index <= maxInView;
             index += step
           ) {
-            if (pdbData.file) {
+            if (pdbData && pdbData.file) {
               const atom = pdbData.file.atomMap.get(
                 pdbData.file.atomStore.atomTypeId[index],
               );
@@ -539,7 +540,7 @@ const Graph = ({
         {type === 'dash' && (
           <Button
             variant="contained"
-            disabled={!selected.size}
+            disabled={selected instanceof Set && !selected.size}
             onClick={handleClick}
           >
             <DeleteIcon />

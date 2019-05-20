@@ -3,7 +3,7 @@ import { render, fireEvent, cleanup } from 'react-testing-library';
 import { createMemoryHistory } from 'history';
 import { sleep } from 'timing-functions';
 
-import Search from '.';
+import Search, { updateLocation } from '.';
 
 describe('Search', () => {
   let wrapper;
@@ -94,5 +94,48 @@ describe('Search', () => {
     if (wrapper.unmount) wrapper.unmount();
     wrapper = render(<Search history={history} />);
     expect(wrapper.container.querySelector('input').value).toBe('xyz');
+  });
+});
+
+describe('updateLocation', () => {
+  let history;
+
+  beforeEach(() => {
+    history = createMemoryHistory();
+  });
+
+  it('should push into history if previous undefined, and next defined', () => {
+    updateLocation(history, 'text');
+    expect(history.location.search).toBe('?search=text');
+    expect(history.length).toBe(2);
+  });
+
+  it('should push into history if previous defined, and next undefined', () => {
+    history.location.search = '?search=text';
+    updateLocation(history, '');
+    expect(history.location.search).toBe('');
+    expect(history.length).toBe(2);
+  });
+
+  it('should replace history if previous defined, and next defined', () => {
+    history.location.search = '?search=t';
+    updateLocation(history, 'text');
+    expect(history.location.search).toBe('?search=text');
+    expect(history.length).toBe(1);
+  });
+
+  it('should replace history if previous undefined, and next undefined', () => {
+    updateLocation(history, '');
+    expect(history.location.search).toBe('');
+    expect(history.length).toBe(1);
+  });
+
+  it("shouldn't do anything if value is same before and after", () => {
+    history.location.search = '?search=text';
+    const { key } = history.location;
+    updateLocation(history, 'text');
+    expect(history.location.search).toBe('?search=text');
+    expect(history.length).toBe(1);
+    expect(history.location.key).toBe(key);
   });
 });

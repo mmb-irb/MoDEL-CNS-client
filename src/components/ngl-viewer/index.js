@@ -131,9 +131,12 @@ const NGLViewer = memo(
 
       // perspective
       useEffect(() => {
-        stageRef.current.viewer.setCamera(
-          perspective ? 'perspective' : 'orthographic',
-        );
+        stageRef.current &&
+          stageRef.current.viewer &&
+          stageRef.current.viewer.setCamera &&
+          stageRef.current.viewer.setCamera(
+            perspective ? 'perspective' : 'orthographic',
+          );
       }, [perspective]);
 
       // frames
@@ -358,7 +361,12 @@ const NGLViewer = memo(
 
       // spinning
       useEffect(() => {
-        if (spinning === stageRef.current.spinAnimation.paused) {
+        if (
+          stageRef.current &&
+          stageRef.current.spinAnimation &&
+          stageRef.current.spinAnimation.paused &&
+          spinning === stageRef.current.spinAnimation.paused
+        ) {
           stageRef.current.toggleSpin();
         }
       }, [spinning]);

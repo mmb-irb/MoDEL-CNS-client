@@ -10,8 +10,7 @@ import style from './style.module.css';
 
 const DEBOUNCE_DELAY = 500;
 
-// debounced function, to avoid changing the URL too much while typing
-const updateLocation = debounce((history, value) => {
+export const updateLocation = (history, value) => {
   const { search, ...nextSearchObject } = parse(history.location.search, {
     ignoreQueryPrefix: true,
   });
@@ -22,7 +21,10 @@ const updateLocation = debounce((history, value) => {
     ...history.location,
     search: stringify(nextSearchObject),
   });
-}, DEBOUNCE_DELAY);
+};
+
+// debounced function, to avoid changing the URL too much while typing
+const debouncedUpdateLocation = debounce(updateLocation, DEBOUNCE_DELAY);
 
 const Search = ({ history }) => {
   const [value, setValue] = useState(
@@ -30,13 +32,13 @@ const Search = ({ history }) => {
   );
 
   // make sure to cancel any upcoming location update if component unmounts
-  useEffect(() => updateLocation.cancel, []);
+  useEffect(() => debouncedUpdateLocation.cancel, []);
 
   const handleChange = useCallback(
     ({ target: { value } }) => {
       setValue(value);
 
-      updateLocation(history, value);
+      debouncedUpdateLocation(history, value);
     },
     [history],
   );

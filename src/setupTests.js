@@ -2,7 +2,7 @@ import React from 'react';
 import { configure, mount } from 'enzyme';
 import AdapterForReact16 from 'enzyme-adapter-react-16';
 
-// ncessary set up
+// necessary set up
 configure({ adapter: new AdapterForReact16() });
 
 // utils

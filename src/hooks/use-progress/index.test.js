@@ -11,4 +11,9 @@ describe('useProgress', () => {
   it('should have an initial value', () => {
     expect(progressHook).toBeNull();
   });
+
+  it('should be able to handle change/removal of response object', () => {
+    testHook(() => (progressHook = useProgress()));
+    expect(progressHook).toBeNull();
+  });
 });

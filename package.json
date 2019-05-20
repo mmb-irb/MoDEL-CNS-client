@@ -23,10 +23,12 @@
     "typeface-roboto": "0.0.54"
   },
   "devDependencies": {
+    "canvas": "2.5.0",
     "enzyme": "3.9.0",
     "enzyme-adapter-react-16": "1.13.0",
     "enzyme-to-json": "3.3.5",
     "husky": "2.3.0",
+    "jest-environment-jsdom-fourteen": "0.1.0",
     "lint-staged": "8.1.7",
     "prettier": "1.17.1",
     "prop-types": "15.7.2",
@@ -37,7 +39,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --transformIgnorePatterns='node_modules/(?!lodash-es)'",
+    "test": "react-scripts test --transformIgnorePatterns='node_modules/(?!lodash-es)' --env=jest-environment-jsdom-fourteen",
     "eject": "react-scripts eject"
   },
   "jest": {

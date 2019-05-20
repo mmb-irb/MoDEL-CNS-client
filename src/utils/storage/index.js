@@ -13,5 +13,5 @@ export const set = (key, value) => {
 export const deleteAll = () => {
   Object.keys(localStorage)
     .filter(key => key.startsWith(KEY))
-    .forEach(localStorage.deleteItem);
+    .forEach(key => localStorage.removeItem(key));
 };
