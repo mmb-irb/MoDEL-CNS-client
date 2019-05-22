@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<NGLViewerInDND /> should render 1`] = `
+<Rnd
+  bounds="body"
+  cancel="canvas, [data-popover]"
+  className="rnd"
+  data-rnd={true}
+  maxHeight={9007199254740991}
+  maxWidth={9007199254740991}
+  onDrag={[Function]}
+  onDragStart={[Function]}
+  onDragStop={[Function]}
+  onResize={[Function]}
+  onResizeStart={[Function]}
+  onResizeStop={[Function]}
+  scale={1}
+>
+  <WithStyles(Card)
+    className="floating-card"
+    elevation={4}
+  >
+    <Suspense
+      fallback={null}
+    >
+      <lazy
+        accession="MCNS00001"
+        className="ngl-viewer-with-controls"
+        close={[Function]}
+        noTrajectory={false}
+        requestedFrame={false}
+        startsPlaying={false}
+      />
+    </Suspense>
+  </WithStyles(Card)>
+</Rnd>
+`;

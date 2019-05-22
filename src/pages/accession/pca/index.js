@@ -1,6 +1,5 @@
 import React, { useContext, useState, useMemo, lazy, Suspense } from 'react';
 import cn from 'classnames';
-import { round } from 'lodash-es';
 
 import { Card, CardContent, Typography } from '@material-ui/core';
 
@@ -13,6 +12,9 @@ import useAPI from '../../../hooks/use-api/index';
 import { AccessionCtx } from '../../../contexts';
 
 import { BASE_PATH_PROJECTS } from '../../../utils/constants';
+
+import plainTextExplanation from './plain-text-explanation';
+import processStats from './process-stats';
 
 import style from './style.module.css';
 
@@ -34,33 +36,6 @@ const nglPlaceholder = (
   <div className={cn(style.placeholder, style['ngl-viewer-with-controls'])} />
 );
 
-const PlainTextExplanation = ({ projections, explanation }) => {
-  if (!projections.length) {
-    return `No projection selected, please select one or multiple projections to
-    visualise its related data. Only the darker blue bars correspond to
-    projections for which data has been calculated.`;
-  }
-  let projectionText;
-  if (projections.length === 1) {
-    projectionText = projections[0] + 1;
-  } else if (projections.length === 2) {
-    projectionText = `${projections[0] + 1} and ${projections[1] + 1}`;
-  } else {
-    projectionText = projections.reduce(
-      (acc, projection, i, { length }) =>
-        `${acc}${acc ? ',' : ''}${i === length - 1 ? ' and' : ''} ${projection +
-          1}`,
-      '',
-    );
-  }
-  return `Selected principal component${
-    projections.length > 1 ? 's' : ''
-  } ${projectionText}, accounting for ${round(
-    explanation * 100,
-    1,
-  )}% of explained variance`;
-};
-
 const PCA = () => {
   const accession = useContext(AccessionCtx);
 
@@ -72,23 +47,8 @@ const PCA = () => {
   const [requestedFrame, setRequestedFrame] = useState(null);
 
   const [explanation, totalEigenvalue] = useMemo(() => {
-    if (!payload) return [];
-
-    const values = Object.values(payload.y);
-
-    const totalEigenvalue = values.reduce(
-      (acc, component) => acc + component.eigenvalue,
-      0,
-    );
-
-    const explanation =
-      projections.reduce(
-        (acc, projection) => acc + values[projection].eigenvalue,
-        0,
-      ) / totalEigenvalue;
-
     setRequestedFrame(null);
-    return [explanation, totalEigenvalue];
+    return processStats(payload, projections);
   }, [payload, projections]);
 
   if (loading) return 'loading';
@@ -109,12 +69,7 @@ const PCA = () => {
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">PCA projections</Typography>
-          <p>
-            <PlainTextExplanation
-              projections={projections}
-              explanation={explanation}
-            />
-          </p>
+          <p>{plainTextExplanation(projections, explanation)}</p>
           {projections.length === 1 && (
             <Suspense fallback={nglPlaceholder}>
               <NGLViewerWithControls

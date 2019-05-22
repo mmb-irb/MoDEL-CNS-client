@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<NGLViewerWithControls /> should render 1`] = `
+<div
+  className="fullscreen-target"
+>
+  <WithStyles(CardContent)
+    className="card-content"
+  >
+    <[object Object]
+      darkBackground={true}
+      membraneOpacity={0.5}
+      nFrames={25}
+      onProgress={[Function]}
+      perspective={false}
+      playing={true}
+      smooth={false}
+      spinning={false}
+    />
+    <div
+      className="progress dark"
+      onClick={[Function]}
+      onMouseMove={[Function]}
+    >
+      <WithStyles(LinearProgress)
+        color="secondary"
+        value={0}
+        variant="determinate"
+      />
+    </div>
+    <div
+      className="controls"
+    >
+      <WithStyles(IconButton)
+        onClick={[Function]}
+        title="Previous frame"
+      >
+        <pure(SkipPreviousIcon) />
+      </WithStyles(IconButton)>
+      <WithStyles(IconButton)
+        onClick={[Function]}
+        title="Pause"
+      >
+        <pure(PauseIcon) />
+      </WithStyles(IconButton)>
+      <WithStyles(IconButton)
+        onClick={[Function]}
+        title="Next frame"
+      >
+        <pure(SkipNextIcon) />
+      </WithStyles(IconButton)>
+      <WithStyles(IconButton)
+        onClick={[Function]}
+        title="Toggle spin"
+      >
+        <pure(ThreeSixtyIcon) />
+      </WithStyles(IconButton)>
+      <WithStyles(IconButton)
+        onClick={[Function]}
+        title="Center focus"
+      >
+        <pure(CenterFocusStrongIcon) />
+      </WithStyles(IconButton)>
+      <WithStyles(IconButton)
+        disabled={false}
+        onClick={[Function]}
+        title="Toggle smooth interpolation on (may display artifacts for simulation box border atoms)"
+      >
+        <pure(VideocamIcon) />
+      </WithStyles(IconButton)>
+      <WithStyles(IconButton)
+        className="background-toggle dark"
+        onClick={[Function]}
+        title="Invert background color"
+      >
+        <pure(InvertColorsIcon) />
+      </WithStyles(IconButton)>
+      <WithStyles(IconButton)
+        onClick={[Function]}
+        title="Switch to perspective view"
+      >
+        <pure(LayersClearIcon) />
+      </WithStyles(IconButton)>
+      <Component
+        className="opacity-slider"
+        handleChange={[Function]}
+        label="Membrane label:"
+        title="Change membrane opacity"
+        value={50}
+      />
+      <WithStyles(FormControl)>
+        <WithStyles(WithFormControlContext(InputLabel))>
+          frames
+        </WithStyles(WithFormControlContext(InputLabel))>
+        <WithStyles(WithFormControlContext(Select))
+          native={true}
+          onChange={[Function]}
+          value={25}
+        >
+          <option
+            value={10}
+          >
+            10
+          </option>
+          <option
+            value={25}
+          >
+            25
+          </option>
+          <option
+            value={50}
+          >
+            50
+          </option>
+          <option
+            value={100}
+          >
+            100
+          </option>
+          <option
+            value={500}
+          >
+            500
+          </option>
+        </WithStyles(WithFormControlContext(Select))>
+      </WithStyles(FormControl)>
+    </div>
+  </WithStyles(CardContent)>
+</div>
+`;

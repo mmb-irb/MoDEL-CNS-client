@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Footer /> should render 1`] = `
+<footer>
+  <WithStyles(Paper)
+    position="static"
+  >
+    <WithStyles(Toolbar)
+      className="footer"
+    >
+      <a
+        href="https://www.humanbrainproject.eu/"
+        rel="noreferrer noopener"
+        target="_blank"
+      >
+        <img
+          alt="Human Brain Project website"
+          height="100px"
+          loading="lazy"
+          src="logo-hbp.png"
+        />
+      </a>
+      <a
+        href="https://www.irbbarcelona.org/"
+        rel="noreferrer noopener"
+        target="_blank"
+      >
+        <img
+          alt="IRB Barcelona website"
+          height="100px"
+          loading="lazy"
+          src="logo-irb.png"
+        />
+      </a>
+    </WithStyles(Toolbar)>
+  </WithStyles(Paper)>
+</footer>
+`;

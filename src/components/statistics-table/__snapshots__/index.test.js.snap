@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<StatisticsTable /> should render empty table 1`] = `
+<WithStyles(Table)>
+  <WithStyles(TableHead)>
+    <WithStyles(TableRow)>
+      <WithStyles(TableCell)>
+        name
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        mean
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        standard deviation
+      </WithStyles(TableCell)>
+    </WithStyles(TableRow)>
+  </WithStyles(TableHead)>
+  <WithStyles(TableBody) />
+</WithStyles(Table)>
+`;
+
+exports[`<StatisticsTable /> should render table with data 1`] = `
+<WithStyles(Table)>
+  <WithStyles(TableHead)>
+    <WithStyles(TableRow)>
+      <WithStyles(TableCell)>
+        name
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        mean
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        standard deviation
+      </WithStyles(TableCell)>
+    </WithStyles(TableRow)>
+  </WithStyles(TableHead)>
+  <WithStyles(TableBody)>
+    <WithStyles(TableRow)
+      key="rgyr"
+    >
+      <WithStyles(TableCell)>
+        Rgyr
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        3.1416
+        nm
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        1.0000
+        nm
+      </WithStyles(TableCell)>
+    </WithStyles(TableRow)>
+  </WithStyles(TableBody)>
+</WithStyles(Table)>
+`;

@@ -24,19 +24,20 @@ const StatisticsTable = memo(({ y }) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {Object.entries(y).map(([key, { average, stddev }]) => (
-          <TableRow key={key}>
-            <TableCell>{NICE_NAMES.get(key) || key}</TableCell>
-            <TableCell>
-              {formatter(average)}
-              nm
-            </TableCell>
-            <TableCell>
-              {formatter(stddev)}
-              nm
-            </TableCell>
-          </TableRow>
-        ))}
+        {y &&
+          Object.entries(y).map(([key, { average, stddev }]) => (
+            <TableRow key={key}>
+              <TableCell>{NICE_NAMES.get(key) || key}</TableCell>
+              <TableCell>
+                {formatter(average)}
+                nm
+              </TableCell>
+              <TableCell>
+                {formatter(stddev)}
+                nm
+              </TableCell>
+            </TableRow>
+          ))}
       </TableBody>
     </Table>
   );
