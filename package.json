@@ -29,6 +29,7 @@
     "enzyme-to-json": "3.3.5",
     "husky": "2.3.0",
     "jest-environment-jsdom-fourteen": "0.1.0",
+    "jest-image-snapshot": "2.8.2",
     "lint-staged": "8.1.7",
     "prettier": "1.17.1",
     "prop-types": "15.7.2",
