@@ -50,6 +50,21 @@ exports[`<StatisticsTable /> should render table with data 1`] = `
         nm
       </WithStyles(TableCell)>
     </WithStyles(TableRow)>
+    <WithStyles(TableRow)
+      key="other-analysis"
+    >
+      <WithStyles(TableCell)>
+        other-analysis
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        2.0000
+        nm
+      </WithStyles(TableCell)>
+      <WithStyles(TableCell)>
+        2.0000
+        nm
+      </WithStyles(TableCell)>
+    </WithStyles(TableRow)>
   </WithStyles(TableBody)>
 </WithStyles(Table)>
 `;

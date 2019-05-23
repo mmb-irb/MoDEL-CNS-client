@@ -38,7 +38,7 @@ import {
 
 import Slider from '../slider';
 
-import { get, set } from '../../utils/storage/index';
+import { get, setAsync } from '../../utils/storage/index';
 import NGLViewer from '../ngl-viewer';
 
 import useToggleState from '../../hooks/use-toggle-state';
@@ -249,9 +249,7 @@ const NGLViewerWithControls = forwardRef(
               title="Invert background color"
               onClick={() => {
                 toggleDarkBackground();
-                schedule(1000).then(() =>
-                  set('dark-background', !darkBackground),
-                );
+                setAsync('dark-background', !darkBackground);
               }}
               className={cn(style['background-toggle'], {
                 [style['dark']]: darkBackground,
@@ -265,7 +263,7 @@ const NGLViewerWithControls = forwardRef(
               } view`}
               onClick={() => {
                 togglePerspective();
-                schedule(1000).then(() => set('perspective', !perspective));
+                setAsync('perspective', !perspective);
               }}
             >
               {perspective ? <Layers /> : <LayersClear />}
@@ -278,9 +276,7 @@ const NGLViewerWithControls = forwardRef(
                 value={membraneOpacity * 100}
                 handleChange={(_, value) => {
                   setMembraneOpacity(value / 100);
-                  schedule(1000).then(() =>
-                    set('membrane-opacity', value / 100),
-                  );
+                  setAsync('membrane-opacity', value / 100);
                 }}
               />
             )}

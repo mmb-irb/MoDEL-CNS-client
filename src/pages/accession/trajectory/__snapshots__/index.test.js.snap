@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Trajectory /> should render 1`] = `
+<Fragment>
+  <WithStyles(Card)
+    className="card"
+  >
+    <WithStyles(CardContent)>
+      <Component />
+    </WithStyles(CardContent)>
+  </WithStyles(Card)>
+  <WithStyles(Card)
+    className="card"
+  >
+    <ForwardRef
+      className="container"
+    />
+  </WithStyles(Card)>
+</Fragment>
+`;
+
+exports[`<TrajectoryMetadata /> should render 1`] = `<Component />`;

@@ -11,7 +11,12 @@ describe('<StatisticsTable />', () => {
   it('should render table with data', () => {
     expect(
       shallow(
-        <StatisticsTable y={{ rgyr: { average: Math.PI, stddev: 1 } }} />,
+        <StatisticsTable
+          y={{
+            rgyr: { average: Math.PI, stddev: 1 },
+            'other-analysis': { average: 2, stddev: 2 },
+          }}
+        />,
       ),
     ).toMatchSnapshot();
   });

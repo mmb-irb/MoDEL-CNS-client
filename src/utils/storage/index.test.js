@@ -1,4 +1,4 @@
-import { get, set, deleteAll } from '.';
+import { get, set, setAsync, deleteAll } from '.';
 
 beforeAll(() => localStorage.clear());
 afterAll(() => localStorage.clear());
@@ -9,6 +9,20 @@ describe('storage utilities', () => {
       set('key', 20);
       expect(Object.entries(localStorage)).toEqual([
         [expect.stringMatching(/key$/), '20'],
+      ]);
+    });
+  });
+
+  describe('setAsync', () => {
+    it('should asynchronously set a value', async () => {
+      const setPromise = setAsync('key-async', 25);
+      expect(Object.entries(localStorage)).toEqual([
+        [expect.stringMatching(/key$/), '20'],
+      ]);
+      await setPromise;
+      expect(Object.entries(localStorage)).toEqual([
+        [expect.stringMatching(/key$/), '20'],
+        [expect.stringMatching(/key-async$/), '25'],
       ]);
     });
   });

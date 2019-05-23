@@ -5,13 +5,11 @@ import useProgress from '../use-progress';
 
 import { BASE_PATH_PROJECTS } from '../../utils/constants';
 
-const getRangeFor = frames => {
-  if (!frames || !frames.length) return;
-  return `frames=${frames.map(frame => `${frame}-${frame}`).join(',')}`;
-};
+import getRange from './get-range';
+import extractCounts from './extract-counts';
 
 const useFrames = (accession, frames, projection) => {
-  const range = getRangeFor(frames);
+  const range = getRange(frames);
   const fetchOptions = useMemo(() => ({ headers: { range } }), [range]);
 
   const { loading, payload, error, previousPayload, response } = useAPI(
@@ -23,18 +21,7 @@ const useFrames = (accession, frames, projection) => {
 
   const progress = useProgress(response);
 
-  const counts = useMemo(() => {
-    if (!response) return {};
-    const contentRange = response.headers.get('content-range') || '';
-    const types = (contentRange.match(/\w*(?==)/g) || []).filter(Boolean);
-    const counts = {};
-    for (const type of types) {
-      counts[type] = +contentRange.match(
-        new RegExp(`${type}=[^\\/]*\\/(\\d*)`),
-      )[1];
-    }
-    return counts;
-  }, [response]);
+  const counts = useMemo(() => extractCounts(response), [response]);
 
   return {
     loading,

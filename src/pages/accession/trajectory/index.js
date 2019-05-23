@@ -15,7 +15,7 @@ import NGLViewerWithControls from '../../../components/ngl-viewer-with-controls'
 
 import style from './style.module.css';
 
-const TrajectoryMetadata = memo(() => {
+export const TrajectoryMetadata = memo(() => {
   const { metadata } = useContext(ProjectCtx);
 
   return (

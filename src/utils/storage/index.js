@@ -1,4 +1,8 @@
+import { schedule } from 'timing-functions';
+
 const KEY = 'MoDEL-CNS-';
+
+const MAX_WAIT_TIME = 1000;
 
 export const get = (key, defaultValue) => {
   const storedValue = localStorage.getItem(KEY + key);
@@ -8,6 +12,11 @@ export const get = (key, defaultValue) => {
 
 export const set = (key, value) => {
   localStorage.setItem(KEY + key, JSON.stringify(value));
+};
+
+export const setAsync = async (key, value) => {
+  await schedule(MAX_WAIT_TIME);
+  return set(key, value);
 };
 
 export const deleteAll = () => {

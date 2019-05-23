@@ -12,6 +12,9 @@ import cn from 'classnames';
 import { Stage } from 'ngl';
 import { frame } from 'timing-functions';
 
+import payloadToNGLFile from './payload-to-ngl-file';
+import getFrames from './get-frames';
+
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
 import useFrames from '../../hooks/use-frames';
@@ -28,8 +31,6 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
     representation.setVisibility(true);
   }
 }, 100);
-
-const COORDINATES_NUMBER = 3;
 const DEFAULT_NUMBER_OF_FRAMES = 25;
 
 const NGLViewer = memo(
@@ -66,18 +67,15 @@ const NGLViewer = memo(
 
       const { loading: loadingPDB, file: pdbFile } = pdbData;
 
-      // default, no frames loaded
-      let frames = [];
-      if (Number.isFinite(projection)) {
-        frames = Array.from({ length: 20 }, (_, i) => i);
-        // multiple frames loaded, as a trajectory
-      } else if (metadata && !noTrajectory) {
-        const frameStep = Math.floor(metadata.frameCount / nFrames);
-        frames = Array.from({ length: nFrames }, (_, i) => i * frameStep);
-        // only one specific frame loaded
-      } else if (metadata && noTrajectory && Number.isFinite(requestedFrame)) {
-        frames = [requestedFrame];
-      }
+      const isProjection = Number.isFinite(projection);
+
+      const frames = getFrames(
+        isProjection,
+        metadata,
+        noTrajectory,
+        nFrames,
+        requestedFrame,
+      );
 
       const {
         loading: loadingDCD,
@@ -199,9 +197,7 @@ const NGLViewer = memo(
             name: 'membrane',
           },
         );
-        if (Number.isFinite(projection)) {
-          membraneRepresentation.setVisibility(false);
-        }
+        if (isProjection) membraneRepresentation.setVisibility(false);
       }, [pdbFile, projection]);
 
       // highlight hovered atoms from other components
@@ -274,63 +270,18 @@ const NGLViewer = memo(
 
       // DCD file, trajectory
       useEffect(() => {
-        if (!(pdbFile && dcdPayload)) return;
-        const view = new Float32Array(dcdPayload);
-        const file = {
-          boxes: [],
-          type: 'Frames',
-          coordinates: [],
-        };
-        let length = nFrames;
-        if (Number.isFinite(projection)) {
-          length = 20;
-        } else if (Number.isFinite(requestedFrame)) {
-          length = 1;
-        }
-        for (let i = 0; i < length; i++) {
-          const coordinates = new Float32Array(
-            pdbFile.atomCount * COORDINATES_NUMBER,
-          );
-          let k = 0;
-          if (Number.isFinite(projection)) {
-            // if it is a PCA projection
-            for (let j = 0; j < pdbFile.atomCount; j++) {
-              if (k < counts.atoms && pdbFile.getAtomProxy(j).element !== 'H') {
-                // getting value from trajectory
-                coordinates[j * COORDINATES_NUMBER] =
-                  view[
-                    i * counts.atoms * COORDINATES_NUMBER +
-                      k * COORDINATES_NUMBER
-                  ];
-                coordinates[j * COORDINATES_NUMBER + 1] =
-                  view[
-                    i * counts.atoms * COORDINATES_NUMBER +
-                      k * COORDINATES_NUMBER +
-                      1
-                  ];
-                coordinates[j * COORDINATES_NUMBER + 2] =
-                  view[
-                    i * counts.atoms * COORDINATES_NUMBER +
-                      k * COORDINATES_NUMBER +
-                      2
-                  ];
-                k++;
-              }
-            }
-          } else {
-            // if it is not a PCA projection
-            coordinates.set(
-              view.subarray(
-                i * counts.atoms * COORDINATES_NUMBER,
-                (i + 1) * counts.atoms * COORDINATES_NUMBER,
-              ),
-            );
-          }
-          file.coordinates.push(coordinates);
-        }
+        const file = payloadToNGLFile(
+          pdbFile,
+          dcdPayload,
+          counts.atoms,
+          nFrames,
+          isProjection,
+          Number.isFinite(requestedFrame),
+        );
+        if (!file) return;
 
         const component = stageRef.current.compList[0];
-
+        // remove all possibly already existing trajectories
         component.trajList.forEach(component.removeTrajectory.bind(component));
 
         const frames = component.addTrajectory(file);
@@ -338,9 +289,8 @@ const NGLViewer = memo(
         frames.trajectory.setFrame(0);
 
         component.autoView();
-        return () => {
-          frames.signals.frameChanged.remove(handleFrameChange);
-        };
+
+        return () => frames.signals.frameChanged.remove(handleFrameChange);
       }, [
         requestedFrame,
         pdbFile,
