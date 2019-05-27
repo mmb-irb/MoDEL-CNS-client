@@ -13,6 +13,7 @@ import {
   TableRow,
   TablePagination,
   TableFooter,
+  Chip,
 } from '@material-ui/core';
 import { Done } from '@material-ui/icons';
 
@@ -20,7 +21,7 @@ import Highlight from '../../components/highlight';
 
 import useAPI from '../../hooks/use-api';
 
-import { BASE_PATH_PROJECTS } from '../../utils/constants';
+import { BASE_PATH_PROJECTS, NICE_NAMES } from '../../utils/constants';
 
 import style from './style.module.css';
 
@@ -62,13 +63,14 @@ export default ({ location, history }) => {
               <TableCell>name</TableCell>
               <TableCell>membrane</TableCell>
               <TableCell>preview</TableCell>
+              <TableCell>analyses</TableCell>
             </TableRow>
           </TableHead>
           <TableBody
             className={cn(style['table-body'], { [style.loading]: loading })}
           >
             {(payload || previousPayload).projects.map(
-              ({ identifier, pdbInfo }) => (
+              ({ identifier, pdbInfo, analyses }) => (
                 <TableRow key={identifier}>
                   <TableCell>
                     <Link to={`/browse/${identifier}/overview`}>
@@ -103,6 +105,24 @@ export default ({ location, history }) => {
                       loading="lazy"
                       alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
                     />
+                  </TableCell>
+                  <TableCell>
+                    {analyses &&
+                      analyses.length &&
+                      analyses
+                        .sort()
+                        .map(analysis => (
+                          <Chip
+                            key={analysis}
+                            clickable
+                            className={style.analysis}
+                            component={Link}
+                            to={`/browse/${identifier}/${analysis}`}
+                            label={NICE_NAMES.get(analysis) || analysis}
+                            variant="outlined"
+                            color="primary"
+                          />
+                        ))}
                   </TableCell>
                 </TableRow>
               ),
