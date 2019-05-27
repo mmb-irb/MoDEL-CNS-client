@@ -18,7 +18,9 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Button,
 } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 
 import style from './style.module.css';
 
@@ -266,27 +268,40 @@ const EigenvalueGraph = ({
       <div className={style['graph-container']} ref={containerRef} />
       <div className={style.tooltip} ref={tooltipRef} />
       {!!projections.length && (
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Principal component</TableCell>
-              <TableCell>Eigenvalue</TableCell>
-              <TableCell>Explained variance</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {projections.map(p => (
-              <TableRow key={p}>
-                <TableCell>{p + 1}</TableCell>
-                <TableCell>{components[p].eigenvalue}</TableCell>
-                <TableCell>
-                  {round((components[p].eigenvalue / totalEigenvalue) * 100, 1)}{' '}
-                  %
-                </TableCell>
+        <>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Principal component</TableCell>
+                <TableCell>Eigenvalue</TableCell>
+                <TableCell>Explained variance</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {projections.map(p => (
+                <TableRow key={p}>
+                  <TableCell>{p + 1}</TableCell>
+                  <TableCell>{components[p].eigenvalue}</TableCell>
+                  <TableCell>
+                    {round(
+                      (components[p].eigenvalue / totalEigenvalue) * 100,
+                      1,
+                    )}{' '}
+                    %
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Button
+            variant="contained"
+            onClick={() => setProjections([])}
+            className={style.delete}
+          >
+            <Delete />
+            <span>Clear selection</span>
+          </Button>
+        </>
       )}
     </>
   );

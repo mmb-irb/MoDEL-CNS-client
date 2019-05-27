@@ -1,3 +1,8 @@
+.delete {
+  float: right;
+  margin: 1em auto;
+}
+
 .graph-container {
   height: 25vh;
 }
