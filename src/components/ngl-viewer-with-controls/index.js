@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import cn from 'classnames';
 import screenfull from 'screenfull';
-import { schedule } from 'timing-functions';
 
 import {
   CardContent,

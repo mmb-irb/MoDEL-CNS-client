@@ -198,7 +198,7 @@ const NGLViewer = memo(
           },
         );
         if (isProjection) membraneRepresentation.setVisibility(false);
-      }, [pdbFile, projection]);
+      }, [pdbFile, isProjection]);
 
       // highlight hovered atoms from other components
       useEffect(() => {
@@ -298,7 +298,7 @@ const NGLViewer = memo(
         handleFrameChange,
         nFrames,
         counts.atoms,
-        projection,
+        isProjection,
       ]);
 
       // play/pause
