@@ -272,7 +272,8 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
         const { left, top } = containerRef.current.getBoundingClientRect();
         tooltipRef.current.innerHTML = `
           <div>
-            <p>Frame ${datumIndex * processed.step + 1}</p>
+            <p>Frame ${datumIndex * processed.step +
+              1} (click to open viewer)</p>
             <p>Principal component ${processed.projections[0] + 1}: ${
           datum.x
         }</p>
