@@ -16,8 +16,12 @@ import { Delaunay } from 'd3-delaunay';
 import { schedule, sleep, frame } from 'timing-functions';
 import cn from 'classnames';
 
+import useToggleState from '../../hooks/use-toggle-state';
 import movePoints from './move-points';
 import getDrawLegend from './get-draw-legend';
+
+import { IconButton } from '@material-ui/core';
+import { Sync } from '@material-ui/icons';
 
 import style from './style.module.css';
 
@@ -44,6 +48,8 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
   const tooltipRef = useRef(null);
   const delaunayDiagramRef = useRef({ find() {} });
 
+  const [switched, toggleSwitched] = useToggleState(false);
+
   useEffect(() => {
     const canvas = select(containerRef.current).append('canvas');
     const graph = select(containerRef.current).append('svg');
@@ -59,12 +65,10 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       yAxis: graph.append('g').attr('class', style.axis),
       xAxisLegend: graph
         .append('text')
-        .attr('class', cn(style.axis, style['legend-text']))
-        .text(`← principal component ${projections[0] + 1} →`),
+        .attr('class', cn(style.axis, style['legend-text'])),
       yAxisLegend: graph
         .append('text')
-        .attr('class', cn(style.axis, style['legend-text']))
-        .text(`← principal component ${projections[1] + 1} →`),
+        .attr('class', cn(style.axis, style['legend-text'])),
       dataPoints: graph.append('g').attr('class', style['data-points']),
       hover: graph.append('circle').attr('fill', 'transparent'),
       legendCanvas: select(legendRef.current).select('canvas'),
@@ -137,6 +141,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
         .call(xAxis);
 
       refs.xAxisLegend
+        .text(`← principal component ${processed.projections[0] + 1} →`)
         .transition()
         .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(${width / 2}, ${height - 5})`);
@@ -159,6 +164,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
         .call(yAxis);
 
       refs.yAxisLegend
+        .text(`← principal component ${processed.projections[1] + 1} →`)
         .transition()
         .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(5, ${height / 2}) rotate(90)`);
@@ -359,11 +365,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
   useEffect(() => {
     const values = Object.values(data);
 
+    const [xProj, yProj] = switched ? [0, 1] : [1, 0];
+
     const colorScaleWithDomain = colorScale.domain([0, values[0].data.length]);
 
     const zipped = zip(
-      values[projections[0]].data,
-      values[projections[1]].data,
+      values[projections[xProj]].data,
+      values[projections[yProj]].data,
     );
     const processed = {
       data: zipped.map(([x, y], i) => {
@@ -374,10 +382,10 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           fill: { hex, ...rgb(hex) },
         };
       }),
-      xMinMax: [values[projections[0]].min, values[projections[0]].max],
-      yMinMax: [values[projections[1]].min, values[projections[1]].max],
+      xMinMax: [values[projections[xProj]].min, values[projections[xProj]].max],
+      yMinMax: [values[projections[yProj]].min, values[projections[yProj]].max],
       step,
-      projections,
+      projections: [projections[xProj], projections[yProj]],
     };
 
     processedRef.current = processed;
@@ -391,7 +399,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       await schedule(100);
       delaunayDiagramRef.current = Delaunay.from(zipped);
     })();
-  }, [data, projections, step]);
+  }, [data, projections, step, switched]);
 
   return (
     <>
@@ -401,6 +409,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
         ref={containerRef}
       />
       <div className={style.legend}>
+        <IconButton
+          title="Switch axes"
+          className={cn(style.switch, { [style.switched]: switched })}
+          onClick={toggleSwitched}
+        >
+          <Sync />
+        </IconButton>
         <p>position in simulation:</p>
         <div className={style['color-scale']}>
           <div>start</div>
