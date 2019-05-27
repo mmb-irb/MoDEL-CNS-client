@@ -189,7 +189,7 @@ const EigenvalueGraph = ({
           setProjections(projections => {
             const set = new Set(projections);
             set[set.has(i) ? 'delete' : 'add'](i);
-            return Array.from(set).sort();
+            return Array.from(set).sort((a, b) => a - b);
           });
         })
         .on('mousemove', (d, i) => {
