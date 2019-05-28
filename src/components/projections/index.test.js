@@ -3,10 +3,10 @@ import { render, cleanup } from 'react-testing-library';
 
 import Projections from '.';
 
-const data = {
-  'component-1': { eigenvalue: 50, data: [1, 2] },
-  'component-2': { eigenvalue: 50, data: [2, 3] },
-};
+const data = [
+  { eigenvalue: 50, data: [1, 2] },
+  { eigenvalue: 50, data: [2, 3] },
+];
 
 afterAll(cleanup);
 

@@ -147,7 +147,7 @@ const EigenvalueGraph = ({
       // eigenvalue
       // y axis
       const yEigen = scaleLinear()
-        .domain([0, data['component-1'].eigenvalue])
+        .domain([0, data[0].eigenvalue])
         .range([height - MARGIN.bottom, MARGIN.top])
         .nice();
 

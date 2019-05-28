@@ -4,10 +4,7 @@ import { render, fireEvent, cleanup } from 'react-testing-library';
 import EigenvalueGraph from '.';
 import style from './style.module.css';
 
-const data = {
-  'component-1': { eigenvalue: 50, data: [1, 2] },
-  'component-2': { eigenvalue: 50 },
-};
+const data = [{ eigenvalue: 50, data: [1, 2] }, { eigenvalue: 50 }];
 
 describe('<EigenvalueGraph />', () => {
   let wrapper;

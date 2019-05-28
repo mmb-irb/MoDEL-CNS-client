@@ -363,15 +363,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
   }, [projections, setRequestedFrame, step]);
 
   useEffect(() => {
-    const values = Object.values(data);
-
     const [xProj, yProj] = switched ? [0, 1] : [1, 0];
 
-    const colorScaleWithDomain = colorScale.domain([0, values[0].data.length]);
+    const colorScaleWithDomain = colorScale.domain([0, data[0].data.length]);
 
     const zipped = zip(
-      values[projections[xProj]].data,
-      values[projections[yProj]].data,
+      data[projections[xProj]].data,
+      data[projections[yProj]].data,
     );
     const processed = {
       data: zipped.map(([x, y], i) => {
@@ -382,8 +380,8 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           fill: { hex, ...rgb(hex) },
         };
       }),
-      xMinMax: [values[projections[xProj]].min, values[projections[xProj]].max],
-      yMinMax: [values[projections[yProj]].min, values[projections[yProj]].max],
+      xMinMax: [data[projections[xProj]].min, data[projections[xProj]].max],
+      yMinMax: [data[projections[yProj]].min, data[projections[yProj]].max],
       step,
       projections: [projections[xProj], projections[yProj]],
     };
@@ -420,10 +418,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
         <div className={style['color-scale']}>
           <div>start</div>
           <div ref={legendRef}>
-            <canvas
-              height="1"
-              width={data ? Object.values(data)[0].data.length : 0}
-            />
+            <canvas height="1" width={data ? data[0].data.length : 0} />
             <div className={style.cursor} />
           </div>
           <div>end</div>
