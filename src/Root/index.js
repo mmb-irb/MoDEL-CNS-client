@@ -13,7 +13,9 @@ const Header = lazy(() =>
 );
 const Footer = lazy(async () => {
   await schedule(100);
-  const module = await import(/* webpackChunkName: 'footer' */ '../layout/footer');
+  const module = await import(
+    /* webpackChunkName: 'footer' */ '../layout/footer'
+  );
   await sleep(1000);
   await schedule(500);
   return module;
@@ -23,6 +25,9 @@ const Footer = lazy(async () => {
 const Home = lazy(() => import(/* webpackChunkName: 'home' */ '../pages/home'));
 const Browse = lazy(() =>
   import(/* webpackChunkName: 'browse' */ '../pages/browse'),
+);
+const Preview = lazy(() =>
+  import(/* webpackChunkName: 'preview' */ '../pages/preview'),
 );
 const Accession = lazy(() =>
   import(/* webpackChunkName: 'accession' */ '../pages/accession'),
@@ -73,6 +78,15 @@ const Root = () => (
             render={props => (
               <Suspense fallback={null}>
                 <Browse {...props} />
+              </Suspense>
+            )}
+          />
+          <Route
+            path="/preview"
+            exact
+            render={props => (
+              <Suspense fallback={null}>
+                <Preview {...props} />
               </Suspense>
             )}
           />
