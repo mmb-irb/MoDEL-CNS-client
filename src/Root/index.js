@@ -26,8 +26,8 @@ const Home = lazy(() => import(/* webpackChunkName: 'home' */ '../pages/home'));
 const Browse = lazy(() =>
   import(/* webpackChunkName: 'browse' */ '../pages/browse'),
 );
-const Preview = lazy(() =>
-  import(/* webpackChunkName: 'preview' */ '../pages/preview'),
+const PreviewSubmit = lazy(() =>
+  import(/* webpackChunkName: 'preview-submit' */ '../pages/preview-submit'),
 );
 const Accession = lazy(() =>
   import(/* webpackChunkName: 'accession' */ '../pages/accession'),
@@ -82,11 +82,14 @@ const Root = () => (
             )}
           />
           <Route
-            path="/preview"
+            path="/(preview|submit)"
             exact
             render={props => (
               <Suspense fallback={null}>
-                <Preview {...props} />
+                <PreviewSubmit
+                  {...props}
+                  submitMode={props.match.params[0] === 'submit'}
+                />
               </Suspense>
             )}
           />
