@@ -1,6 +1,32 @@
+.container {
+  position: relative;
+}
+
+.container::before {
+  content: '';
+  pointer-events: none;
+  background: black;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 500ms ease-in-out 50ms;
+}
+
+.container.is-dragging::before {
+  opacity: 0.25;
+}
+
 .card {
   margin: 1em 0;
   position: relative;
+}
+
+.card em {
+  font-weight: bold;
+  font-style: normal;
 }
 
 .card-content {
@@ -9,6 +35,27 @@
   background: rgba(0, 255, 0, 0.1);
   background: linear-gradient(transparent 0, rgba(0, 255, 0, 0.1) 2em);
   cursor: pointer;
+  position: relative;
+}
+
+.card-content::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  top: 2em;
+  right: 1em;
+  bottom: 1em;
+  left: 1em;
+  border: 0.25em dashed gray;
+  border-radius: 4px;
+  text-align: center;
+  padding-top: 3em;
+  opacity: 0;
+  transition: opacity 500ms ease-in-out 50ms;
+}
+
+.is-dragging .card-content::after {
+  opacity: 0.5;
 }
 
 .fab {

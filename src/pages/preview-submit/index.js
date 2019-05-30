@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  Suspense,
+  lazy,
+  useCallback,
+} from 'react';
 
 import {
   Card,
@@ -82,7 +89,7 @@ const MetadataStepContent = wrapAsyncComponents(() =>
   ),
 );
 
-const PreviewSubmit = ({ submitMode }) => {
+const PreviewSubmit = ({ submitMode, history }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [files, setFiles] = useState([]);
 
@@ -92,11 +99,22 @@ const PreviewSubmit = ({ submitMode }) => {
     filesRef.current = files;
   }, [files]);
 
-  // clean-up references on unmounting
-  useEffect(
-    () => () => filesRef.current.forEach(file => URL.revokeObjectURL(file)),
-    [],
-  );
+  useEffect(() => {
+    // on mount
+    // if on mount we were in /submit (because of page refresh, or linking)
+    // then replace current location to /preview instead
+    if (submitMode) history.replace('/preview');
+    // on unmount
+    // clean-up references on unmounting
+    return () => filesRef.current.forEach(file => URL.revokeObjectURL(file));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const previousStep = useCallback(() => setCurrentStep(step => --step), [
+    setCurrentStep,
+  ]);
+  const nextStep = useCallback(() => setCurrentStep(step => ++step), [
+    setCurrentStep,
+  ]);
 
   return (
     <>
@@ -106,7 +124,7 @@ const PreviewSubmit = ({ submitMode }) => {
       <Files files={files} setFiles={setFiles} submitMode={submitMode} />
 
       <Card className={style.card}>
-        <CardHeader title="Submission steps" />
+        <CardHeader title="Preview steps" />
         <CardContent className={style['card-content']}>
           <Stepper activeStep={currentStep} orientation="vertical">
             {/* Files */}
@@ -120,7 +138,7 @@ const PreviewSubmit = ({ submitMode }) => {
                   variant="contained"
                   disabled={!files.length}
                   color="primary"
-                  onClick={() => setCurrentStep(c => ++c)}
+                  onClick={nextStep}
                 >
                   Next
                 </Button>
@@ -133,14 +151,8 @@ const PreviewSubmit = ({ submitMode }) => {
               </StepLabel>
               <StepContent>
                 <TopologyStepContent />
-                <Button onClick={() => setCurrentStep(c => --c)}>
-                  Previous
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setCurrentStep(c => ++c)}
-                >
+                <Button onClick={previousStep}>Previous</Button>
+                <Button variant="contained" color="primary" onClick={nextStep}>
                   Next
                 </Button>
               </StepContent>
@@ -152,61 +164,65 @@ const PreviewSubmit = ({ submitMode }) => {
               </StepLabel>
               <StepContent>
                 <TrajectoryStepContent />
-                <Button onClick={() => setCurrentStep(c => --c)}>
-                  Previous
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setCurrentStep(c => ++c)}
-                >
-                  Next
-                </Button>
-              </StepContent>
-            </Step>
-            {/* Analyses */}
-            <Step>
-              <StepLabel>
-                <AnalysesStepLabel />
-              </StepLabel>
-              <StepContent>
-                <AnalysesStepContent />
-                <Button onClick={() => setCurrentStep(c => --c)}>
-                  Previous
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setCurrentStep(c => ++c)}
-                >
-                  Next
-                </Button>
-              </StepContent>
-            </Step>
-            {/* Metadata */}
-            <Step>
-              <StepLabel>
-                <MetadataStepLabel />
-              </StepLabel>
-              <StepContent>
-                <MetadataStepContent />
-                <Button onClick={() => setCurrentStep(c => --c)}>
-                  Previous
-                </Button>
+                <Button onClick={previousStep}>Previous</Button>
                 <Button
                   variant="contained"
                   color="secondary"
-                  onClick={() => setCurrentStep(c => ++c)}
+                  onClick={() => {
+                    nextStep();
+                    history.push('/submit');
+                  }}
                 >
-                  Submit
+                  Start submission process
                 </Button>
               </StepContent>
             </Step>
+            {submitMode && (
+              <Step>
+                {/* Analyses */}
+                <StepLabel>
+                  <AnalysesStepLabel />
+                </StepLabel>
+                <StepContent>
+                  <AnalysesStepContent />
+                  <Button
+                    onClick={() => {
+                      previousStep();
+                      history.push('/preview');
+                    }}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={nextStep}
+                  >
+                    Next
+                  </Button>
+                </StepContent>
+              </Step>
+            )}
+            {submitMode && (
+              <Step>
+                {/* Metadata */}
+                <StepLabel>
+                  <MetadataStepLabel />
+                </StepLabel>
+                <StepContent>
+                  <MetadataStepContent />
+                  <Button onClick={previousStep}>Previous</Button>
+                  <Button variant="contained" color="secondary">
+                    Submit
+                  </Button>
+                </StepContent>
+              </Step>
+            )}
           </Stepper>
 
           <Button
             variant="contained"
-            color="primary"
+            color={submitMode ? 'secondary' : 'primary'}
             disabled={currentStep === 0 && !files.length}
             onClick={() => {
               setCurrentStep(0);
