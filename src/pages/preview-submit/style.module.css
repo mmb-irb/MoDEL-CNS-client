@@ -5,3 +5,7 @@
 .card-content > :not(:first-of-type) {
   margin: 1em 0;
 }
+
+.action-container {
+  margin-top: 1em;
+}

@@ -94,7 +94,7 @@ const Files = ({ files, setFiles, submitMode }) => {
               key={file.url}
               label={`${file.name} (${prettyBytes(file.size)})`}
               onClick={stopEvent}
-              deleteIcon={submitMode ? undefined : <Lock />}
+              deleteIcon={submitMode ? <Lock /> : undefined}
               onDelete={submitMode ? stopEvent : handleDelete(file)}
             />
           ))}

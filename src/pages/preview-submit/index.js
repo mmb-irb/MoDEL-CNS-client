@@ -134,14 +134,16 @@ const PreviewSubmit = ({ submitMode, history }) => {
               </StepLabel>
               <StepContent>
                 <FilesStepContent />
-                <Button
-                  variant="contained"
-                  disabled={!files.length}
-                  color="primary"
-                  onClick={nextStep}
-                >
-                  Next
-                </Button>
+                <div className={style['action-container']}>
+                  <Button
+                    variant="contained"
+                    disabled={!files.length}
+                    color="primary"
+                    onClick={nextStep}
+                  >
+                    Next
+                  </Button>
+                </div>
               </StepContent>
             </Step>
             {/* Topology */}
@@ -151,10 +153,16 @@ const PreviewSubmit = ({ submitMode, history }) => {
               </StepLabel>
               <StepContent>
                 <TopologyStepContent />
-                <Button onClick={previousStep}>Previous</Button>
-                <Button variant="contained" color="primary" onClick={nextStep}>
-                  Next
-                </Button>
+                <div className={style['action-container']}>
+                  <Button onClick={previousStep}>Previous</Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={nextStep}
+                  >
+                    Next
+                  </Button>
+                </div>
               </StepContent>
             </Step>
             {/* Trajectory */}
@@ -164,17 +172,20 @@ const PreviewSubmit = ({ submitMode, history }) => {
               </StepLabel>
               <StepContent>
                 <TrajectoryStepContent />
-                <Button onClick={previousStep}>Previous</Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    nextStep();
-                    history.push('/submit');
-                  }}
-                >
-                  Start submission process
-                </Button>
+
+                <div className={style['action-container']}>
+                  <Button onClick={previousStep}>Previous</Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                      nextStep();
+                      history.push('/submit');
+                    }}
+                  >
+                    Start submission process (not available yet)
+                  </Button>
+                </div>
               </StepContent>
             </Step>
             {submitMode && (
@@ -185,21 +196,24 @@ const PreviewSubmit = ({ submitMode, history }) => {
                 </StepLabel>
                 <StepContent>
                   <AnalysesStepContent />
-                  <Button
-                    onClick={() => {
-                      previousStep();
-                      history.push('/preview');
-                    }}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={nextStep}
-                  >
-                    Next
-                  </Button>
+
+                  <div className={style['action-container']}>
+                    <Button
+                      onClick={() => {
+                        previousStep();
+                        history.push('/preview');
+                      }}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={nextStep}
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </StepContent>
               </Step>
             )}
@@ -211,10 +225,12 @@ const PreviewSubmit = ({ submitMode, history }) => {
                 </StepLabel>
                 <StepContent>
                   <MetadataStepContent />
-                  <Button onClick={previousStep}>Previous</Button>
-                  <Button variant="contained" color="secondary">
-                    Submit
-                  </Button>
+                  <div className={style['action-container']}>
+                    <Button onClick={previousStep}>Previous</Button>
+                    <Button disabled variant="contained" color="secondary">
+                      Submit (disabled for now)
+                    </Button>
+                  </div>
                 </StepContent>
               </Step>
             )}
