@@ -89,11 +89,20 @@ const MetadataStepContent = wrapAsyncComponents(() =>
   ),
 );
 
+const categorize = file => {
+  if (file.category) return;
+  if (/.(pdb|top)$/i.test(file.name)) file.category = 'topology';
+};
+
 const PreviewSubmit = ({ submitMode, history }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [files, setFiles] = useState([]);
 
   const filesRef = useRef(files);
+
+  useEffect(() => {
+    files.forEach(categorize);
+  }, [files]);
 
   useEffect(() => {
     filesRef.current = files;
@@ -152,7 +161,7 @@ const PreviewSubmit = ({ submitMode, history }) => {
                 <TopologyStepLabel />
               </StepLabel>
               <StepContent>
-                <TopologyStepContent />
+                <TopologyStepContent files={files} />
                 <div className={style['action-container']}>
                   <Button onClick={previousStep}>Previous</Button>
                   <Button
