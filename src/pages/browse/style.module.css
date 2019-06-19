@@ -3,6 +3,11 @@
   transition: 0.5s opacity ease-in-out 0.25s;
 }
 
+.not-published {
+  filter: contrast(0.25);
+  opacity: 0.75;
+}
+
 .loading {
   opacity: 0.25;
 }

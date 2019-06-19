@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useContext } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { Typography, Button } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
@@ -21,7 +21,9 @@ const Trajectory = lazy(() =>
   import(/* webpackChunkName: 'trajectory' */ './trajectory'),
 );
 const GenericAnalysisPage = lazy(() =>
-  import(/* webpackChunkName: 'generic-analysis-page' */ './generic-analysis-page'),
+  import(
+    /* webpackChunkName: 'generic-analysis-page' */ './generic-analysis-page'
+  ),
 );
 const PCA = lazy(() => import(/* webpackChunkName: 'pca' */ './pca'));
 
@@ -45,6 +47,24 @@ const SummarySwitch = () => {
   );
 
   if (loading) return <Loading />;
+
+  if (payload && payload.accession && accession !== payload.accession) {
+    // it means that the accession we extracted from the URL is not actually an
+    // accession but an identifier, so, if it exists, redirect to it
+    return (
+      <Route
+        render={({ location }) => (
+          <Redirect
+            to={{
+              ...location,
+              pathname: location.pathname.replace(accession, payload.accession),
+            }}
+          />
+        )}
+      />
+    );
+  }
+
   if (payload) {
     return (
       <ProjectCtx.Provider value={payload}>
@@ -173,16 +193,18 @@ const LinkSwitch = ({ accession, subPage }) => {
   );
 };
 
-export default ({ match }) => (
-  <AccessionCtx.Provider value={match.params.accession}>
-    <Typography variant="h4">
-      Accession: {match.params.accession}
-      <LinkSwitch
-        accession={match.params.accession}
-        subPage={match.params.subPage}
-      />
-    </Typography>
+export default ({ match }) => {
+  return (
+    <AccessionCtx.Provider value={match.params.accession}>
+      <Typography variant="h4">
+        Accession: {match.params.accession}
+        <LinkSwitch
+          accession={match.params.accession}
+          subPage={match.params.subPage}
+        />
+      </Typography>
 
-    <SummarySwitch />
-  </AccessionCtx.Provider>
-);
+      <SummarySwitch />
+    </AccessionCtx.Provider>
+  );
+};

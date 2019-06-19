@@ -13,7 +13,9 @@ const Header = lazy(() =>
 );
 const Footer = lazy(async () => {
   await schedule(100);
-  const module = await import(/* webpackChunkName: 'footer' */ '../layout/footer');
+  const module = await import(
+    /* webpackChunkName: 'footer' */ '../layout/footer'
+  );
   await sleep(1000);
   await schedule(500);
   return module;

@@ -70,12 +70,16 @@ export default ({ location, history }) => {
             className={cn(style['table-body'], { [style.loading]: loading })}
           >
             {(payload || previousPayload).projects.map(
-              ({ identifier, pdbInfo, analyses }) => (
-                <TableRow key={identifier}>
+              ({ identifier, accession, published, pdbInfo, analyses }) => (
+                <TableRow
+                  key={identifier}
+                  className={cn({ [style['not-published']]: !published })}
+                >
                   <TableCell>
-                    <Link to={`/browse/${identifier}/overview`}>
+                    <Link to={`/browse/${accession || identifier}/overview`}>
                       <Highlight highlight={search.search}>
-                        {identifier}
+                        {accession || identifier}
+                        {!published && ' (not published)'}
                       </Highlight>
                     </Link>
                   </TableCell>
@@ -117,7 +121,8 @@ export default ({ location, history }) => {
                             clickable
                             className={style.analysis}
                             component={Link}
-                            to={`/browse/${identifier}/${analysis}`}
+                            to={`/browse/${accession ||
+                              identifier}/${analysis}`}
                             label={NICE_NAMES.get(analysis) || analysis}
                             variant="outlined"
                             color="primary"
