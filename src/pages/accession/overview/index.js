@@ -123,7 +123,7 @@ export default React.memo(() => {
           <Typography variant="h6">Project information</Typography>
           <div className={style['summary-list']}>
             <div>
-              Project accession: {accession || <code>not assigned</code>}
+              Public project accession: {accession || <code>not assigned</code>}
             </div>
             <div>Internal project identifier: {identifier}</div>
             <div>Status: {published ? 'published' : 'unpublished'}</div>
