@@ -1,70 +1,70 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<StatisticsTable /> should render empty table 1`] = `
-<WithStyles(Table)>
-  <WithStyles(TableHead)>
-    <WithStyles(TableRow)>
-      <WithStyles(TableCell)>
+<WithStyles(ForwardRef(Table))>
+  <WithStyles(ForwardRef(TableHead))>
+    <WithStyles(ForwardRef(TableRow))>
+      <WithStyles(ForwardRef(TableCell))>
         name
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         mean
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         standard deviation
-      </WithStyles(TableCell)>
-    </WithStyles(TableRow)>
-  </WithStyles(TableHead)>
-  <WithStyles(TableBody) />
-</WithStyles(Table)>
+      </WithStyles(ForwardRef(TableCell))>
+    </WithStyles(ForwardRef(TableRow))>
+  </WithStyles(ForwardRef(TableHead))>
+  <WithStyles(ForwardRef(TableBody)) />
+</WithStyles(ForwardRef(Table))>
 `;
 
 exports[`<StatisticsTable /> should render table with data 1`] = `
-<WithStyles(Table)>
-  <WithStyles(TableHead)>
-    <WithStyles(TableRow)>
-      <WithStyles(TableCell)>
+<WithStyles(ForwardRef(Table))>
+  <WithStyles(ForwardRef(TableHead))>
+    <WithStyles(ForwardRef(TableRow))>
+      <WithStyles(ForwardRef(TableCell))>
         name
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         mean
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         standard deviation
-      </WithStyles(TableCell)>
-    </WithStyles(TableRow)>
-  </WithStyles(TableHead)>
-  <WithStyles(TableBody)>
-    <WithStyles(TableRow)
+      </WithStyles(ForwardRef(TableCell))>
+    </WithStyles(ForwardRef(TableRow))>
+  </WithStyles(ForwardRef(TableHead))>
+  <WithStyles(ForwardRef(TableBody))>
+    <WithStyles(ForwardRef(TableRow))
       key="rgyr"
     >
-      <WithStyles(TableCell)>
+      <WithStyles(ForwardRef(TableCell))>
         Rgyr
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         3.1416
         nm
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         1.0000
         nm
-      </WithStyles(TableCell)>
-    </WithStyles(TableRow)>
-    <WithStyles(TableRow)
+      </WithStyles(ForwardRef(TableCell))>
+    </WithStyles(ForwardRef(TableRow))>
+    <WithStyles(ForwardRef(TableRow))
       key="other-analysis"
     >
-      <WithStyles(TableCell)>
+      <WithStyles(ForwardRef(TableCell))>
         other-analysis
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         2.0000
         nm
-      </WithStyles(TableCell)>
-      <WithStyles(TableCell)>
+      </WithStyles(ForwardRef(TableCell))>
+      <WithStyles(ForwardRef(TableCell))>
         2.0000
         nm
-      </WithStyles(TableCell)>
-    </WithStyles(TableRow)>
-  </WithStyles(TableBody)>
-</WithStyles(Table)>
+      </WithStyles(ForwardRef(TableCell))>
+    </WithStyles(ForwardRef(TableRow))>
+  </WithStyles(ForwardRef(TableBody))>
+</WithStyles(ForwardRef(Table))>
 `;

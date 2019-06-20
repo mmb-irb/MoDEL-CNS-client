@@ -2,10 +2,10 @@
 
 exports[`<Home /> should render 1`] = `
 <Fragment>
-  <WithStyles(Card)
+  <WithStyles(ForwardRef(Card))
     className="card"
   >
-    <WithStyles(CardContent)
+    <WithStyles(ForwardRef(CardContent))
       className="card-content"
     >
       <img
@@ -13,7 +13,7 @@ exports[`<Home /> should render 1`] = `
         loading="eager"
         src="home-image.png"
       />
-      <WithStyles(Typography)
+      <WithStyles(ForwardRef(Typography))
         variant="h5"
       >
         <strong>
@@ -29,8 +29,8 @@ exports[`<Home /> should render 1`] = `
           signal transduction proteins
         </strong>
         .
-      </WithStyles(Typography)>
-      <WithStyles(Typography)
+      </WithStyles(ForwardRef(Typography))>
+      <WithStyles(ForwardRef(Typography))
         variant="h5"
       >
         The project is part of the Service for providing molecular simulation-based predictions for systems neurobiology of the
@@ -39,8 +39,8 @@ exports[`<Home /> should render 1`] = `
           Human Brain Project
         </strong>
         .
-      </WithStyles(Typography)>
-      <WithStyles(Typography)
+      </WithStyles(ForwardRef(Typography))>
+      <WithStyles(ForwardRef(Typography))
         variant="h5"
       >
         <strong>
@@ -75,16 +75,16 @@ exports[`<Home /> should render 1`] = `
           Central Nervous System
         </strong>
          (CNS) processes, including membrane proteins.
-      </WithStyles(Typography)>
-      <WithStyles(Typography)
+      </WithStyles(ForwardRef(Typography))>
+      <WithStyles(ForwardRef(Typography))
         variant="h5"
       >
         <strong>
           MoDEL_CNS web server interface
         </strong>
          presents the resulting trajectories, analyses, and protein properties. All data produced by the project is available to download.
-      </WithStyles(Typography)>
-      <WithStyles(Typography)
+      </WithStyles(ForwardRef(Typography))>
+      <WithStyles(ForwardRef(Typography))
         className="with-background"
         variant="h5"
       >
@@ -92,10 +92,10 @@ exports[`<Home /> should render 1`] = `
           MoDEL_CNS
         </strong>
          will contribute in the improvement of the understanding of neuronal signalling cascades by protein structure-based simulations, calculating molecular flexibility and dynamics, and guiding systems level modelling.
-      </WithStyles(Typography)>
-    </WithStyles(CardContent)>
-  </WithStyles(Card)>
-  <WithStyles(Fab)
+      </WithStyles(ForwardRef(Typography))>
+    </WithStyles(ForwardRef(CardContent))>
+  </WithStyles(ForwardRef(Card))>
+  <WithStyles(ForwardRef(Fab))
     className="browse-fab"
     color="primary"
     component={[Function]}
@@ -103,6 +103,6 @@ exports[`<Home /> should render 1`] = `
     variant="extended"
   >
     Browse
-  </WithStyles(Fab)>
+  </WithStyles(ForwardRef(Fab))>
 </Fragment>
 `;

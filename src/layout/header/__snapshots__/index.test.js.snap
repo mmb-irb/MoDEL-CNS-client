@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Header /> should render 1`] = `
-<WithStyles(AppBar)
+<WithStyles(ForwardRef(AppBar))
   position="sticky"
 >
-  <WithStyles(Toolbar)>
+  <WithStyles(ForwardRef(Toolbar))>
     <img
       alt="MoDEL - Centra Nervous System - Logo"
       height="102.5px"
@@ -13,6 +13,6 @@ exports[`<Header /> should render 1`] = `
       width="200px"
     />
     <_default />
-  </WithStyles(Toolbar)>
-</WithStyles(AppBar)>
+  </WithStyles(ForwardRef(Toolbar))>
+</WithStyles(ForwardRef(AppBar))>
 `;

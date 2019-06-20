@@ -2,21 +2,21 @@
 
 exports[`<Trajectory /> should render 1`] = `
 <Fragment>
-  <WithStyles(Card)
+  <WithStyles(ForwardRef(Card))
     className="card"
   >
-    <WithStyles(CardContent)>
-      <Component />
-    </WithStyles(CardContent)>
-  </WithStyles(Card)>
-  <WithStyles(Card)
+    <WithStyles(ForwardRef(CardContent))>
+      <Memo() />
+    </WithStyles(ForwardRef(CardContent))>
+  </WithStyles(ForwardRef(Card))>
+  <WithStyles(ForwardRef(Card))
     className="card"
   >
     <ForwardRef
       className="container"
     />
-  </WithStyles(Card)>
+  </WithStyles(ForwardRef(Card))>
 </Fragment>
 `;
 
-exports[`<TrajectoryMetadata /> should render 1`] = `<Component />`;
+exports[`<TrajectoryMetadata /> should render 1`] = `<Memo() />`;

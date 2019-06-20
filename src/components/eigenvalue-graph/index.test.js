@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { render, fireEvent, cleanup } from 'react-testing-library';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 
 import EigenvalueGraph from '.';
 import style from './style.module.css';

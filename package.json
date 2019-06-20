@@ -23,6 +23,7 @@
     "typeface-roboto": "0.0.54"
   },
   "devDependencies": {
+    "@testing-library/react": "8.0.1",
     "canvas": "2.5.0",
     "enzyme": "3.10.0",
     "enzyme-adapter-react-16": "1.14.0",
@@ -33,8 +34,7 @@
     "lint-staged": "8.2.1",
     "prettier": "1.18.2",
     "prop-types": "15.7.2",
-    "react-scripts": "3.0.1",
-    "react-testing-library": "8.0.1"
+    "react-scripts": "3.0.1"
   },
   "homepage": ".",
   "scripts": {

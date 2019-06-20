@@ -2,10 +2,10 @@
 
 exports[`<Footer /> should render 1`] = `
 <footer>
-  <WithStyles(Paper)
+  <WithStyles(ForwardRef(Paper))
     position="static"
   >
-    <WithStyles(Toolbar)
+    <WithStyles(ForwardRef(Toolbar))
       className="footer"
     >
       <a
@@ -32,7 +32,7 @@ exports[`<Footer /> should render 1`] = `
           src="logo-irb.png"
         />
       </a>
-    </WithStyles(Toolbar)>
-  </WithStyles(Paper)>
+    </WithStyles(ForwardRef(Toolbar))>
+  </WithStyles(ForwardRef(Paper))>
 </footer>
 `;

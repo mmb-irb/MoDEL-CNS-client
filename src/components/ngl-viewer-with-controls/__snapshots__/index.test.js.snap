@@ -4,10 +4,10 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
 <div
   className="fullscreen-target"
 >
-  <WithStyles(CardContent)
+  <WithStyles(ForwardRef(CardContent))
     className="card-content"
   >
-    <[object Object]
+    <Memo([object Object])
       darkBackground={true}
       membraneOpacity={0.5}
       nFrames={25}
@@ -22,7 +22,7 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
       onClick={[Function]}
       onMouseMove={[Function]}
     >
-      <WithStyles(LinearProgress)
+      <WithStyles(ForwardRef(LinearProgress))
         color="secondary"
         value={0}
         variant="determinate"
@@ -31,68 +31,68 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
     <div
       className="controls"
     >
-      <WithStyles(IconButton)
+      <WithStyles(ForwardRef(IconButton))
         onClick={[Function]}
         title="Previous frame"
       >
-        <pure(SkipPreviousIcon) />
-      </WithStyles(IconButton)>
-      <WithStyles(IconButton)
+        <SkipPreviousIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(IconButton))
         onClick={[Function]}
         title="Pause"
       >
-        <pure(PauseIcon) />
-      </WithStyles(IconButton)>
-      <WithStyles(IconButton)
+        <PauseIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(IconButton))
         onClick={[Function]}
         title="Next frame"
       >
-        <pure(SkipNextIcon) />
-      </WithStyles(IconButton)>
-      <WithStyles(IconButton)
+        <SkipNextIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(IconButton))
         onClick={[Function]}
         title="Toggle spin"
       >
-        <pure(ThreeSixtyIcon) />
-      </WithStyles(IconButton)>
-      <WithStyles(IconButton)
+        <ThreeSixtyIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(IconButton))
         onClick={[Function]}
         title="Center focus"
       >
-        <pure(CenterFocusStrongIcon) />
-      </WithStyles(IconButton)>
-      <WithStyles(IconButton)
+        <CenterFocusStrongIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(IconButton))
         disabled={false}
         onClick={[Function]}
         title="Toggle smooth interpolation on (may display artifacts for simulation box border atoms)"
       >
-        <pure(VideocamIcon) />
-      </WithStyles(IconButton)>
-      <WithStyles(IconButton)
+        <VideocamIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(IconButton))
         className="background-toggle dark"
         onClick={[Function]}
         title="Invert background color"
       >
-        <pure(InvertColorsIcon) />
-      </WithStyles(IconButton)>
-      <WithStyles(IconButton)
+        <InvertColorsIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(IconButton))
         onClick={[Function]}
         title="Switch to perspective view"
       >
-        <pure(LayersClearIcon) />
-      </WithStyles(IconButton)>
-      <Component
+        <LayersClearIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <Memo()
         className="opacity-slider"
         handleChange={[Function]}
         label="Membrane label:"
         title="Change membrane opacity"
         value={50}
       />
-      <WithStyles(FormControl)>
-        <WithStyles(WithFormControlContext(InputLabel))>
+      <WithStyles(ForwardRef(FormControl))>
+        <WithStyles(WithFormControlContext(ForwardRef(InputLabel)))>
           frames
-        </WithStyles(WithFormControlContext(InputLabel))>
-        <WithStyles(WithFormControlContext(Select))
+        </WithStyles(WithFormControlContext(ForwardRef(InputLabel)))>
+        <WithStyles(WithFormControlContext(ForwardRef(Select)))
           native={true}
           onChange={[Function]}
           value={25}
@@ -122,9 +122,9 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
           >
             500
           </option>
-        </WithStyles(WithFormControlContext(Select))>
-      </WithStyles(FormControl)>
+        </WithStyles(WithFormControlContext(ForwardRef(Select)))>
+      </WithStyles(ForwardRef(FormControl))>
     </div>
-  </WithStyles(CardContent)>
+  </WithStyles(ForwardRef(CardContent))>
 </div>
 `;

@@ -1,4 +1,5 @@
 import payloadToNGLFile from '.';
+import { Frames } from 'ngl';
 
 const pdbFile = {
   atomCount: 2,
@@ -16,21 +17,17 @@ describe('payloadToNGLFile', () => {
 
   it('should work for basic trajectory', () => {
     const file = payloadToNGLFile(pdbFile, twoFrames, 2, 2, false, false);
-    expect(file).toEqual({
-      ...fileTemplate,
-      coordinates: [
-        new Float32Array([0, 1, 2, 3, 4, 5]),
-        new Float32Array([6, 7, 8, 9, 10, 11]),
-      ],
-    });
+    expect(file).toBeInstanceOf(Frames);
+    expect(file.coordinates).toEqual([
+      new Float32Array([0, 1, 2, 3, 4, 5]),
+      new Float32Array([6, 7, 8, 9, 10, 11]),
+    ]);
   });
 
   it('should work for one-frame trajectory', () => {
     const file = payloadToNGLFile(pdbFile, twoFrames, 2, 2, false, true);
-    expect(file).toEqual({
-      ...fileTemplate,
-      coordinates: [new Float32Array([0, 1, 2, 3, 4, 5])],
-    });
+    expect(file).toBeInstanceOf(Frames);
+    expect(file.coordinates).toEqual([new Float32Array([0, 1, 2, 3, 4, 5])]);
   });
 
   it('should work for projection trajectory', () => {
@@ -45,31 +42,29 @@ describe('payloadToNGLFile', () => {
       true,
       false,
     );
-    expect(file).toEqual({
-      ...fileTemplate,
-      // prettier-ignore
-      coordinates: [
-        new Float32Array([0, 0, 0,  0,   1,   2, 0, 0, 0]),
-        new Float32Array([0, 0, 0,  3,   4,   5, 0, 0, 0]),
-        new Float32Array([0, 0, 0,  6,   7,   8, 0, 0, 0]),
-        new Float32Array([0, 0, 0,  9,  10,  11, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 12,  13,  14, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 15,  16,  17, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 18,  19,  20, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 21,  22,  23, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 24,  25,  26, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 27,  28,  29, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 30,  31,  32, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 33,  34,  35, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 36,  37,  38, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 39,  40,  41, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 42,  43,  44, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 45,  46,  47, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 48,  49,  50, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 51,  52,  53, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 54,  55,  56, 0, 0, 0]),
-        new Float32Array([0, 0, 0, 57,  58,  59, 0, 0, 0]),
-      ]
-    });
+    expect(file).toBeInstanceOf(Frames);
+    // prettier-ignore
+    expect(file.coordinates).toEqual([
+      new Float32Array([0, 0, 0,  0,   1,   2, 0, 0, 0]),
+      new Float32Array([0, 0, 0,  3,   4,   5, 0, 0, 0]),
+      new Float32Array([0, 0, 0,  6,   7,   8, 0, 0, 0]),
+      new Float32Array([0, 0, 0,  9,  10,  11, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 12,  13,  14, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 15,  16,  17, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 18,  19,  20, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 21,  22,  23, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 24,  25,  26, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 27,  28,  29, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 30,  31,  32, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 33,  34,  35, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 36,  37,  38, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 39,  40,  41, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 42,  43,  44, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 45,  46,  47, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 48,  49,  50, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 51,  52,  53, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 54,  55,  56, 0, 0, 0]),
+      new Float32Array([0, 0, 0, 57,  58,  59, 0, 0, 0]),
+    ]);
   });
 });
