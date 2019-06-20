@@ -1,3 +1,5 @@
+import { Frames } from 'ngl';
+
 const COORDINATES_NUMBER = 3;
 
 const payloadToNGLFile = (
@@ -11,11 +13,9 @@ const payloadToNGLFile = (
   if (!(pdbFile && dcdPayload)) return;
 
   const view = new Float32Array(dcdPayload);
-  const file = {
-    boxes: [],
-    type: 'Frames',
-    coordinates: [],
-  };
+
+  const file = new Frames('Dynamically generated trajectory', '');
+
   let length = nFrames;
   if (isProjection) {
     length = 20;

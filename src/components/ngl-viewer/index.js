@@ -336,7 +336,7 @@ const NGLViewer = memo(
       // smoothing, player interpolation
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
-        stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
+        stageRef.current.compList[0].trajList[0].trajectory.player.parameters.interpolateType = smooth
           ? 'linear'
           : '';
       }, [pdbFile, dcdPayload, smooth]);
