@@ -314,7 +314,6 @@ const NGLViewer = memo(
         if (
           stageRef.current &&
           stageRef.current.spinAnimation &&
-          stageRef.current.spinAnimation.paused &&
           spinning === stageRef.current.spinAnimation.paused
         ) {
           stageRef.current.toggleSpin();
