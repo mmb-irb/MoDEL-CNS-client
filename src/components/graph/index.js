@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { fromPairs, noop } from 'lodash-es';
+import { fromPairs, noop, flatten } from 'lodash-es';
 import {
   select,
   scaleLinear,
@@ -206,10 +206,11 @@ const Graph = ({
       const y = scaleLinear()
         .domain(
           extent(
-            yEntries
-              .filter(([key]) => labels[key])
-              .map(([, { data }]) => extent(data))
-              .flat(),
+            flatten(
+              yEntries
+                .filter(([key]) => labels[key])
+                .map(([, { data }]) => extent(data)),
+            ),
           ),
         )
         .nice()
