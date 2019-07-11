@@ -77,7 +77,7 @@ const Graph = ({
     drawRef.current && pdbData && pdbData.file && drawRef.current();
   }, [pdbData]);
 
-  const precisionExponentScale = useMemo(
+  const precisionScale = useMemo(
     () => scaleLog().range([NUMBER_OF_DATA_POINTS_ON_SCREEN_AT_MAX_ZOOM, 1]),
     [],
   );
@@ -141,7 +141,7 @@ const Graph = ({
     const maxZoomExtent =
       yEntries[0][1].data.length / NUMBER_OF_DATA_POINTS_ON_SCREEN_AT_MAX_ZOOM;
 
-    precisionExponentScale.domain([1, maxZoomExtent]);
+    precisionScale.domain([1, maxZoomExtent]);
 
     const graphZoom = zoom().scaleExtent([1, maxZoomExtent]);
     graph.call(graphZoom);
@@ -149,7 +149,7 @@ const Graph = ({
       allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
 
       const precision =
-        2 ** Math.floor(Math.log2(precisionExponentScale(event.transform.k)));
+        2 ** Math.floor(Math.log2(precisionScale(event.transform.k)));
 
       setPrecision(precision);
 
