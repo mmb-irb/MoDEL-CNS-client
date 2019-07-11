@@ -148,10 +148,13 @@ const Graph = ({
     graphZoom.on('zoom', () => {
       allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
 
-      const precision =
-        2 ** Math.floor(Math.log2(precisionScale(event.transform.k)));
+      let precision;
+      if (event.sourceEvent.type === 'wheel') {
+        precision =
+          2 ** Math.floor(Math.log2(precisionScale(event.transform.k)));
 
-      setPrecision(precision);
+        setPrecision(precision);
+      }
 
       drawRef.current({
         rescaleX: event.transform.rescaleX.bind(event.transform),
