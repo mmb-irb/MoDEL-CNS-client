@@ -7,6 +7,8 @@ import { Link } from '@material-ui/icons';
 import useAPI from '../../hooks/use-api';
 import useNGLFile from '../../hooks/use-ngl-file';
 
+import ErrorBoundary from '../../components/error-boundary/index';
+
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
 import { BASE_PATH, BASE_PATH_PROJECTS } from '../../utils/constants';
@@ -67,94 +69,96 @@ const SummarySwitch = () => {
 
   if (payload) {
     return (
-      <ProjectCtx.Provider value={payload}>
-        <PdbCtx.Provider value={pdbData}>
-          <Switch>
-            <Route
-              path="/browse/:accession/overview"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <Overview />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/files"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <Files />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/trajectory"
-              exact
-              render={props => (
-                <Suspense fallback={loadingSpan}>
-                  <Trajectory {...props} />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/pca"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <PCA />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/rmsd"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <GenericAnalysisPage
-                    analysis="rmsd"
-                    defaultPrecision={2 ** 6}
-                    xLabel="Time (ns)"
-                    xScaleFactor={0.001}
-                    yLabel="RMSd (nm)"
-                  />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/rgyr"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <GenericAnalysisPage
-                    analysis="rgyr"
-                    defaultPrecision={2 ** 6}
-                    xLabel="Time (ns)"
-                    xScaleFactor={0.001}
-                    yLabel="Rgyr (nm)"
-                  />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/fluctuation"
-              exact
-              component={() => (
-                <Suspense fallback={loadingSpan}>
-                  <GenericAnalysisPage
-                    analysis="fluctuation"
-                    xLabel="Atom"
-                    yLabel="Fluctuation (nm)"
-                    startsAtOne
-                    graphType="dash"
-                  />
-                </Suspense>
-              )}
-            />
-            <Route render={() => 404} />
-          </Switch>
-        </PdbCtx.Provider>
-      </ProjectCtx.Provider>
+      <ErrorBoundary>
+        <ProjectCtx.Provider value={payload}>
+          <PdbCtx.Provider value={pdbData}>
+            <Switch>
+              <Route
+                path="/browse/:accession/overview"
+                exact
+                render={() => (
+                  <Suspense fallback={loadingSpan}>
+                    <Overview />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/files"
+                exact
+                render={() => (
+                  <Suspense fallback={loadingSpan}>
+                    <Files />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/trajectory"
+                exact
+                render={props => (
+                  <Suspense fallback={loadingSpan}>
+                    <Trajectory {...props} />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/pca"
+                exact
+                render={() => (
+                  <Suspense fallback={loadingSpan}>
+                    <PCA />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/rmsd"
+                exact
+                render={() => (
+                  <Suspense fallback={loadingSpan}>
+                    <GenericAnalysisPage
+                      analysis="rmsd"
+                      defaultPrecision={2 ** 6}
+                      xLabel="Time (ns)"
+                      xScaleFactor={0.001}
+                      yLabel="RMSd (nm)"
+                    />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/rgyr"
+                exact
+                render={() => (
+                  <Suspense fallback={loadingSpan}>
+                    <GenericAnalysisPage
+                      analysis="rgyr"
+                      defaultPrecision={2 ** 6}
+                      xLabel="Time (ns)"
+                      xScaleFactor={0.001}
+                      yLabel="Rgyr (nm)"
+                    />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/fluctuation"
+                exact
+                component={() => (
+                  <Suspense fallback={loadingSpan}>
+                    <GenericAnalysisPage
+                      analysis="fluctuation"
+                      xLabel="Atom"
+                      yLabel="Fluctuation (nm)"
+                      startsAtOne
+                      graphType="dash"
+                    />
+                  </Suspense>
+                )}
+              />
+              <Route render={() => 404} />
+            </Switch>
+          </PdbCtx.Provider>
+        </ProjectCtx.Provider>
+      </ErrorBoundary>
     );
   }
 

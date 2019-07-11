@@ -8,6 +8,9 @@ import lightGreen from '@material-ui/core/colors/lightGreen';
 // Layout
 import Body from '../layout/body';
 import Main from '../layout/main';
+
+import ErrorBoundary from '../components/error-boundary';
+
 const Header = lazy(() =>
   import(/* webpackChunkName: 'header' */ '../layout/header'),
 );
@@ -50,49 +53,51 @@ const Root = () => (
         <Header />
       </Suspense>
       <Main>
-        <Switch>
-          <Route
-            path="/"
-            exact
-            render={() => (
-              <Suspense fallback={null}>
-                <Home />
-              </Suspense>
-            )}
-          />
-          <Route
-            path="/contact"
-            exact
-            render={() => (
-              <Suspense fallback={null}>
-                <Contact />
-              </Suspense>
-            )}
-          />
-          <Route
-            path="/browse"
-            exact
-            render={props => (
-              <Suspense fallback={null}>
-                <Browse {...props} />
-              </Suspense>
-            )}
-          />
-          <Redirect
-            from="/browse/:accession"
-            to="/browse/:accession/overview"
-            exact
-          />
-          <Route
-            path="/browse/:accession/:subPage"
-            render={props => (
-              <Suspense fallback={null}>
-                <Accession match={props.match} />
-              </Suspense>
-            )}
-          />
-          <Route render={() => 404} />
-        </Switch>
+        <ErrorBoundary>
+          <Switch>
+            <Route
+              path="/"
+              exact
+              render={() => (
+                <Suspense fallback={null}>
+                  <Home />
+                </Suspense>
+              )}
+            />
+            <Route
+              path="/contact"
+              exact
+              render={() => (
+                <Suspense fallback={null}>
+                  <Contact />
+                </Suspense>
+              )}
+            />
+            <Route
+              path="/browse"
+              exact
+              render={props => (
+                <Suspense fallback={null}>
+                  <Browse {...props} />
+                </Suspense>
+              )}
+            />
+            <Redirect
+              from="/browse/:accession"
+              to="/browse/:accession/overview"
+              exact
+            />
+            <Route
+              path="/browse/:accession/:subPage"
+              render={props => (
+                <Suspense fallback={null}>
+                  <Accession match={props.match} />
+                </Suspense>
+              )}
+            />
+            <Route render={() => 404} />
+          </Switch>
+        </ErrorBoundary>
       </Main>
       <Suspense fallback={null}>
         <Footer />
