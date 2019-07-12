@@ -27,49 +27,42 @@ export const TrajectoryMetadata = memo(() => {
         <legend>Counts</legend>
         <TextField
           className={style['text-field']}
-          readOnly
           label="System atoms"
           title="Total number of atoms in the system"
           value={metadata.SYSTATS}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Proteins atoms"
           title="Number of protein atoms in the system"
           value={metadata.PROTATS}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Proteins residues"
           title="Number of protein residues in the system"
           value={metadata.PROT}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Phospholipids"
           title="Number of membrane molecules in the system"
           value={metadata.DPPC}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Solvent molecules"
           title="Number of solvent molecules in the system"
           value={metadata.SOL}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Positive ions"
           title="Number of positively charged ions in the system"
           value={metadata.NA}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Negative ions"
           title="Number of negatively charged ions in the system"
           value={metadata.CL}
@@ -79,14 +72,12 @@ export const TrajectoryMetadata = memo(() => {
         <legend>Simulation box</legend>
         <TextField
           className={style['text-field']}
-          readOnly
           label="Type"
           title="Box type"
           value={metadata.BOXTYPE}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Size X"
           title="Simulated system box X dimension"
           value={metadata.BOXSIZEX}
@@ -100,7 +91,6 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Size Y"
           title="Simulated system box Y dimension"
           value={metadata.BOXSIZEY}
@@ -114,7 +104,6 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Size Z"
           title="Simulated system box Z dimension"
           value={metadata.BOXSIZEZ}
@@ -128,7 +117,6 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Volume"
           title="Simulated system box volume"
           value={round(
@@ -148,7 +136,6 @@ export const TrajectoryMetadata = memo(() => {
         <legend>Other</legend>
         <TextField
           className={style['text-field']}
-          readOnly
           label="Length"
           title="Simulation length"
           value={metadata.LENGTH}
@@ -162,7 +149,6 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Timestep"
           title="Simulation timestep"
           value={metadata.TIMESTEP}
@@ -176,14 +162,12 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Snapshots"
           title="Number of snapshots"
           value={metadata.SNAPSHOTS}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Frequency"
           title="Frequency of snapshots"
           value={metadata.FREQUENCY}
@@ -197,14 +181,12 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Force field"
           title="Force field"
           value={metadata.FF}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Temperature"
           title="Temperature"
           value={metadata.TEMP}
@@ -218,28 +200,24 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Water type"
           title="Water type"
           value={metadata.WAT}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Ensemble"
           title="Simulation ensemble"
           value={metadata.ENSEMBLE}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Pressure coupling"
           title="Pressure coupling method"
           value={metadata.PCOUPLING}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Membrane"
           title="Membrane type"
           value={metadata.MEMBRANE}

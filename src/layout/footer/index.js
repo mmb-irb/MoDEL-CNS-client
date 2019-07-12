@@ -16,7 +16,7 @@ for (const img of [logoHBP, logoIRB]) {
 
 const Footer = React.memo(() => (
   <footer>
-    <Paper position="static">
+    <Paper>
       <Toolbar className={style.footer}>
         <a
           href="https://www.humanbrainproject.eu/"

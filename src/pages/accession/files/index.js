@@ -63,8 +63,8 @@ export default React.memo(() => {
   return (
     <>
       <Typography variant="h5">Files</Typography>
-      {[...groupedFiles, api].map(([key, set]) => (
-        <Fragment key={key}>
+      {[...groupedFiles, api].map(([key, set], i) => (
+        <Fragment key={typeof key === 'string' ? key : i}>
           <Typography variant="h6" className={style.title}>
             &nbsp;⤷&nbsp;
             {key}

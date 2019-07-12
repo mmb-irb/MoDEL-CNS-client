@@ -334,11 +334,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
         .on('mouseout', reset)
         .on('click', handleGraphEventWith(handleClick));
 
+      /**
+       * @param {(object: object) => void} handler
+       */
       const handleLegendEventWith = handler => () => {
-        const {
-          left,
-          width,
-        } = refs.legendCanvas.node().getBoundingClientRect();
+        const node = refs.legendCanvas.node();
+        if (!(node && 'getBoundingClientRect' in node)) return;
+        const { left, width } = node.getBoundingClientRect();
         const { pageX } = event;
         const position = (pageX - left) / width;
         const datumIndex = Math.floor(position * processed.data.length);

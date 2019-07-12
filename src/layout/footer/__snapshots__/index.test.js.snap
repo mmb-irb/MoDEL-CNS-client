@@ -2,9 +2,7 @@
 
 exports[`<Footer /> should render 1`] = `
 <footer>
-  <WithStyles(ForwardRef(Paper))
-    position="static"
-  >
+  <WithStyles(ForwardRef(Paper))>
     <WithStyles(ForwardRef(Toolbar))
       className="footer"
     >

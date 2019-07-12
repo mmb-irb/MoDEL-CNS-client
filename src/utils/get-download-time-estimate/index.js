@@ -1,3 +1,6 @@
+/**
+ * @param {number} lengthInBytes
+ */
 const getDownloadTimeEstimate = lengthInBytes => {
   if (!(navigator && navigator.connection && navigator.connection.downlink)) {
     return null;
