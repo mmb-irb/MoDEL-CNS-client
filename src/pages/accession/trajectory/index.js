@@ -119,10 +119,13 @@ export const TrajectoryMetadata = memo(() => {
           className={style['text-field']}
           label="Volume"
           title="Simulated system box volume"
-          value={round(
-            +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
-            5,
-          )}
+          value={
+            metadata.BOXSIZEX &&
+            round(
+              +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
+              5,
+            )
+          }
           InputProps={{
             endAdornment: (
               <InputAdornment variant="filled" position="end">

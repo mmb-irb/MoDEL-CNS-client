@@ -97,37 +97,39 @@ export default ({ location, history }) => {
                     <Done />
                   </TableCell>
                   <TableCell>
-                    <img
-                      width="150px"
-                      height="150px"
-                      src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier
-                        .toLowerCase()
-                        .substr(
-                          1,
-                          2,
-                        )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`}
-                      loading="lazy"
-                      alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
-                    />
+                    {pdbInfo && pdbInfo.identifier && (
+                      <img
+                        width="150px"
+                        height="150px"
+                        src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier
+                          .toLowerCase()
+                          .substr(
+                            1,
+                            2,
+                          )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`}
+                        loading="lazy"
+                        alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
+                      />
+                    )}
                   </TableCell>
                   <TableCell>
-                    {analyses &&
-                      analyses.length &&
-                      analyses
-                        .sort()
-                        .map(analysis => (
-                          <Chip
-                            key={analysis}
-                            clickable
-                            className={style.analysis}
-                            component={Link}
-                            to={`/browse/${accession ||
-                              identifier}/${analysis}`}
-                            label={NICE_NAMES.get(analysis) || analysis}
-                            variant="outlined"
-                            color="primary"
-                          />
-                        ))}
+                    {analyses && analyses.length
+                      ? analyses
+                          .sort()
+                          .map(analysis => (
+                            <Chip
+                              key={analysis}
+                              clickable
+                              className={style.analysis}
+                              component={Link}
+                              to={`/browse/${accession ||
+                                identifier}/${analysis}`}
+                              label={NICE_NAMES.get(analysis) || analysis}
+                              variant="outlined"
+                              color="primary"
+                            />
+                          ))
+                      : null}
                   </TableCell>
                 </TableRow>
               ),
@@ -137,7 +139,7 @@ export default ({ location, history }) => {
             <TableRow>
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25, 50]}
-                colSpan={5}
+                colSpan={6}
                 count={(payload || previousPayload).totalCount}
                 rowsPerPage={+search.limit || DEFAULT_LIMIT}
                 page={(+search.page || DEFAULT_PAGE) - 1}

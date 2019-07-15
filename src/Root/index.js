@@ -2,8 +2,10 @@ import React, { lazy, Suspense } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { sleep, schedule } from 'timing-functions';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import blueGrey from '@material-ui/core/colors/blueGrey';
-import lightGreen from '@material-ui/core/colors/lightGreen';
+import {
+  blueGrey as primary,
+  lightGreen as secondary,
+} from '@material-ui/core/colors';
 
 // Layout
 import Body from '../layout/body';
@@ -40,10 +42,7 @@ const theme = createMuiTheme({
   typography: {
     useNextVariants: true,
   },
-  palette: {
-    primary: blueGrey,
-    secondary: lightGreen,
-  },
+  palette: { primary, secondary },
 });
 
 const Root = () => (

@@ -1,6 +1,7 @@
 import { schedule } from 'timing-functions';
+import { name } from '../../../package.json';
 
-const KEY = 'MoDEL-CNS-';
+const KEY = `${name}-`;
 
 const MAX_WAIT_TIME = 1000;
 

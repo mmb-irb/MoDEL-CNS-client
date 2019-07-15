@@ -4,8 +4,7 @@
 }
 
 .not-published {
-  filter: contrast(0.25);
-  opacity: 0.75;
+  opacity: 0.6;
 }
 
 .loading {
