@@ -24,8 +24,15 @@ import style from './style.module.css';
 
 const groupPerTypeReducer = (group, file) => {
   let groupName;
-  if (file.filename.toLowerCase().endsWith('pdb')) {
+  const name = file.filename.toLowerCase();
+  if (name.endsWith('.pdb') || name.endsWith('.gro')) {
     groupName = 'Structure/topology';
+  } else if (
+    name.endsWith('.xtc') ||
+    name.endsWith('.traj') ||
+    name.endsWith('.dcd')
+  ) {
+    groupName = 'Trajectory';
   } else {
     groupName = 'Other';
   }
