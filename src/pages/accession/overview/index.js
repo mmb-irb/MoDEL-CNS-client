@@ -18,16 +18,19 @@ const COMMA_SEPARATOR = /\s*,\s*/;
 export default React.memo(() => {
   const { pdbInfo, accession, identifier, published } = useContext(ProjectCtx);
 
-  const imgSrc = `//cdn.rcsb.org/images/hd/${pdbInfo.identifier
-    .toLowerCase()
-    .substr(
-      1,
-      2,
-    )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`;
+  const imgSrc =
+    pdbInfo &&
+    pdbInfo.identifier &&
+    `//cdn.rcsb.org/images/hd/${pdbInfo.identifier
+      .toLowerCase()
+      .substr(
+        1,
+        2,
+      )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`;
   let organisms;
   let keywords;
   let publishDate;
-  if (pdbInfo) {
+  if (pdbInfo && pdbInfo.identifier) {
     organisms = Array.from(
       new Set((pdbInfo.sources || '').split(COMMA_SEPARATOR)),
     );
