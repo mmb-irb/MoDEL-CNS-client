@@ -51,6 +51,7 @@ const NGLViewer = memo(
         requestedFrame,
         darkBackground,
         perspective,
+        speed,
       },
       ref,
     ) => {
@@ -308,6 +309,16 @@ const NGLViewer = memo(
           playing ? 'play' : 'pause'
         ]();
       }, [pdbFile, dcdPayload, playing]);
+
+      // speed
+      useEffect(() => {
+        stageRef.current &&
+          stageRef.current.compList[0] &&
+          stageRef.current.compList[0].trajList[0] &&
+          stageRef.current.compList[0].trajList[0].trajectory.player.setParameters(
+            { timeout: 500 / (Math.log2(speed + 1) + 1) },
+          );
+      }, [speed, loadingDCD]);
 
       // spinning
       useEffect(() => {

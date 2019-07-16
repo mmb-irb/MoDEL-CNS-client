@@ -72,7 +72,7 @@
   padding: 0.5ch;
 }
 
-[data-rnd] .is-fullscreen .controls .opacity-slider {
-  /* hiding it in this case because it messes things up */
+[data-rnd] .is-fullscreen .controls .slider {
+  /* hiding it in them case because it messes things up */
   display: none;
 }

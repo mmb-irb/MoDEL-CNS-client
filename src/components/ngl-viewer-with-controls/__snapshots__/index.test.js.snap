@@ -15,6 +15,7 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
       perspective={false}
       playing={true}
       smooth={false}
+      speed={50}
       spinning={false}
     />
     <div
@@ -82,12 +83,23 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
         <LayersClearIcon />
       </WithStyles(ForwardRef(IconButton))>
       <Memo()
-        className="opacity-slider"
+        className="slider"
         handleChange={[Function]}
-        label="Membrane label:"
+        label="Membrane opacity:"
         title="Change membrane opacity"
         value={50}
-      />
+      >
+        <FlipIcon />
+      </Memo()>
+      <Memo()
+        className="slider"
+        handleChange={[Function]}
+        label="Player speed:"
+        title="Change player speed"
+        value={50}
+      >
+        <DirectionsRunIcon />
+      </Memo()>
       <WithStyles(ForwardRef(FormControl))>
         <WithStyles(WithFormControlContext(ForwardRef(InputLabel)))>
           frames

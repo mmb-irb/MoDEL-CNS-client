@@ -33,6 +33,10 @@ import {
   Layers,
   LayersClear,
   Close,
+  Flip,
+  DirectionsWalk,
+  DirectionsRun,
+  DirectionsBike,
 } from '@material-ui/icons';
 
 import Slider from '../slider';
@@ -98,6 +102,11 @@ const NGLViewerWithControls = forwardRef(
         }
       }, []),
     );
+    const [speed, setSpeed] = useState(useMemo(() => get('speed', 50), []));
+
+    let SpeedIcon = DirectionsWalk;
+    if (speed > 45) SpeedIcon = DirectionsRun;
+    if (speed > 90) SpeedIcon = DirectionsBike;
 
     // handlers
     // handle click or click & drag progress bar
@@ -164,6 +173,7 @@ const NGLViewerWithControls = forwardRef(
             darkBackground={darkBackground}
             perspective={perspective}
             projection={projection}
+            speed={speed}
             {...props}
           />
           {noTrajectory || (
@@ -185,6 +195,7 @@ const NGLViewerWithControls = forwardRef(
                 <Close />
               </IconButton>
             )}
+
             {noTrajectory || (
               <>
                 <IconButton
@@ -211,6 +222,7 @@ const NGLViewerWithControls = forwardRef(
                 </IconButton>
               </>
             )}
+
             {screenfull.enabled && (
               <IconButton
                 title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
@@ -222,9 +234,11 @@ const NGLViewerWithControls = forwardRef(
                 {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
               </IconButton>
             )}
+
             <IconButton title="Toggle spin" onClick={toggleSpinning}>
               <ThreeSixty />
             </IconButton>
+
             <IconButton
               title="Center focus"
               onClick={useCallback(() => {
@@ -233,6 +247,7 @@ const NGLViewerWithControls = forwardRef(
             >
               <CenterFocusStrong />
             </IconButton>
+
             <IconButton
               title={`Toggle smooth interpolation ${
                 smooth
@@ -244,6 +259,7 @@ const NGLViewerWithControls = forwardRef(
             >
               {smooth ? <BurstMode /> : <Videocam />}
             </IconButton>
+
             <IconButton
               title="Invert background color"
               onClick={() => {
@@ -256,6 +272,7 @@ const NGLViewerWithControls = forwardRef(
             >
               <InvertColors />
             </IconButton>
+
             <IconButton
               title={`Switch to ${
                 perspective ? 'ortographic' : 'perspective'
@@ -267,18 +284,34 @@ const NGLViewerWithControls = forwardRef(
             >
               {perspective ? <Layers /> : <LayersClear />}
             </IconButton>
+
             {!Number.isFinite(projection) && (
               <Slider
-                className={style['opacity-slider']}
-                label="Membrane label:"
+                className={style.slider}
+                label="Membrane opacity:"
                 title="Change membrane opacity"
                 value={membraneOpacity * 100}
                 handleChange={(_, value) => {
                   setMembraneOpacity(value / 100);
                   setAsync('membrane-opacity', value / 100);
                 }}
-              />
+              >
+                <Flip />
+              </Slider>
             )}
+
+            <Slider
+              className={style.slider}
+              label="Player speed:"
+              title="Change player speed"
+              value={speed}
+              handleChange={(_, value) => {
+                setSpeed(value);
+                setAsync('speed', value);
+              }}
+            >
+              <SpeedIcon />
+            </Slider>
 
             {!Number.isFinite(projection) && !noTrajectory && (
               <FormControl>
