@@ -4,9 +4,11 @@ exports[`<Header /> should render 1`] = `
 <WithStyles(ForwardRef(AppBar))
   position="sticky"
 >
-  <WithStyles(ForwardRef(Toolbar))>
+  <WithStyles(ForwardRef(Toolbar))
+    className="toolbar"
+  >
     <img
-      alt="MoDEL - Centra Nervous System - Logo"
+      alt="MoDEL - Central Nervous System - Logo"
       height="102.5px"
       loading="lazy"
       src="logo.png"

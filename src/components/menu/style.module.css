@@ -1,7 +1,6 @@
 .menu {
-  position: absolute;
-  left: 200px;
-  right: 0;
+  overflow: hidden;
+  margin: 0;
 }
 
 .main {
