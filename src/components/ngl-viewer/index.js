@@ -144,7 +144,7 @@ const NGLViewer = memo(
           if (!onProgress) return;
           const progress = clamp(
             frame /
-              (stageRef.current.compList[0].trajList[0].trajectory.numframes -
+              (stageRef.current.compList[0].trajList[0].trajectory.frameCount -
                 1),
             0,
             1,
