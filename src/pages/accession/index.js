@@ -200,13 +200,16 @@ const LinkSwitch = ({ accession, subPage }) => {
 export default ({ match }) => {
   return (
     <AccessionCtx.Provider value={match.params.accession}>
-      <Typography variant="h4">
-        Accession: {match.params.accession}
+      <span>
+        <Typography variant="h4">
+          Accession: {match.params.accession}
+        </Typography>
+
         <LinkSwitch
           accession={match.params.accession}
           subPage={match.params.subPage}
         />
-      </Typography>
+      </span>
 
       <SummarySwitch />
     </AccessionCtx.Provider>
