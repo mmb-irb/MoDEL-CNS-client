@@ -101,10 +101,10 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
         <DirectionsRunIcon />
       </Memo()>
       <WithStyles(ForwardRef(FormControl))>
-        <WithStyles(WithFormControlContext(ForwardRef(InputLabel)))>
+        <WithStyles(ForwardRef(InputLabel))>
           frames
-        </WithStyles(WithFormControlContext(ForwardRef(InputLabel)))>
-        <WithStyles(WithFormControlContext(ForwardRef(Select)))
+        </WithStyles(ForwardRef(InputLabel))>
+        <WithStyles(ForwardRef(Select))
           native={true}
           onChange={[Function]}
           value={25}
@@ -134,7 +134,7 @@ exports[`<NGLViewerWithControls /> should render 1`] = `
           >
             500
           </option>
-        </WithStyles(WithFormControlContext(ForwardRef(Select)))>
+        </WithStyles(ForwardRef(Select))>
       </WithStyles(ForwardRef(FormControl))>
     </div>
   </WithStyles(ForwardRef(CardContent))>

@@ -22,9 +22,8 @@ import {
 import { ColormakerRegistry } from 'ngl';
 import cn from 'classnames';
 
-import { FormControlLabel, Checkbox, Button } from '@material-ui/core';
+import { FormControlLabel, Checkbox, Button, Slider } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Slider } from '@material-ui/lab';
 
 import { PdbCtx } from '../../contexts';
 import { NICE_NAMES, COLORS } from '../../utils/constants';

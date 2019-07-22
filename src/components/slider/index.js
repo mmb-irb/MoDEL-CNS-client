@@ -1,8 +1,12 @@
 import React, { memo, useState, useCallback } from 'react';
 import screenfull from 'screenfull';
 
-import { IconButton, Popover, Paper } from '@material-ui/core';
-import { Slider as MaterialSlider } from '@material-ui/lab';
+import {
+  IconButton,
+  Popover,
+  Paper,
+  Slider as MaterialSlider,
+} from '@material-ui/core';
 
 import style from './style.module.css';
 
