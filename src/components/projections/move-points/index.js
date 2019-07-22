@@ -17,7 +17,8 @@ export default ({ context, dataPoints, width, height, maxTime, isFirstTime }) =>
       // if we finished transitioning, clear completely the canvas
       if (isLastDraw) {
         t.stop();
-        context.clearRect(0, 0, width * dPR, height * dPR);
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, width * dPR, height * dPR);
       } else {
         // clean up the canvas before drawing everything else
         // using white, but opacity 0.25, to keep a shadow of the previous drawings

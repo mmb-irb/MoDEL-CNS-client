@@ -88,7 +88,9 @@ const Graph = ({
     let canvasContext;
     if (type === 'dash') {
       canvas = select(containerRef.current).append('canvas');
-      canvasContext = canvas.node().getContext('2d');
+      canvasContext = canvas
+        .node()
+        .getContext('2d' /*, {desynchronized: true}*/);
     }
     const graph = select(containerRef.current).append('svg');
     const defs = graph.append('defs');
@@ -149,11 +151,13 @@ const Graph = ({
       allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
 
       let precision;
-      if (event.sourceEvent.type === 'wheel') {
-        precision =
-          2 ** Math.floor(Math.log2(precisionScale(event.transform.k)));
+      if (type === 'line') {
+        if (event.sourceEvent.type === 'wheel') {
+          precision =
+            2 ** Math.floor(Math.log2(precisionScale(event.transform.k)));
 
-        setPrecision(precision);
+          setPrecision(precision);
+        }
       }
 
       drawRef.current({

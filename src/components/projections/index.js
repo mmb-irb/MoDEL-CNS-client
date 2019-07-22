@@ -54,7 +54,9 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
     const canvas = select(containerRef.current).append('canvas');
     const graph = select(containerRef.current).append('svg');
 
-    const context = canvas.node().getContext('2d');
+    const context = canvas
+      .node()
+      .getContext('2d', { alpha: false, desynchronized: true });
 
     const brushInstance = brush();
 
@@ -79,7 +81,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
 
     // debounce it to prevent redrawing that too much
     refs.drawLegend = debounce(
-      getDrawLegend(refs.legendCanvas.node().getContext('2d')),
+      getDrawLegend(refs.legendCanvas.node().getContext('2d', { alpha: true })),
       MAX_DELAY + MAX_DURATION,
     );
 
@@ -108,7 +110,12 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
-      canvas.attr('width', width * dPR).attr('height', height * dPR);
+      if (canvas.attr('width') !== `${width * dPR}`) {
+        canvas.attr('width', width * dPR);
+      }
+      if (canvas.attr('height') !== `${height * dPR}`) {
+        canvas.attr('height', height * dPR);
+      }
       canvas.style('width', `${width}px`).style('height', `${height}px`);
 
       refs.brushElement.call(refs.brush);
@@ -122,7 +129,6 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       // y axis
       refs.yScale.range([height - MARGIN.bottom, MARGIN.top]);
       if (!brushing) refs.yScale.domain(processed.yMinMax);
-
       // visual x axis
       const xAxis = g =>
         g
