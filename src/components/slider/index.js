@@ -19,10 +19,7 @@ const Slider = memo(
       <>
         <IconButton
           {...buttonProps}
-          onClick={useCallback(
-            ({ currentTarget }) => setElement(currentTarget),
-            [],
-          )}
+          onClick={event => setElement(event.currentTarget)}
         >
           {children}
         </IconButton>

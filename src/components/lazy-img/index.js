@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * @param {{loading: 'auto' | 'lazy' | 'eager'}} param0
+ * @param {ImgAttr} param0
  */
 const LazyImg = ({ loading = 'auto', alt, ...props }) => (
   // @ts-ignore

@@ -5,7 +5,9 @@ import useProgress from '.';
 let progressHook;
 
 describe('useProgress', () => {
-  const response = new Response(null, { headers: { 'Content-Length': 100 } });
+  const response = new Response(null, {
+    headers: new Headers({ 'Content-Length': '100' }),
+  });
   beforeAll(() => testHook(() => (progressHook = useProgress(response))));
 
   it('should have an initial value', () => {

@@ -34,7 +34,8 @@ const Loading = () => loadingSpan;
 
 const Error = ({ error }) => {
   console.error(error);
-  return 'Something wrong happened';
+  // returningg a fragment here to avoid having typescript complaining
+  return <>Something wrong happened</>;
 };
 
 const SummarySwitch = () => {

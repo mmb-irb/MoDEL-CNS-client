@@ -41,6 +41,11 @@ const Analysis = ({
     analysis === 'fluctuation' ? new Set() : null,
   );
 
+  const showDND = !!(
+    (typeof selected === 'number' && Number.isFinite(selected)) ||
+    (selected && selected.size)
+  );
+
   return (
     <Suspense fallback={<span>Loading</span>}>
       <Card className={style.card}>
@@ -70,7 +75,7 @@ const Analysis = ({
           )}
         </CardContent>
       </Card>
-      {Number.isFinite(selected) || (selected && selected.size) ? (
+      {showDND && (
         <NGLViewerInDND
           accession={accession}
           hovered={hovered}
@@ -78,7 +83,7 @@ const Analysis = ({
           selected={selected}
           setSelected={setSelected}
         />
-      ) : null}
+      )}
     </Suspense>
   );
 };

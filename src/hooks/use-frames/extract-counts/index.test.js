@@ -5,7 +5,7 @@ describe('extractCounts', () => {
     expect(extractCounts()).toEqual({});
     expect(extractCounts({})).toEqual({});
     expect(extractCounts({ headers: new Headers() })).toEqual({});
-    expect(extractCounts({ headers: new Headers([['length', 10]]) })).toEqual(
+    expect(extractCounts({ headers: new Headers({ length: '10' }) })).toEqual(
       {},
     );
   });
