@@ -8,7 +8,7 @@ exports[`<Home /> should render 1`] = `
     <WithStyles(ForwardRef(CardContent))
       className="card-content"
     >
-      <img
+      <LazyImg
         alt="home page"
         loading="eager"
         src="home-image.png"

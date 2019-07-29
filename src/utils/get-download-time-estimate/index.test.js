@@ -2,7 +2,7 @@ import getDownloadTimeEstimate from '.';
 
 describe('getDownloadTimeEstimate', () => {
   it('should give an undefined value when not mocked/not available', () => {
-    expect(getDownloadTimeEstimate()).toBeNull();
+    expect(getDownloadTimeEstimate(10)).toBeNull();
   });
 
   it('should give a time estimate', () => {

@@ -9,6 +9,8 @@ import {
 } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 
+import LazyImg from '../../../components/lazy-img/index';
+
 import { ProjectCtx } from '../../../contexts';
 
 import style from './style.module.css';
@@ -46,7 +48,7 @@ export default React.memo(() => {
         <Card className={style.card}>
           <CardContent className={style['card-content']}>
             <Typography variant="h6">PDB information</Typography>
-            <img
+            <LazyImg
               src={imgSrc}
               loading="lazy"
               alt={`3D view of the ${pdbInfo.identifier} structure`}

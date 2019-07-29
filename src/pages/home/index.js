@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, Fab, Typography } from '@material-ui/core';
 
+import LazyImg from '../../components/lazy-img';
+
 import style from './style.module.css';
 
 import homeImage from '../../images/home-image.png';
@@ -10,7 +12,7 @@ const Home = () => (
   <>
     <Card className={style.card}>
       <CardContent className={style['card-content']}>
-        <img src={homeImage} loading="eager" alt="home page" />
+        <LazyImg src={homeImage} loading="eager" alt="home page" />
         <Typography variant="h5">
           <strong>MoDEL_CNS</strong> is a platform designed to provide
           web-access to <strong>atomistic-MD trajectories</strong> for relevant{' '}

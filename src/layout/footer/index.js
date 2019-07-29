@@ -1,6 +1,8 @@
 import React from 'react';
 import { Paper, Toolbar } from '@material-ui/core';
 
+import LazyImg from '../../components/lazy-img';
+
 import style from './style.module.css';
 
 import logoHBP from '../../images/logo-hbp.png';
@@ -23,7 +25,7 @@ const Footer = React.memo(() => (
           target="_blank"
           rel="noreferrer noopener"
         >
-          <img
+          <LazyImg
             height="100px"
             src={logoHBP}
             loading="lazy"
@@ -35,7 +37,7 @@ const Footer = React.memo(() => (
           target="_blank"
           rel="noreferrer noopener"
         >
-          <img
+          <LazyImg
             height="100px"
             src={logoIRB}
             loading="lazy"

@@ -18,6 +18,7 @@ import {
 import { Done } from '@material-ui/icons';
 
 import Highlight from '../../components/highlight';
+import LazyImg from '../../components/lazy-img';
 
 import useAPI from '../../hooks/use-api';
 
@@ -98,7 +99,7 @@ export default ({ location, history }) => {
                   </TableCell>
                   <TableCell>
                     {pdbInfo && pdbInfo.identifier && (
-                      <img
+                      <LazyImg
                         width="150px"
                         height="150px"
                         src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier

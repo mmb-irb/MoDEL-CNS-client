@@ -11,7 +11,7 @@ exports[`<Footer /> should render 1`] = `
         rel="noreferrer noopener"
         target="_blank"
       >
-        <img
+        <LazyImg
           alt="Human Brain Project website"
           height="100px"
           loading="lazy"
@@ -23,7 +23,7 @@ exports[`<Footer /> should render 1`] = `
         rel="noreferrer noopener"
         target="_blank"
       >
-        <img
+        <LazyImg
           alt="IRB Barcelona website"
           height="100px"
           loading="lazy"
