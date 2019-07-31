@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { format } from 'd3';
 
 import {

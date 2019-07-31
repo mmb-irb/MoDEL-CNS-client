@@ -99,7 +99,7 @@ const EigenvalueGraph = ({
         g.attr('transform', `translate(${width - MARGIN.right}, 0)`).call(
           axisRight(yExpl)
             .ticks(6)
-            .tickFormat(d => `${d * 100}%`),
+            .tickFormat(d => `${(typeof d === 'number' ? d : 0) * 100}%`),
         );
       refs.yExplAxis.call(yExplAxis);
 

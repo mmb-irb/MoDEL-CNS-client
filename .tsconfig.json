@@ -13,11 +13,7 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowSyntheticDefaultImports": true
   },
   "files": [
@@ -25,7 +21,5 @@
     "types/custom.d.ts",
     "src/index.js"
   ],
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
