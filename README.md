@@ -11,13 +11,13 @@ Have Node.js and npm installed and working
 
 1. Install the dependencies with `npm install`
 2. Create and fill and `.env` file in the root of the project (see [reference below](#.env-file-fields) for the keys)
-3. Start development server with `npm run start`
+3. Start development version of the website with `npm run start`
 
 ### production
 
 1. Install the dependencies with `npm ci` (install exact dependencies as defined by `package-lock.json` file)
 2. Create and fill and `.env` file in the root of the project (see [reference below](#.env-file-fields) for the keys)
-3. Start the server with `node index.js` or using a process manager like [PM2](http://pm2.keymetrics.io/) for example
+3. Build the website bundle with `npm run build`
 
 ### `.env` file fields
 
