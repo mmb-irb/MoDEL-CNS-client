@@ -7,17 +7,21 @@ import LazyImg from '../../components/lazy-img';
 import style from './style.module.css';
 
 import logo from '../../images/logo.png';
+import logoWebP from '../../images/logo.webp';
 
 const Header = () => (
   <AppBar position="sticky">
     <Toolbar className={style.toolbar}>
-      <LazyImg
-        src={logo}
-        width="200px"
-        height="102.5px"
-        loading="lazy"
-        alt="MoDEL - Central Nervous System - Logo"
-      />
+      <picture>
+        <source type="image/webp" srcSet={logoWebP} />
+        <LazyImg
+          src={logo}
+          width="200px"
+          height="103px"
+          loading="lazy"
+          alt="MoDEL - Central Nervous System - Logo"
+        />
+      </picture>
       <Menu />
     </Toolbar>
   </AppBar>

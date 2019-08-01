@@ -7,12 +7,28 @@ import LazyImg from '../../components/lazy-img';
 import style from './style.module.css';
 
 import homeImage from '../../images/home-image.png';
+import homeImage300 from '../../images/home-image_300.png';
+import homeImageWebP from '../../images/home-image.webp';
+import homeImageWebP300 from '../../images/home-image_300.webp';
 
 const Home = () => (
   <>
     <Card className={style.card}>
       <CardContent className={style['card-content']}>
-        <LazyImg src={homeImage} loading="eager" alt="home page" />
+        <picture>
+          <source
+            type="image/webp"
+            srcSet={homeImageWebP}
+            media="(min-width: 679px)"
+          />
+          <source type="image/webp" srcSet={homeImageWebP300} />
+          <source
+            type="image/png"
+            srcSet={homeImage}
+            media="(min-width: 679px)"
+          />
+          <LazyImg src={homeImage300} loading="eager" alt="home page" />
+        </picture>
         <Typography variant="h5">
           <strong>MoDEL_CNS</strong> is a platform designed to provide
           web-access to <strong>atomistic-MD trajectories</strong> for relevant{' '}

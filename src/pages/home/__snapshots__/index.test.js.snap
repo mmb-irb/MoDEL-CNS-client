@@ -8,11 +8,27 @@ exports[`<Home /> should render 1`] = `
     <WithStyles(ForwardRef(CardContent))
       className="card-content"
     >
-      <LazyImg
-        alt="home page"
-        loading="eager"
-        src="home-image.png"
-      />
+      <picture>
+        <source
+          media="(min-width: 679px)"
+          srcSet="home-image.webp"
+          type="image/webp"
+        />
+        <source
+          srcSet="home-image_300.webp"
+          type="image/webp"
+        />
+        <source
+          media="(min-width: 679px)"
+          srcSet="home-image.png"
+          type="image/png"
+        />
+        <LazyImg
+          alt="home page"
+          loading="eager"
+          src="home-image_300.png"
+        />
+      </picture>
       <WithStyles(ForwardRef(Typography))
         variant="h5"
       >

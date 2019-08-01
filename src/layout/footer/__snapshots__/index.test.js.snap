@@ -11,24 +11,36 @@ exports[`<Footer /> should render 1`] = `
         rel="noreferrer noopener"
         target="_blank"
       >
-        <LazyImg
-          alt="Human Brain Project website"
-          height="100px"
-          loading="lazy"
-          src="logo-hbp.png"
-        />
+        <picture>
+          <source
+            srcSet="logo-hbp.webp"
+            type="image/webp"
+          />
+          <LazyImg
+            alt="Human Brain Project website"
+            height="100px"
+            loading="lazy"
+            src="logo-hbp.png"
+          />
+        </picture>
       </a>
       <a
         href="https://www.irbbarcelona.org/"
         rel="noreferrer noopener"
         target="_blank"
       >
-        <LazyImg
-          alt="IRB Barcelona website"
-          height="100px"
-          loading="lazy"
-          src="logo-irb.png"
-        />
+        <picture>
+          <source
+            srcSet="logo-irb.webp"
+            type="image/webp"
+          />
+          <LazyImg
+            alt="IRB Barcelona website"
+            height="100px"
+            loading="lazy"
+            src="logo-irb.png"
+          />
+        </picture>
       </a>
     </WithStyles(ForwardRef(Toolbar))>
   </WithStyles(ForwardRef(Paper))>
