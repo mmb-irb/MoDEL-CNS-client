@@ -11,7 +11,7 @@ import style from './style.module.css';
 const DEBOUNCE_DELAY = 500;
 
 // define non-changing props
-const inputProps = { ['aria-label']: 'Search projects by text' };
+const inputProps = { 'aria-label': 'Search projects by text' };
 
 export const updateLocation = (history, value) => {
   const { search, ...nextSearchObject } = parse(history.location.search, {
