@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { sleep, schedule } from 'timing-functions';
+import { schedule } from 'timing-functions';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import {
   blueGrey as primary,
@@ -10,19 +10,16 @@ import {
 // Layout
 import Body from '../layout/body';
 import Main from '../layout/main';
+import Header from '../layout/header';
 import HomeFAB from '../components/home-fab';
 
 import ErrorBoundary from '../components/error-boundary';
 
-const Header = lazy(() =>
-  import(/* webpackChunkName: 'header' */ '../layout/header'),
-);
 const Footer = lazy(async () => {
   await schedule(100);
   const module = await import(
     /* webpackChunkName: 'footer' */ '../layout/footer'
   );
-  await sleep(1000);
   await schedule(500);
   return module;
 });
@@ -59,9 +56,7 @@ const theme = createMuiTheme({
 const Root = () => (
   <MuiThemeProvider theme={theme}>
     <Body>
-      <Suspense fallback={null}>
-        <Header />
-      </Suspense>
+      <Header />
       <Main>
         <ErrorBoundary>
           <Switch>
