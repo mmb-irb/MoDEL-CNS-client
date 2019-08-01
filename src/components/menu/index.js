@@ -16,7 +16,12 @@ const Search = lazy(() => import(/* webpackChunkName: 'search' */ './search'));
 export default () => (
   <menu className={style.menu}>
     <div className={style.main}>
-      <Button component={Link} color="inherit" to="/">
+      <Button
+        component={Link}
+        color="inherit"
+        to="/"
+        className={style['home-text-button']}
+      >
         Home
       </Button>
       <Button component={Link} color="inherit" to="/browse">

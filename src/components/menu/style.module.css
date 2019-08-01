@@ -5,6 +5,13 @@
 
 .main {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   color: black;
+}
+
+@media (max-width: 990px) {
+  .home-text-button {
+    display: none;
+  }
 }

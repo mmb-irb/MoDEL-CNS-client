@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { AppBar, Toolbar } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 
 import Menu from '../../components/menu';
 import LazyImg from '../../components/lazy-img';
@@ -12,16 +14,18 @@ import logoWebP from '../../images/logo.webp';
 const Header = () => (
   <AppBar position="sticky">
     <Toolbar className={style.toolbar}>
-      <picture>
-        <source type="image/webp" srcSet={logoWebP} />
-        <LazyImg
-          src={logo}
-          width="200px"
-          height="103px"
-          loading="lazy"
-          alt="MoDEL - Central Nervous System - Logo"
-        />
-      </picture>
+      <Link to="/" title="home">
+        <picture>
+          <source type="image/webp" srcSet={logoWebP} />
+          <LazyImg
+            src={logo}
+            width="200px"
+            height="103px"
+            loading="lazy"
+            alt="Logo - Link to home page"
+          />
+        </picture>
+      </Link>
       <Menu />
     </Toolbar>
   </AppBar>

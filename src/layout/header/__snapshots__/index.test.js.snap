@@ -7,19 +7,24 @@ exports[`<Header /> should render 1`] = `
   <WithStyles(ForwardRef(Toolbar))
     className="toolbar"
   >
-    <picture>
-      <source
-        srcSet="logo.webp"
-        type="image/webp"
-      />
-      <LazyImg
-        alt="MoDEL - Central Nervous System - Logo"
-        height="103px"
-        loading="lazy"
-        src="logo.png"
-        width="200px"
-      />
-    </picture>
+    <Link
+      title="home"
+      to="/"
+    >
+      <picture>
+        <source
+          srcSet="logo.webp"
+          type="image/webp"
+        />
+        <LazyImg
+          alt="Logo - Link to home page"
+          height="103px"
+          loading="lazy"
+          src="logo.png"
+          width="200px"
+        />
+      </picture>
+    </Link>
     <_default />
   </WithStyles(ForwardRef(Toolbar))>
 </WithStyles(ForwardRef(AppBar))>

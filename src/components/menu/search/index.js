@@ -44,7 +44,7 @@ const Search = ({ history }) => {
   );
 
   return (
-    <>
+    <span>
       <Icon>
         <SearchIcon className={value && style['search-active']} />
       </Icon>
@@ -53,7 +53,7 @@ const Search = ({ history }) => {
         onChange={handleChange}
         className={style.search}
       />
-    </>
+    </span>
   );
 };
 
