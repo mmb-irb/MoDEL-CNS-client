@@ -31,12 +31,7 @@ export default () => (
       <Button component={Link} color="inherit" to="/contact">
         Contact
       </Button>
-      <Button
-        component="a"
-        color="inherit"
-        href={`${BASE_PATH}docs/`}
-        target="_blank"
-      >
+      <Button component="a" color="inherit" href={`${BASE_PATH}docs/`}>
         REST API
       </Button>
       <Switch>
