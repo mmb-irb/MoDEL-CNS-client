@@ -16,10 +16,3 @@
   background: lightcyan;
   padding-left: 1ch;
 }
-
-.browse-fab {
-  z-index: 1;
-  position: fixed !important;
-  bottom: 6vh;
-  right: 6vw;
-}
