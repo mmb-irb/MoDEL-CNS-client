@@ -3,7 +3,7 @@
 }
 
 .search input {
-  color: lime;
+  color: initial;
   letter-spacing: 0.15ch;
   padding: 0.5ch;
 }

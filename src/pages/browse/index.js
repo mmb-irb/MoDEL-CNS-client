@@ -29,6 +29,11 @@ import style from './style.module.css';
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 
+// define non-changing props
+const rowsPerPageOptions = [5, 10, 25, 50];
+const backIconButtonProps = { title: 'Previous page' };
+const nextIconButtonProps = { title: 'Next page' };
+
 export default ({ location, history }) => {
   const search = parse(location.search, { ignoreQueryPrefix: true });
 
@@ -133,7 +138,6 @@ export default ({ location, history }) => {
                                 identifier}/${analysis}`}
                               label={NICE_NAMES.get(analysis) || analysis}
                               variant="outlined"
-                              color="primary"
                             />
                           ))
                       : null}
@@ -145,7 +149,7 @@ export default ({ location, history }) => {
           <TableFooter>
             <TableRow>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25, 50]}
+                rowsPerPageOptions={rowsPerPageOptions}
                 colSpan={6}
                 count={(payload || previousPayload).totalCount}
                 rowsPerPage={+search.limit || DEFAULT_LIMIT}
@@ -172,6 +176,8 @@ export default ({ location, history }) => {
                     }),
                   });
                 }}
+                backIconButtonProps={backIconButtonProps}
+                nextIconButtonProps={nextIconButtonProps}
               />
             </TableRow>
           </TableFooter>
