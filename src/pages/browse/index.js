@@ -57,7 +57,7 @@ export default ({ location, history }) => {
     <Card>
       <CardContent>
         <Table>
-          <TableHead>
+          <TableHead className={style['table-head']}>
             <TableRow>
               <TableCell>accession</TableCell>
               <TableCell>PDB accession</TableCell>
@@ -76,6 +76,7 @@ export default ({ location, history }) => {
                   key={identifier}
                   className={cn({ [style['not-published']]: !published })}
                 >
+                  {/* accession */}
                   <TableCell>
                     <Link to={`/browse/${accession || identifier}/overview`}>
                       <Highlight highlight={search.search}>
@@ -84,19 +85,23 @@ export default ({ location, history }) => {
                       </Highlight>
                     </Link>
                   </TableCell>
+                  {/* PDB accession */}
                   <TableCell>
                     <Highlight highlight={search.search}>
                       {pdbInfo && pdbInfo.identifier}
                     </Highlight>
                   </TableCell>
+                  {/* name */}
                   <TableCell>
                     <Highlight highlight={search.search}>
                       {pdbInfo && pdbInfo.compound}
                     </Highlight>
                   </TableCell>
+                  {/* membrane */}
                   <TableCell>
                     <Done />
                   </TableCell>
+                  {/* preview */}
                   <TableCell>
                     {pdbInfo && pdbInfo.identifier && (
                       <LazyImg
@@ -113,6 +118,7 @@ export default ({ location, history }) => {
                       />
                     )}
                   </TableCell>
+                  {/* analyses */}
                   <TableCell>
                     {analyses && analyses.length
                       ? analyses

@@ -3,6 +3,25 @@
   transition: 0.5s opacity ease-in-out 0.25s;
 }
 
+@media (max-width: 1100px) {
+  .table-body img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .table-body td,
+  .table-head th {
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .table-body img {
+    width: 50px;
+    height: 50px;
+  }
+}
+
 .not-published {
   opacity: 0.6;
 }

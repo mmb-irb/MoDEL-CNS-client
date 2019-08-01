@@ -42,6 +42,16 @@ const theme = createMuiTheme({
   typography: {
     useNextVariants: true,
   },
+  overrides: {
+    MuiTablePagination: {
+      toolbar: {
+        justifyContent: 'center',
+      },
+      spacer: {
+        flex: 0,
+      },
+    },
+  },
   palette: { primary, secondary },
 });
 
