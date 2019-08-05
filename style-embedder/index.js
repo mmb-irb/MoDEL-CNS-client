@@ -19,7 +19,7 @@ const main = async () => {
     const { href } = (link.match(hrefRE) || []).groups || {};
     // read stylesheet file content
     let style = await asyncReadFile(`./build/${href}`, { encoding: 'utf8' });
-    style = style.replace(relativeURLInCSS, 'url(/');
+    style = style.replace(relativeURLInCSS, 'url(./');
     // inline content of stylesheet inside html
     indexFile = indexFile.replace(link, `<style>${style}</style>`);
   }
