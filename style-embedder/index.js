@@ -6,6 +6,7 @@ const asyncWriteFile = promisify(writeFile);
 
 const styleLinkRE = /<link[^>]+\.css[^>]+>/gim;
 const hrefRE = /href="\.(?<href>[^"]+)"/i;
+const relativeURLInCSS = /url\(\.\.\/\.\.\//g; // matches: url(../../
 
 const main = async () => {
   // read index.html file content
@@ -17,7 +18,8 @@ const main = async () => {
     // extract href of the stylesheet
     const { href } = (link.match(hrefRE) || []).groups || {};
     // read stylesheet file content
-    const style = await asyncReadFile(`./build/${href}`, { encoding: 'utf8' });
+    let style = await asyncReadFile(`./build/${href}`, { encoding: 'utf8' });
+    style = style.replace(relativeURLInCSS, 'url(/');
     // inline content of stylesheet inside html
     indexFile = indexFile.replace(link, `<style>${style}</style>`);
   }
