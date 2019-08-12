@@ -19,14 +19,20 @@ const main = async () => {
     const { href } = (link.match(hrefRE) || []).groups || {};
     // read stylesheet file content
     let style = await asyncReadFile(`./build/${href}`, { encoding: 'utf8' });
+    // fix relative urls
     style = style.replace(relativeURLInCSS, 'url(./');
+    // but then, we have to add the path to the sourcemaps
+    style = style.replace(
+      /sourceMappingURL=/g,
+      'sourceMappingURL=./static/css/',
+    );
     // inline content of stylesheet inside html
     indexFile = indexFile.replace(link, `<style>${style}</style>`);
   }
   // output resulting index.html file (overwrite)
   await asyncWriteFile('./build/index.html', indexFile, { encoding: 'utf8' });
 
-  return '⚡ Inlined embeddable stylesheets inside "build/index.html" file ⚡';
+  return '⚡ Injected embeddable stylesheets inside "build/index.html" file ⚡';
 };
 
 main().then(console.log, console.error);
