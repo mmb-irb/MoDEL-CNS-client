@@ -16,6 +16,13 @@ exports[`<Trajectory /> should render 1`] = `
       className="container"
     />
   </WithStyles(ForwardRef(Card))>
+  <WithStyles(ForwardRef(Card))
+    className="card"
+  >
+    <WithStyles(ForwardRef(CardContent))>
+      <Memo() />
+    </WithStyles(ForwardRef(CardContent))>
+  </WithStyles(ForwardRef(Card))>
 </Fragment>
 `;
 

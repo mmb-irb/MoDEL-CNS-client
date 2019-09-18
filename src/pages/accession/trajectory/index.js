@@ -12,6 +12,7 @@ import {
 import { ProjectCtx } from '../../../contexts';
 
 import NGLViewerWithControls from '../../../components/ngl-viewer-with-controls';
+import ChainAnalyses from '../../../components/chain-analyses';
 
 import style from './style.module.css';
 
@@ -230,6 +231,33 @@ export const TrajectoryMetadata = memo(() => {
   );
 });
 
+const Analyses = memo(() => {
+  const { chains, accession, identifier } = useContext(ProjectCtx);
+
+  return (
+    <>
+      <Typography variant="h6">Protein functional analysis</Typography>
+      <p>
+        Powered by{' '}
+        <a
+          href="https://www.ebi.ac.uk/interpro/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          InterProScan
+        </a>
+      </p>
+      <ul>
+        {chains.map(chain => (
+          <li key={chain}>
+            <ChainAnalyses chain={chain} accession={accession || identifier} />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+});
+
 const Trajectory = () => (
   <>
     <Card className={style.card}>
@@ -239,6 +267,11 @@ const Trajectory = () => (
     </Card>
     <Card className={style.card}>
       <NGLViewerWithControls className={style.container} />
+    </Card>
+    <Card className={style.card}>
+      <CardContent>
+        <Analyses />
+      </CardContent>
     </Card>
   </>
 );

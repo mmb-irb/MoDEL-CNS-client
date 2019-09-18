@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
-import { Stage } from 'ngl';
+import { Stage, ColormakerRegistry } from 'ngl';
 import { frame } from 'timing-functions';
 
 import payloadToNGLFile from './payload-to-ngl-file';
@@ -188,6 +188,7 @@ const NGLViewer = memo(
         structureComponent.addRepresentation('cartoon', {
           sele: 'polymer and not hydrogen',
           name: 'structure',
+          opacity: 1,
         });
         // membrane
         const membraneRepresentation = structureComponent.addRepresentation(
@@ -197,6 +198,9 @@ const NGLViewer = memo(
             opacity: 0.5,
             name: 'membrane',
           },
+        );
+        structureComponent.structure.eachChain(
+          chain => (window[`chain_${chain.chainname}`] = chain.toObject()),
         );
         if (isProjection) membraneRepresentation.setVisibility(false);
       }, [pdbFile, isProjection]);
@@ -358,6 +362,70 @@ const NGLViewer = memo(
         return handleResize.cancel;
       }, [pdbFile, dcdPayload, handleResize]);
 
+      // listen to change event from nightingale component
+      useEffect(() => {
+        const handler = ({ detail }) => {
+          // escape case for event listener
+          if (!(detail.eventtype === 'click' || detail.eventtype === 'reset')) {
+            return;
+          }
+          let offset = 0;
+          let highlight = '';
+          for (const manager of document.querySelectorAll(
+            'protvista-manager',
+          )) {
+            // get highlight value for each manager
+            const thisHiglight = manager.attributeValues.get('highlight');
+            const nextOffset = offset + +manager.dataset.chainLength;
+            if (!thisHiglight) {
+              // if none, escape
+              offset = nextOffset;
+              continue;
+            }
+            const [start, end] = thisHiglight
+              .split(':')
+              .map(item => +item + offset);
+            highlight += ` or ${start}-${end}`;
+            offset = nextOffset;
+          }
+          highlight = highlight.substr(4); // remove initial ' or '
+          console.log(highlight);
+
+          const previousStructureRepresentation = stageRef.current.compList[0].reprList.find(
+            representation => representation.name === 'structure',
+          );
+          if (previousStructureRepresentation) {
+            stageRef.current.compList[0].removeRepresentation(
+              previousStructureRepresentation,
+            );
+          }
+          // no highlight, then default coloring
+          if (!highlight) {
+            stageRef.current.compList[0].addRepresentation('cartoon', {
+              sele: 'polymer and not hydrogen',
+              name: 'structure',
+              opacity: 1,
+            });
+            return;
+          }
+
+          // otherwise, highlight accordingly
+          const colorSchemeID = ColormakerRegistry.addSelectionScheme(
+            [['yellow', highlight], ['white', '*']],
+            'custom label',
+          );
+          console.log({ colorSchemeID });
+          stageRef.current.compList[0].addRepresentation('cartoon', {
+            sele: 'polymer and not hydrogen',
+            name: 'structure',
+            opacity: 1,
+            color: colorSchemeID,
+          });
+        };
+        window.addEventListener('change', handler);
+        return () => window.removeEventListener('change', handler);
+      }, []);
+
       // Expose public methods and getters/setters
       useImperativeHandle(
         ref,
@@ -404,6 +472,7 @@ const NGLViewer = memo(
         }),
         [pdbFile, dcdPayload, handleResize],
       );
+
       return (
         <div
           ref={containerRef}

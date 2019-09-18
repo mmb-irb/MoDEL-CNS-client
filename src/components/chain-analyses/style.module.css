@@ -1,0 +1,45 @@
+.entries {
+  background-color: #d6d6d6;
+  border-radius: 0 0 0.5em 0.5em;
+  padding-bottom: 0.5em;
+}
+
+.entries protvista-interpro-track {
+  opacity: 0.5;
+  transition: opacity ease-in-out 250ms;
+}
+
+.entries protvista-interpro-track.has-signatures {
+  opacity: 1;
+}
+
+.label {
+  position: absolute;
+  display: block;
+  margin: 0.2em 0 0 1.75ch;
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity ease-in-out 250ms;
+}
+
+.entries:hover .label {
+  opacity: 1;
+}
+
+.entries:hover protvista-interpro-track {
+  opacity: 1;
+}
+
+.popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-weight: bold;
+  z-index: 1000;
+  padding: 1ch;
+  transform: translate(0, 0);
+  border-radius: 1ch;
+  border: grey solid 1px;
+  opacity: 0.2;
+  background: #d6d6d6;
+}
