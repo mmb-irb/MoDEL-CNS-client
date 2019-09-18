@@ -101,8 +101,6 @@ const ChainAnalyses = memo(({ chain, accession }) => {
   } = payload;
   const { length } = sequence;
 
-  console.log(matches);
-
   const processedMatches = processIPScanResults(matches);
 
   return (

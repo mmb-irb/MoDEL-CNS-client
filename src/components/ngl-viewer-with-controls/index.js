@@ -223,7 +223,7 @@ const NGLViewerWithControls = forwardRef(
               </>
             )}
 
-            {screenfull.enabled && (
+            {screenfull.isEnabled && (
               <IconButton
                 title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
                 onClick={useCallback(() => {

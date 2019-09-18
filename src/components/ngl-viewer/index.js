@@ -389,7 +389,6 @@ const NGLViewer = memo(
             offset = nextOffset;
           }
           highlight = highlight.substr(4); // remove initial ' or '
-          console.log(highlight);
 
           const previousStructureRepresentation = stageRef.current.compList[0].reprList.find(
             representation => representation.name === 'structure',
@@ -414,7 +413,7 @@ const NGLViewer = memo(
             [['yellow', highlight], ['white', '*']],
             'custom label',
           );
-          console.log({ colorSchemeID });
+
           stageRef.current.compList[0].addRepresentation('cartoon', {
             sele: 'polymer and not hydrogen',
             name: 'structure',
