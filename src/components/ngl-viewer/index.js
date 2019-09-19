@@ -371,6 +371,7 @@ const NGLViewer = memo(
           }
           let offset = 0;
           let highlight = '';
+          const addOffsetMappingFn = item => +item + offset;
           for (const manager of document.querySelectorAll(
             'protvista-manager',
           )) {
@@ -384,12 +385,11 @@ const NGLViewer = memo(
             }
             const [start, end] = thisHiglight
               .split(':')
-              .map(item => +item + offset);
+              .map(addOffsetMappingFn);
             highlight += ` or ${start}-${end}`;
             offset = nextOffset;
           }
           highlight = highlight.substr(4); // remove initial ' or '
-          console.log(highlight);
 
           const previousStructureRepresentation = stageRef.current.compList[0].reprList.find(
             representation => representation.name === 'structure',
@@ -414,7 +414,6 @@ const NGLViewer = memo(
             [['yellow', highlight], ['white', '*']],
             'custom label',
           );
-          console.log({ colorSchemeID });
           stageRef.current.compList[0].addRepresentation('cartoon', {
             sele: 'polymer and not hydrogen',
             name: 'structure',

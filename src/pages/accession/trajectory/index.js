@@ -1,5 +1,6 @@
-import React, { memo, useContext } from 'react';
+import React, { memo, useContext, useState, useEffect } from 'react';
 import { round } from 'lodash-es';
+import { sleep } from 'timing-functions';
 
 import {
   Card,
@@ -258,22 +259,28 @@ const Analyses = memo(() => {
   );
 });
 
-const Trajectory = () => (
-  <>
-    <Card className={style.card}>
-      <CardContent>
-        <TrajectoryMetadata />
-      </CardContent>
-    </Card>
-    <Card className={style.card}>
-      <NGLViewerWithControls className={style.container} />
-    </Card>
-    <Card className={style.card}>
-      <CardContent>
-        <Analyses />
-      </CardContent>
-    </Card>
-  </>
-);
+const Trajectory = () => {
+  const [hasWaitedEnough, setHasWaitEnough] = useState(false);
+
+  useEffect(() => {
+    sleep(1500).then(() => setHasWaitEnough(true));
+  }, []);
+
+  return (
+    <>
+      <Card className={style.card}>
+        <CardContent>
+          <TrajectoryMetadata />
+        </CardContent>
+      </Card>
+      <Card className={style.card}>
+        <NGLViewerWithControls className={style.container} />
+      </Card>
+      <Card className={style.card}>
+        <CardContent>{hasWaitedEnough && <Analyses />}</CardContent>
+      </Card>
+    </>
+  );
+};
 
 export default Trajectory;
