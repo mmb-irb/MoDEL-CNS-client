@@ -24,11 +24,12 @@ describe('<Slider />', () => {
     });
 
     it('should handle clicks', () => {
+      wrapper = render(<Slider value={50} className="button-class" />);
+
       expect(
         wrapper.container.parentElement.querySelector('[data-popover]'),
       ).toBeNull();
 
-      // open
       fireEvent.click(wrapper.container.querySelector('.button-class'));
       const popover = wrapper.container.parentElement.querySelector(
         '[data-popover] > [role=document]',
@@ -49,7 +50,8 @@ describe('<Slider />', () => {
     });
 
     it('should handle click to open, escape to close', () => {
-      // open
+      wrapper = render(<Slider value={50} className="button-class" />);
+
       fireEvent.click(wrapper.container.querySelector('.button-class'));
       const popover = wrapper.container.parentElement.querySelector(
         '[data-popover] > [role=document]',
