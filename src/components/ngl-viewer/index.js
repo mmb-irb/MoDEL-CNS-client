@@ -420,6 +420,7 @@ const NGLViewer = memo(
             opacity: 1,
             color: colorSchemeID,
           });
+          stageRef.current.compList[0].autoView(highlight, 1000);
         };
         window.addEventListener('change', handler);
         return () => window.removeEventListener('change', handler);
