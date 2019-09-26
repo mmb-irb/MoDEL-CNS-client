@@ -1,6 +1,6 @@
 const extractCounts = response => {
   if (!(response && response.headers)) return {};
-  const contentRange = response.headers.get('content-range') || '';
+  const contentRange = response.headers['content-range'] || '';
   const types = (contentRange.match(/\w*(?==)/g) || []).filter(Boolean);
   const counts = {};
   for (const type of types) {

@@ -366,7 +366,10 @@ const NGLViewer = memo(
       useEffect(() => {
         const handler = ({ detail }) => {
           // escape case for event listener
-          if (!(detail.eventtype === 'click' || detail.eventtype === 'reset')) {
+          if (
+            !detail ||
+            !(detail.eventtype === 'click' || detail.eventtype === 'reset')
+          ) {
             return;
           }
           let offset = 0;
@@ -391,9 +394,11 @@ const NGLViewer = memo(
           }
           highlight = highlight.substr(4); // remove initial ' or '
 
-          const previousStructureRepresentation = stageRef.current.compList[0].reprList.find(
-            representation => representation.name === 'structure',
-          );
+          const previousStructureRepresentation =
+            stageRef.current.compList[0] &&
+            stageRef.current.compList[0].reprList.find(
+              representation => representation.name === 'structure',
+            );
           if (previousStructureRepresentation) {
             stageRef.current.compList[0].removeRepresentation(
               previousStructureRepresentation,
@@ -406,6 +411,7 @@ const NGLViewer = memo(
               name: 'structure',
               opacity: 1,
             });
+            stageRef.current.compList[0].autoView(null, 1000);
             return;
           }
 

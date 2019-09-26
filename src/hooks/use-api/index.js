@@ -1,82 +1,75 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useReducer } from 'react';
+import axios from 'axios';
 
-const NO_CONTENT = 204;
-
-const emptyArgs = {};
 const emptyOptions = {};
 
-const useAPI = (
-  url,
-  { bodyParser = 'json', fetchOptions = emptyOptions } = emptyArgs,
-) => {
-  const [state, setState] = useState({
+const fetchReducer = (state, action) => {
+  switch (action.type) {
+    case 'INIT':
+      return {
+        ...state,
+        loading: true,
+        previousPayload: state.payload || state.previousPayload,
+        payload: null,
+      };
+    case 'PROGRESS':
+      return { ...state, progress: action.progress };
+    case 'SUCCESS':
+      return {
+        ...state,
+        loading: false,
+        payload: action.response.data || null,
+        response: action.response,
+        progress: 1,
+      };
+    case 'ERROR':
+      return { ...state, loading: false, error: action.error };
+    default:
+      throw new Error(`"${action.type}" is not a valid action`);
+  }
+};
+
+const useAPI = (url, fetchOptions = emptyOptions) => {
+  const [state, dispatch] = useReducer(fetchReducer, {
     loading: !!url,
     payload: null,
     error: null,
     previousPayload: null,
     response: null,
+    progress: 0,
   });
 
-  const canceledRef = useRef(false);
+  const onDownloadProgress = progressEvent =>
+    progressEvent.lengthComputable &&
+    dispatch({
+      type: 'PROGRESS',
+      progress: progressEvent.loaded / progressEvent.total,
+    });
 
   useEffect(() => {
-    canceledRef.current = false;
     if (!url) {
-      setState(state => ({
-        loading: false,
-        payload: null,
-        error: null,
-        previousPayload: state.payload || state.previousPayload,
-        response: null,
-      }));
+      dispatch({ type: 'SUCCESS' });
       return;
     }
 
-    const controller = new AbortController();
-    setState(state => ({
-      loading: true,
-      payload: null,
-      error: null,
-      previousPayload: state.payload || state.previousPayload,
-      response: null,
-    }));
-    (async () => {
-      let response;
-      try {
-        response = await fetch(url, {
-          signal: controller.signal,
-          ...fetchOptions,
-        });
-        if (response.status === NO_CONTENT) return;
-        setState(state => ({ ...state, response }));
-        const payload = await ('clone' in response
-          ? response.clone()
-          : response)[bodyParser]();
-        if (canceledRef.current) return;
-        setState(state => ({
-          loading: false,
-          payload,
-          error: null,
-          previousPayload: state.payload || state.previousPayload,
-          response,
-        }));
-      } catch (error) {
-        if (canceledRef.current) return;
-        setState(state => ({
-          loading: false,
-          payload: null,
-          error,
-          previousPayload: state.payload || state.previousPayload,
-          response,
-        }));
-      }
-    })();
+    dispatch({ type: 'INIT' });
+
+    const source = axios.CancelToken.source();
+    let didCancel = false;
+
+    axios(url, {
+      cancelToken: source.token,
+      onDownloadProgress,
+      ...fetchOptions,
+    })
+      .then(response => !didCancel && dispatch({ type: 'SUCCESS', response }))
+      .catch(error => !didCancel && dispatch({ type: 'ERROR', error }));
 
     return () => {
-      canceledRef.current = true;
-      controller.abort();
+      source.cancel();
+      didCancel = true;
     };
-  }, [url, bodyParser, fetchOptions]);
+  }, [url, fetchOptions]);
 
   return state;
 };
