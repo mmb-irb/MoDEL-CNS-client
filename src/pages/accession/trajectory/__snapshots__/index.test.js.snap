@@ -12,14 +12,24 @@ exports[`<Trajectory /> should render 1`] = `
   <WithStyles(ForwardRef(Card))
     className="card"
   >
-    <ForwardRef
-      className="container"
+    <div
+      style={
+        Object {
+          "height": "50vh",
+        }
+      }
     />
   </WithStyles(ForwardRef(Card))>
   <WithStyles(ForwardRef(Card))
     className="card"
   >
-    <WithStyles(ForwardRef(CardContent)) />
+    <div
+      style={
+        Object {
+          "height": "50vh",
+        }
+      }
+    />
   </WithStyles(ForwardRef(Card))>
 </Fragment>
 `;

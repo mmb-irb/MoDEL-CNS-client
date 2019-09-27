@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
 import { Stage, ColormakerRegistry, Matrix4 } from 'ngl';
@@ -70,6 +71,9 @@ const NGLViewer = memo(
       const originalOritentationRef = useRef(
         curatedOrientation ? new Matrix4().set(...curatedOrientation) : null,
       );
+
+      // in-view hook
+      const [inViewRef, isInView] = useInView();
 
       const { loading: loadingPDB, file: pdbFile } = pdbData;
 
@@ -327,9 +331,9 @@ const NGLViewer = memo(
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
         stageRef.current.compList[0].trajList[0].trajectory.player[
-          playing ? 'play' : 'pause'
+          playing && isInView ? 'play' : 'pause'
         ]();
-      }, [pdbFile, dcdPayload, playing]);
+      }, [pdbFile, dcdPayload, playing, isInView]);
 
       // speed
       useEffect(() => {
@@ -504,9 +508,16 @@ const NGLViewer = memo(
         [pdbFile, dcdPayload, handleResize],
       );
 
+      // workaround to have multiple ref logic on one element
+      // https://github.com/thebuilder/react-intersection-observer/issues/186#issuecomment-468641525
+      const handleRef = node => {
+        inViewRef(node);
+        containerRef.current = node;
+      };
+
       return (
         <div
-          ref={containerRef}
+          ref={handleRef}
           className={cn(className, style.container, {
             [style['loading-pdb']]: loadingPDB,
             [style['loading-trajectory']]: !noTrajectory && loadingDCD,

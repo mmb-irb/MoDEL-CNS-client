@@ -54,11 +54,15 @@ import connectionLevel, {
 
 import style from './style.module.css';
 
+// Decide that the default should be to play the trajectory only on "big enough"
+// screens (as a proxy for performance and low-end device detection)
+const defaultStartsPlaying = window.innerWidth > 750;
+
 const NGLViewerWithControls = forwardRef(
   (
     {
       className,
-      startsPlaying = true,
+      startsPlaying = defaultStartsPlaying,
       noTrajectory,
       close,
       projection,

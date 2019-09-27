@@ -1,6 +1,6 @@
-import React, { memo, useContext, useState, useEffect } from 'react';
+import React, { memo, useContext } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { round } from 'lodash-es';
-import { sleep } from 'timing-functions';
 
 import {
   Card,
@@ -238,6 +238,7 @@ const Analyses = memo(() => {
   return (
     <>
       <Typography variant="h6">Protein functional analysis</Typography>
+      <p>{chains.length} chains were analysed</p>
       <p>
         Powered by{' '}
         <a
@@ -259,12 +260,11 @@ const Analyses = memo(() => {
   );
 });
 
-const Trajectory = () => {
-  const [hasWaitedEnough, setHasWaitEnough] = useState(false);
+const useInViewOptions = { triggerOnce: true, rootMargin: '100px' };
 
-  useEffect(() => {
-    sleep(1500).then(() => setHasWaitEnough(true));
-  }, []);
+const Trajectory = () => {
+  const [nglRef, isNglVisible] = useInView(useInViewOptions);
+  const [nightingaleRef, isNightingaleVisible] = useInView(useInViewOptions);
 
   return (
     <>
@@ -273,11 +273,21 @@ const Trajectory = () => {
           <TrajectoryMetadata />
         </CardContent>
       </Card>
-      <Card className={style.card}>
-        <NGLViewerWithControls className={style.container} />
+      <Card className={style.card} ref={nglRef}>
+        {isNglVisible ? (
+          <NGLViewerWithControls className={style.container} />
+        ) : (
+          <div style={{ height: '50vh' }} />
+        )}
       </Card>
-      <Card className={style.card}>
-        <CardContent>{hasWaitedEnough && <Analyses />}</CardContent>
+      <Card className={style.card} ref={nightingaleRef}>
+        {isNightingaleVisible ? (
+          <CardContent>
+            <Analyses />
+          </CardContent>
+        ) : (
+          <div style={{ height: '50vh' }} />
+        )}
       </Card>
     </>
   );
