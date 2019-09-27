@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
-import { Stage, ColormakerRegistry } from 'ngl';
+import { Stage, ColormakerRegistry, Matrix4 } from 'ngl';
 import { frame } from 'timing-functions';
 
 import payloadToNGLFile from './payload-to-ngl-file';
@@ -31,7 +31,9 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
     representation.setVisibility(true);
   }
 }, 100);
+
 const DEFAULT_NUMBER_OF_FRAMES = 25;
+const DEFAULT_ORIENTATION_TRANSITION_DURATION = 500; // 500 ms
 
 const NGLViewer = memo(
   forwardRef(
@@ -57,14 +59,17 @@ const NGLViewer = memo(
     ) => {
       // data from context
       const accession = useContext(AccessionCtx);
-      const { metadata } = useContext(ProjectCtx);
+      const { metadata, curatedOrientation } = useContext(ProjectCtx);
       const pdbData = useContext(PdbCtx);
 
       // references
       const containerRef = useRef(null);
       const stageRef = useRef(null);
-      const originalOritentationRef = useRef(null);
       const firstTime = useRef(true);
+      // curatedOrientation might be null
+      const originalOritentationRef = useRef(
+        curatedOrientation ? new Matrix4().set(...curatedOrientation) : null,
+      );
 
       const { loading: loadingPDB, file: pdbFile } = pdbData;
 
@@ -181,8 +186,22 @@ const NGLViewer = memo(
           pdbFile,
         );
 
-        structureComponent.autoView();
-        originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
+        // set the view somehow, in any case no transition duration is set
+        // because it's the first time we do that
+
+        // if an original orientation was aleady defined
+        // (manually created, and stored in the API)
+        if (originalOritentationRef.current) {
+          // use it to set the initial orientation
+          stageRef.current.animationControls.orient(
+            originalOritentationRef.current,
+            0,
+          );
+        } else {
+          structureComponent.autoView('polymer and not hydrogen', 0);
+          originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
+        }
+        window.vc = stageRef.current.viewerControls;
 
         // main structure
         structureComponent.addRepresentation('cartoon', {
@@ -293,8 +312,6 @@ const NGLViewer = memo(
         frames.signals.frameChanged.add(handleFrameChange);
         frames.trajectory.setFrame(0);
 
-        component.autoView();
-
         return () => frames.signals.frameChanged.remove(handleFrameChange);
       }, [
         requestedFrame,
@@ -394,24 +411,29 @@ const NGLViewer = memo(
           }
           highlight = highlight.substr(4); // remove initial ' or '
 
+          const structureComponent = stageRef.current.compList[0];
+
           const previousStructureRepresentation =
-            stageRef.current.compList[0] &&
-            stageRef.current.compList[0].reprList.find(
+            structureComponent &&
+            structureComponent.reprList.find(
               representation => representation.name === 'structure',
             );
           if (previousStructureRepresentation) {
-            stageRef.current.compList[0].removeRepresentation(
+            structureComponent.removeRepresentation(
               previousStructureRepresentation,
             );
           }
           // no highlight, then default coloring
           if (!highlight) {
-            stageRef.current.compList[0].addRepresentation('cartoon', {
+            structureComponent.addRepresentation('cartoon', {
               sele: 'polymer and not hydrogen',
               name: 'structure',
               opacity: 1,
             });
-            stageRef.current.compList[0].autoView(null, 1000);
+            stageRef.current.animationControls.orient(
+              originalOritentationRef.current,
+              DEFAULT_ORIENTATION_TRANSITION_DURATION,
+            );
             return;
           }
 
@@ -420,13 +442,16 @@ const NGLViewer = memo(
             [['yellow', highlight], ['white', '*']],
             'custom label',
           );
-          stageRef.current.compList[0].addRepresentation('cartoon', {
+          structureComponent.addRepresentation('cartoon', {
             sele: 'polymer and not hydrogen',
             name: 'structure',
             opacity: 1,
             color: colorSchemeID,
           });
-          stageRef.current.compList[0].autoView(highlight, 1000);
+          structureComponent.autoView(
+            highlight,
+            DEFAULT_ORIENTATION_TRANSITION_DURATION,
+          );
         };
         window.addEventListener('change', handler);
         return () => window.removeEventListener('change', handler);
@@ -441,7 +466,7 @@ const NGLViewer = memo(
             if (!originalOritentationRef.current) return;
             stageRef.current.animationControls.orient(
               originalOritentationRef.current,
-              500,
+              DEFAULT_ORIENTATION_TRANSITION_DURATION,
             );
           },
           get currentFrame() {
