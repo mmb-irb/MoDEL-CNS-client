@@ -12,7 +12,9 @@ const history = createHashHistory({
     // if new path
     if (nextPathname !== history.location.pathname) {
       // get all current sections
-      const sections = Array.from(document.querySelectorAll('main section'));
+      const sections = Array.from(
+        document.querySelectorAll('main section'),
+      ).reverse();
       sections.forEach((section, index) => {
         if (!section.animate) return;
         // and trigger animation out
@@ -25,7 +27,7 @@ const history = createHashHistory({
             fill: 'both',
             easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
             duration: 500,
-            delay: index * 150,
+            delay: Math.min(250, index * 100),
           },
         );
       });
