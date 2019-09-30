@@ -16,7 +16,7 @@ exports[`<NGLViewerInDND /> should render 1`] = `
   onResizeStop={[Function]}
   scale={1}
 >
-  <WithStyles(ForwardRef(Card))
+  <ForwardRef
     className="floating-card"
     elevation={4}
   >
@@ -32,6 +32,6 @@ exports[`<NGLViewerInDND /> should render 1`] = `
         startsPlaying={false}
       />
     </Suspense>
-  </WithStyles(ForwardRef(Card))>
+  </ForwardRef>
 </Rnd>
 `;

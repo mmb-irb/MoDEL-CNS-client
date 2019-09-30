@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { CardContent, Typography } from '@material-ui/core';
 
+import Card from '../../components/animated-card';
 import LazyImg from '../../components/lazy-img';
 
 import style from './style.module.css';

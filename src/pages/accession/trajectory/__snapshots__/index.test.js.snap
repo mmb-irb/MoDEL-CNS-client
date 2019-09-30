@@ -2,14 +2,14 @@
 
 exports[`<Trajectory /> should render 1`] = `
 <Fragment>
-  <WithStyles(ForwardRef(Card))
+  <ForwardRef
     className="card"
   >
     <WithStyles(ForwardRef(CardContent))>
       <Memo() />
     </WithStyles(ForwardRef(CardContent))>
-  </WithStyles(ForwardRef(Card))>
-  <WithStyles(ForwardRef(Card))
+  </ForwardRef>
+  <ForwardRef
     className="card"
   >
     <div
@@ -19,8 +19,8 @@ exports[`<Trajectory /> should render 1`] = `
         }
       }
     />
-  </WithStyles(ForwardRef(Card))>
-  <WithStyles(ForwardRef(Card))
+  </ForwardRef>
+  <ForwardRef
     className="card"
   >
     <div
@@ -30,7 +30,7 @@ exports[`<Trajectory /> should render 1`] = `
         }
       }
     />
-  </WithStyles(ForwardRef(Card))>
+  </ForwardRef>
 </Fragment>
 `;
 

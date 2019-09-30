@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import {
-  Card,
   CardContent,
   CardActions,
   Button,
@@ -9,6 +8,7 @@ import {
 } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 
+import Card from '../../../components/animated-card';
 import LazyImg from '../../../components/lazy-img';
 
 import { ProjectCtx } from '../../../contexts';

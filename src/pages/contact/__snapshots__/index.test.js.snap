@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Contact /> should render 1`] = `
-<WithStyles(ForwardRef(Card))
+<ForwardRef
   className="card"
 >
   <WithStyles(ForwardRef(CardContent))
@@ -20,5 +20,5 @@ exports[`<Contact /> should render 1`] = `
       See on the IRB Molecular Modeling and Bioinformatics group website
     </a>
   </WithStyles(ForwardRef(CardContent))>
-</WithStyles(ForwardRef(Card))>
+</ForwardRef>
 `;

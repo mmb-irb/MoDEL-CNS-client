@@ -1,7 +1,8 @@
 import React, { lazy, Suspense, useState, useContext } from 'react';
 
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { CardContent, Typography } from '@material-ui/core';
 
+import Card from '../../../components/animated-card';
 import NGLViewerInDND from '../../../components/ngl-viewer-in-dnd';
 import Loading from '../../../components/loading';
 

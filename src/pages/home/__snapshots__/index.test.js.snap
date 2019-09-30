@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Home /> should render 1`] = `
-<WithStyles(ForwardRef(Card))
+<ForwardRef
   className="card"
 >
   <WithStyles(ForwardRef(CardContent))
@@ -109,5 +109,5 @@ exports[`<Home /> should render 1`] = `
        will contribute in the improvement of the understanding of neuronal signalling cascades by protein structure-based simulations, calculating molecular flexibility and dynamics, and guiding systems level modelling.
     </WithStyles(ForwardRef(Typography))>
   </WithStyles(ForwardRef(CardContent))>
-</WithStyles(ForwardRef(Card))>
+</ForwardRef>
 `;

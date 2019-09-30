@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { parse, stringify } from 'qs';
 import cn from 'classnames';
 // import { AutoSizer, Table, Column } from 'react-virtualized';
 import {
-  Card,
   CardContent,
   Table,
   TableBody,
@@ -17,6 +16,7 @@ import {
 } from '@material-ui/core';
 import { Done } from '@material-ui/icons';
 
+import Card from '../../components/animated-card';
 import Highlight from '../../components/highlight';
 import LazyImg from '../../components/lazy-img';
 import Loading from '../../components/loading';
@@ -35,7 +35,105 @@ const rowsPerPageOptions = [5, 10, 25, 50];
 const backIconButtonProps = { title: 'Previous page' };
 const nextIconButtonProps = { title: 'Next page' };
 
-export default ({ location, history }) => {
+const keyframes = {
+  opacity: [0, 1],
+  transform: ['translateX(2.5%)', 'translateX(0)'],
+};
+
+const Row = ({
+  highlight,
+  identifier,
+  accession,
+  published,
+  pdbInfo,
+  analyses,
+  index,
+}) => {
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    if (!(ref.current && ref.current.animate)) return;
+
+    const animation = ref.current.animate(keyframes, {
+      fill: 'both',
+      easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      duration: 750,
+      delay: 100 + index * 75,
+    });
+
+    return () => animation.cancel();
+  }, [index]);
+
+  return (
+    <TableRow
+      ref={ref}
+      className={cn({ [style['not-published']]: !published })}
+    >
+      {/* accession */}
+      <TableCell>
+        <Link to={`/browse/${accession || identifier}/overview`}>
+          <Highlight highlight={highlight}>
+            {accession || identifier}
+            {!published && ' (not published)'}
+          </Highlight>
+        </Link>
+      </TableCell>
+      {/* PDB accession */}
+      <TableCell>
+        <Highlight highlight={highlight}>
+          {pdbInfo && pdbInfo.identifier}
+        </Highlight>
+      </TableCell>
+      {/* name */}
+      <TableCell>
+        <Highlight highlight={highlight}>
+          {pdbInfo && pdbInfo.compound}
+        </Highlight>
+      </TableCell>
+      {/* membrane */}
+      <TableCell>
+        <Done />
+      </TableCell>
+      {/* preview */}
+      <TableCell>
+        {pdbInfo && pdbInfo.identifier && (
+          <LazyImg
+            width="150px"
+            height="150px"
+            src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier
+              .toLowerCase()
+              .substr(
+                1,
+                2,
+              )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`}
+            loading="lazy"
+            alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
+          />
+        )}
+      </TableCell>
+      {/* analyses */}
+      <TableCell>
+        {analyses && analyses.length
+          ? analyses
+              .sort()
+              .map(analysis => (
+                <Chip
+                  key={analysis}
+                  clickable
+                  className={style.analysis}
+                  component={Link}
+                  to={`/browse/${accession || identifier}/${analysis}`}
+                  label={NICE_NAMES.get(analysis) || analysis}
+                  variant="outlined"
+                />
+              ))
+          : null}
+      </TableCell>
+    </TableRow>
+  );
+};
+
+const Browse = ({ location, history }) => {
   const search = parse(location.search, { ignoreQueryPrefix: true });
 
   const searchString = stringify({
@@ -76,76 +174,14 @@ export default ({ location, history }) => {
           <TableBody
             className={cn(style['table-body'], { [style.loading]: loading })}
           >
-            {(payload || previousPayload).projects.map(
-              ({ identifier, accession, published, pdbInfo, analyses }) => (
-                <TableRow
-                  key={identifier}
-                  className={cn({ [style['not-published']]: !published })}
-                >
-                  {/* accession */}
-                  <TableCell>
-                    <Link to={`/browse/${accession || identifier}/overview`}>
-                      <Highlight highlight={search.search}>
-                        {accession || identifier}
-                        {!published && ' (not published)'}
-                      </Highlight>
-                    </Link>
-                  </TableCell>
-                  {/* PDB accession */}
-                  <TableCell>
-                    <Highlight highlight={search.search}>
-                      {pdbInfo && pdbInfo.identifier}
-                    </Highlight>
-                  </TableCell>
-                  {/* name */}
-                  <TableCell>
-                    <Highlight highlight={search.search}>
-                      {pdbInfo && pdbInfo.compound}
-                    </Highlight>
-                  </TableCell>
-                  {/* membrane */}
-                  <TableCell>
-                    <Done />
-                  </TableCell>
-                  {/* preview */}
-                  <TableCell>
-                    {pdbInfo && pdbInfo.identifier && (
-                      <LazyImg
-                        width="150px"
-                        height="150px"
-                        src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier
-                          .toLowerCase()
-                          .substr(
-                            1,
-                            2,
-                          )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`}
-                        loading="lazy"
-                        alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
-                      />
-                    )}
-                  </TableCell>
-                  {/* analyses */}
-                  <TableCell>
-                    {analyses && analyses.length
-                      ? analyses
-                          .sort()
-                          .map(analysis => (
-                            <Chip
-                              key={analysis}
-                              clickable
-                              className={style.analysis}
-                              component={Link}
-                              to={`/browse/${accession ||
-                                identifier}/${analysis}`}
-                              label={NICE_NAMES.get(analysis) || analysis}
-                              variant="outlined"
-                            />
-                          ))
-                      : null}
-                  </TableCell>
-                </TableRow>
-              ),
-            )}
+            {(payload || previousPayload).projects.map((project, index) => (
+              <Row
+                {...project}
+                highlight={search.search}
+                index={index}
+                key={project.identifier}
+              />
+            ))}
           </TableBody>
           <TableFooter>
             <TableRow>
@@ -187,3 +223,5 @@ export default ({ location, history }) => {
     </Card>
   );
 };
+
+export default Browse;

@@ -3,7 +3,6 @@ import { useInView } from 'react-intersection-observer';
 import { round } from 'lodash-es';
 
 import {
-  Card,
   CardContent,
   Typography,
   TextField,
@@ -12,6 +11,7 @@ import {
 
 import { ProjectCtx } from '../../../contexts';
 
+import Card from '../../../components/animated-card';
 import NGLViewerWithControls from '../../../components/ngl-viewer-with-controls';
 import ChainAnalyses from '../../../components/chain-analyses';
 
