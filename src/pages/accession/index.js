@@ -7,7 +7,8 @@ import { Link } from '@material-ui/icons';
 import useAPI from '../../hooks/use-api';
 import useNGLFile from '../../hooks/use-ngl-file';
 
-import ErrorBoundary from '../../components/error-boundary/index';
+import ErrorBoundary from '../../components/error-boundary';
+import Loading from '../../components/loading';
 
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
@@ -28,9 +29,6 @@ const GenericAnalysisPage = lazy(() =>
   ),
 );
 const PCA = lazy(() => import(/* webpackChunkName: 'pca' */ './pca'));
-
-const loadingSpan = <span>Loading</span>;
-const Loading = () => loadingSpan;
 
 const Error = ({ error }) => {
   console.error(error);
@@ -78,7 +76,7 @@ const SummarySwitch = () => {
                 path="/browse/:accession/overview"
                 exact
                 render={() => (
-                  <Suspense fallback={loadingSpan}>
+                  <Suspense fallback={<Loading />}>
                     <Overview />
                   </Suspense>
                 )}
@@ -87,7 +85,7 @@ const SummarySwitch = () => {
                 path="/browse/:accession/files"
                 exact
                 render={() => (
-                  <Suspense fallback={loadingSpan}>
+                  <Suspense fallback={<Loading />}>
                     <Files />
                   </Suspense>
                 )}
@@ -96,7 +94,7 @@ const SummarySwitch = () => {
                 path="/browse/:accession/trajectory"
                 exact
                 render={props => (
-                  <Suspense fallback={loadingSpan}>
+                  <Suspense fallback={<Loading />}>
                     <Trajectory {...props} />
                   </Suspense>
                 )}
@@ -105,7 +103,7 @@ const SummarySwitch = () => {
                 path="/browse/:accession/pca"
                 exact
                 render={() => (
-                  <Suspense fallback={loadingSpan}>
+                  <Suspense fallback={<Loading />}>
                     <PCA />
                   </Suspense>
                 )}
@@ -114,7 +112,7 @@ const SummarySwitch = () => {
                 path="/browse/:accession/rmsd"
                 exact
                 render={() => (
-                  <Suspense fallback={loadingSpan}>
+                  <Suspense fallback={<Loading />}>
                     <GenericAnalysisPage
                       analysis="rmsd"
                       defaultPrecision={2 ** 6}
@@ -129,7 +127,7 @@ const SummarySwitch = () => {
                 path="/browse/:accession/rgyr"
                 exact
                 render={() => (
-                  <Suspense fallback={loadingSpan}>
+                  <Suspense fallback={<Loading />}>
                     <GenericAnalysisPage
                       analysis="rgyr"
                       defaultPrecision={2 ** 6}
@@ -144,7 +142,7 @@ const SummarySwitch = () => {
                 path="/browse/:accession/fluctuation"
                 exact
                 component={() => (
-                  <Suspense fallback={loadingSpan}>
+                  <Suspense fallback={<Loading />}>
                     <GenericAnalysisPage
                       analysis="fluctuation"
                       xLabel="Atom"

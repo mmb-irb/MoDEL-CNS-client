@@ -3,6 +3,7 @@ import React, { lazy, Suspense, useState, useContext } from 'react';
 import { Card, CardContent, Typography } from '@material-ui/core';
 
 import NGLViewerInDND from '../../../components/ngl-viewer-in-dnd';
+import Loading from '../../../components/loading';
 
 import useAPI from '../../../hooks/use-api';
 
@@ -47,7 +48,7 @@ const Analysis = ({
   );
 
   return (
-    <Suspense fallback={<span>Loading</span>}>
+    <Suspense fallback={<Loading />}>
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">Statistics</Typography>

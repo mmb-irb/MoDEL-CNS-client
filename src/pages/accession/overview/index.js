@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 
-import LazyImg from '../../../components/lazy-img/index';
+import LazyImg from '../../../components/lazy-img';
 
 import { ProjectCtx } from '../../../contexts';
 

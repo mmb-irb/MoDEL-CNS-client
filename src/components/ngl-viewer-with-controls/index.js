@@ -41,7 +41,7 @@ import {
 
 import Slider from '../slider';
 
-import { get, setAsync } from '../../utils/storage/index';
+import { get, setAsync } from '../../utils/storage';
 import NGLViewer from '../ngl-viewer';
 
 import useToggleState from '../../hooks/use-toggle-state';

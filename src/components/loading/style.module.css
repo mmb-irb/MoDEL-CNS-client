@@ -1,0 +1,13 @@
+.loading {
+  margin: 1ch;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 750ms ease-in-out;
+  will-change: opacity;
+}
+
+.show {
+  opacity: 1;
+}

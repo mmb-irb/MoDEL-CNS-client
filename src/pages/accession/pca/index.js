@@ -3,11 +3,11 @@ import cn from 'classnames';
 
 import { Card, CardContent, Typography } from '@material-ui/core';
 
-import NGLViewerInDND from '../../../components/ngl-viewer-in-dnd/index';
+import NGLViewerInDND from '../../../components/ngl-viewer-in-dnd';
+import EigenvalueGraph from '../../../components/eigenvalue-graph';
+import Loading from '../../../components/loading';
 
-import EigenvalueGraph from '../../../components/eigenvalue-graph/index';
-
-import useAPI from '../../../hooks/use-api/index';
+import useAPI from '../../../hooks/use-api';
 
 import { AccessionCtx } from '../../../contexts';
 
@@ -51,7 +51,7 @@ const PCA = () => {
     return processStats(payload, projections);
   }, [payload, projections]);
 
-  if (loading) return 'loading';
+  if (loading) return <Loading />;
 
   return (
     <>

@@ -1,4 +1,4 @@
-import hashFromString from '../hash-from-string/index';
+import hashFromString from '../hash-from-string';
 
 const colorFromString = string => {
   const hash = hashFromString(string);

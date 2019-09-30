@@ -19,6 +19,7 @@ import { Done } from '@material-ui/icons';
 
 import Highlight from '../../components/highlight';
 import LazyImg from '../../components/lazy-img';
+import Loading from '../../components/loading';
 
 import useAPI from '../../hooks/use-api';
 
@@ -50,7 +51,7 @@ export default ({ location, history }) => {
   const ApiUrl = `${BASE_PATH_PROJECTS}?${searchString}`;
   const { loading, payload, error, previousPayload } = useAPI(ApiUrl);
 
-  if (loading && !previousPayload) return 'loading';
+  if (loading && !previousPayload) return <Loading />;
   if (error) {
     console.error(error);
     return 'Something wrong happened';

@@ -1,8 +1,9 @@
 import React, { memo, useEffect, useRef } from 'react';
-
 import PropertySetter from 'react-property-setter';
 
-import useAPI from '../../hooks/use-api/index';
+import Loading from '../loading';
+
+import useAPI from '../../hooks/use-api';
 
 import loadCustomElement from '../../utils/load-custom-element';
 import processIPScanResults from '../../utils/process-ipscan-results';
@@ -90,7 +91,7 @@ const ChainAnalyses = memo(({ chain, accession }) => {
     return () => window.removeEventListener('change', handler);
   }, []);
 
-  if (loading) return 'Loading';
+  if (loading) return <Loading />;
   if (!payload) return null;
 
   const {

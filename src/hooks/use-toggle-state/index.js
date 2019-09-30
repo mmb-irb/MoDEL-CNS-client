@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 const useToggleState = initialState => {
   const [state, setState] = useState(!!initialState);
 
-  const toggleState = valueOrSetter => {
+  const toggleState = useCallback(valueOrSetter => {
     switch (typeof valueOrSetter) {
       // setter
       case 'function':
@@ -19,7 +19,7 @@ const useToggleState = initialState => {
       default:
         setState(state => !state);
     }
-  };
+  }, []);
 
   return [state, toggleState];
 };
