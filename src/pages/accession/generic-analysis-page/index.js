@@ -43,6 +43,10 @@ const Analysis = ({
     analysis === 'fluctuation' ? new Set() : null,
   );
 
+  if (loading) return <Loading />;
+
+  if (!payload) return 'Something bad happened';
+
   const showDND = !!(
     (typeof selected === 'number' && Number.isFinite(selected)) ||
     (selected && selected.size)
@@ -53,28 +57,26 @@ const Analysis = ({
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">Statistics</Typography>
-          {!loading && payload && <StatisticsTable y={payload.y} />}
+          <StatisticsTable y={payload.y} />
         </CardContent>
       </Card>
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6" />
-          {!loading && payload && (
-            <Graph
-              y={payload.y}
-              step={payload.step}
-              defaultPrecision={defaultPrecision}
-              xLabel={xLabel}
-              xScaleFactor={xScaleFactor}
-              yLabel={yLabel}
-              type={graphType}
-              startsAtOne={startsAtOne}
-              onHover={analysis === 'fluctuation' ? setHovered : undefined}
-              hovered={hovered}
-              onSelect={setSelected}
-              selected={selected}
-            />
-          )}
+          <Graph
+            y={payload.y}
+            step={payload.step}
+            defaultPrecision={defaultPrecision}
+            xLabel={xLabel}
+            xScaleFactor={xScaleFactor}
+            yLabel={yLabel}
+            type={graphType}
+            startsAtOne={startsAtOne}
+            onHover={analysis === 'fluctuation' ? setHovered : undefined}
+            hovered={hovered}
+            onSelect={setSelected}
+            selected={selected}
+          />
         </CardContent>
       </Card>
       {showDND && (
