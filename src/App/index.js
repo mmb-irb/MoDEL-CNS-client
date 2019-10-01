@@ -25,7 +25,7 @@ const history = createHashHistory({
           },
           {
             fill: 'both',
-            easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            easing: 'cubic-bezier(.33,-0.65,.56,1.1)',
             duration: 500,
             delay: Math.min(250, index * 100),
           },

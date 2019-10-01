@@ -10,7 +10,7 @@ const KEYFRAMES = {
 
 const ANIMATION_OPTIONS = {
   fill: 'both',
-  easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  easing: 'cubic-bezier(0, .99, .56, 1.1)',
   duration: 500,
 };
 
