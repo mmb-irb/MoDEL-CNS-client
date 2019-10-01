@@ -14,7 +14,7 @@ const ANIMATION_OPTIONS = {
   duration: 500,
 };
 
-const AnimatedCard = forwardRef((props, ref) => {
+const AnimatedCard = forwardRef(({ overrideComponent, ...props }, ref) => {
   const containerRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -33,9 +33,11 @@ const AnimatedCard = forwardRef((props, ref) => {
     return () => animation.cancel();
   }, []);
 
+  const Component = overrideComponent ? 'section' : Card;
+
   return (
     <div ref={containerRef} className={style.container}>
-      <Card component="section" {...props} ref={ref} />
+      <Component component="section" {...props} ref={ref} />
     </div>
   );
 });

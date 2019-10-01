@@ -14,6 +14,8 @@ import {
 } from '@material-ui/core';
 import { InsertDriveFile, ExpandMore, Assignment } from '@material-ui/icons';
 
+import Card from '../../../components/animated-card';
+
 import formatNumber from '../../../utils/number-formatter';
 import getEstimate from '../../../utils/get-download-time-estimate';
 import { BASE_PATH, BASE_PATH_PROJECTS } from '../../../utils/constants';
@@ -71,7 +73,7 @@ export default React.memo(() => {
     <>
       <Typography variant="h5">Files</Typography>
       {[...groupedFiles, api].map(([key, set], i) => (
-        <Fragment key={typeof key === 'string' ? key : i}>
+        <Card overrideComponent key={typeof key === 'string' ? key : i}>
           <Typography variant="h6" className={style.title}>
             &nbsp;⤷&nbsp;
             {key}
@@ -152,7 +154,7 @@ export default React.memo(() => {
               );
             },
           )}
-        </Fragment>
+        </Card>
       ))}
     </>
   );
