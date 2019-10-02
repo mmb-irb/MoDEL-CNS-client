@@ -29,17 +29,3 @@
 .entries:hover protvista-interpro-track {
   opacity: 1;
 }
-
-.popup {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-weight: bold;
-  z-index: 1000;
-  padding: 1ch;
-  transform: translate(0, 0);
-  border-radius: 1ch;
-  border: grey solid 1px;
-  opacity: 0.2;
-  background: #d6d6d6;
-}

@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect } from 'react';
 import PropertySetter from 'react-property-setter';
 
 import Loading from '../loading';
@@ -57,38 +57,9 @@ const ChainAnalyses = memo(({ chain, accession }) => {
   const { loading, payload } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/chains/${chain}`,
   );
-  const popupRef = useRef(null);
 
   useEffect(() => {
     loadProtVista();
-  }, []);
-
-  useEffect(() => {
-    const handler = event => {
-      if (!(event.detail && popupRef.current)) return;
-      let bcrTarget, bcrPopup;
-      switch (event.detail.eventtype) {
-        case 'mouseover':
-          if (!event.detail.feature.accession) return;
-          popupRef.current.textContent = `${event.detail.feature.db} - ${event.detail.feature.accession}`;
-          bcrTarget = event.detail.target.getBoundingClientRect();
-          bcrPopup = popupRef.current.getBoundingClientRect();
-          popupRef.current.style.transform = `translate(${bcrTarget.left +
-            bcrTarget.width / 2 -
-            bcrPopup.width / 2}px, ${window.scrollY +
-            bcrTarget.top -
-            bcrTarget.height * 2}px)`;
-          break;
-        case 'mouseout':
-          popupRef.current.textContent = '';
-          popupRef.current.style.transform = 'translate(0, 0)';
-          break;
-        default:
-        // ignore
-      }
-    };
-    window.addEventListener('change', handler);
-    return () => window.removeEventListener('change', handler);
   }, []);
 
   if (loading) return <Loading />;
@@ -107,7 +78,6 @@ const ChainAnalyses = memo(({ chain, accession }) => {
   return (
     <>
       Chain {chain}
-      <div className={style.popup} ref={popupRef} />
       <protvista-manager
         attributes="length displaystart displayend highlight"
         data-chain-length={length}
