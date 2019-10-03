@@ -98,8 +98,10 @@ const NGLViewer = memo(
       useEffect(() => {
         // set-up
         stageRef.current = new Stage(containerRef.current);
+        // wait for a render to screen, then
         frame().then(() => {
           if (!stageRef.current) return;
+          // make sure NGL knows the size it has available
           stageRef.current.handleResize();
           stageRef.current.autoView();
         });
@@ -120,6 +122,7 @@ const NGLViewer = memo(
             await frame();
             let currentTick = Date.now() - beginning;
             // exit condition from while true loop
+            // if we've gone over the full time of the animation
             if (currentTick > duration) break;
             if (darkBackground) currentTick = duration - currentTick;
             const color = `#${Math.round((currentTick * 0xff) / duration)
@@ -129,6 +132,8 @@ const NGLViewer = memo(
             stageRef.current.viewer.setBackground(color);
           }
           await frame();
+          // make sure we're set to the final colour
+          // (in case the transition was stopped halfway through)
           stageRef.current.viewer.setBackground(
             darkBackground ? 'black' : 'white',
           );
@@ -174,7 +179,7 @@ const NGLViewer = memo(
         }, 500),
         [],
       );
-      // connect to events
+      // connect the handle to events
       useEffect(() => {
         window.addEventListener('resize', handleResize);
         return () => {
