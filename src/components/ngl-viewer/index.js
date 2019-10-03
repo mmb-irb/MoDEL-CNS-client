@@ -335,9 +335,9 @@ const NGLViewer = memo(
       // play/pause
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
-        stageRef.current.compList[0].trajList[0].trajectory.player[
-          playing && isInView ? 'play' : 'pause'
-        ]();
+        const { player } = stageRef.current.compList[0].trajList[0].trajectory;
+        player[playing && isInView ? 'play' : 'pause']();
+        return () => player.pause();
       }, [pdbFile, dcdPayload, playing, isInView]);
 
       // speed
