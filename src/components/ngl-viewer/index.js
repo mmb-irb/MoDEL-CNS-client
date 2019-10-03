@@ -36,6 +36,8 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
 const DEFAULT_NUMBER_OF_FRAMES = 25;
 const DEFAULT_ORIENTATION_TRANSITION_DURATION = 500; // 500 ms
 
+const CHAIN_SELECTION = 'polymer and not hydrogen';
+
 const NGLViewer = memo(
   forwardRef(
     (
@@ -103,7 +105,6 @@ const NGLViewer = memo(
           if (!stageRef.current) return;
           // make sure NGL knows the size it has available
           stageRef.current.handleResize();
-          stageRef.current.autoView();
         });
         // clean-up
         return () => stageRef.current.dispose();
@@ -200,6 +201,7 @@ const NGLViewer = memo(
 
         // if an original orientation was aleady defined
         // (manually created, and stored in the API)
+        structureComponent.autoView(CHAIN_SELECTION, 0);
         if (originalOritentationRef.current) {
           // use it to set the initial orientation
           stageRef.current.animationControls.orient(
@@ -207,14 +209,12 @@ const NGLViewer = memo(
             0,
           );
         } else {
-          structureComponent.autoView('polymer and not hydrogen', 0);
           originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
         }
-        window.vc = stageRef.current.viewerControls;
 
         // main structure
         structureComponent.addRepresentation('cartoon', {
-          sele: 'polymer and not hydrogen',
+          sele: CHAIN_SELECTION,
           name: 'structure',
           opacity: 1,
         });
@@ -311,6 +311,9 @@ const NGLViewer = memo(
           isProjection,
           Number.isFinite(requestedFrame),
         );
+        if (stageRef.current.compList[0]) {
+          stageRef.current.compList[0].autoView(CHAIN_SELECTION, 0);
+        }
         if (!file) return;
 
         const component = stageRef.current.compList[0];
@@ -320,6 +323,9 @@ const NGLViewer = memo(
         const frames = component.addTrajectory(file);
         frames.signals.frameChanged.add(handleFrameChange);
         frames.trajectory.setFrame(0);
+
+        component.autoView(CHAIN_SELECTION, 0);
+        originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
 
         return () => frames.signals.frameChanged.remove(handleFrameChange);
       }, [
@@ -435,7 +441,7 @@ const NGLViewer = memo(
           // no highlight, then default coloring
           if (!highlight) {
             structureComponent.addRepresentation('cartoon', {
-              sele: 'polymer and not hydrogen',
+              sele: CHAIN_SELECTION,
               name: 'structure',
               opacity: 1,
             });
@@ -452,7 +458,7 @@ const NGLViewer = memo(
             'custom label',
           );
           structureComponent.addRepresentation('cartoon', {
-            sele: 'polymer and not hydrogen',
+            sele: CHAIN_SELECTION,
             name: 'structure',
             opacity: 1,
             color: colorSchemeID,
