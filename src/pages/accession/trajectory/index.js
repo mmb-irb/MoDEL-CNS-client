@@ -15,6 +15,8 @@ import Card from '../../../components/animated-card';
 import NGLViewerWithControls from '../../../components/ngl-viewer-with-controls';
 import ChainAnalyses from '../../../components/chain-analyses';
 
+import reducedMotion from '../../../utils/reduced-motion';
+
 import style from './style.module.css';
 
 export const TrajectoryMetadata = memo(() => {
@@ -271,10 +273,7 @@ const Analyses = memo(() => {
         portal.animate(
           { transform: [`scale(1) translate(${-bcr.left}px, ${-bcr.top}px)`] },
           {
-            duration: window.matchMedia('(prefers-reduced-motion: reduce)')
-              .matches
-              ? 0
-              : 1000,
+            duration: reducedMotion() ? 0 : 1000,
             easing: 'cubic-bezier(.23,-0.26,0,1)',
             fill: 'both',
           },

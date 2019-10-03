@@ -44,6 +44,20 @@
   transform: rotate(0.5turn);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .legend > .switch {
+    transition-duration: 0;
+  }
+
+  .legend > .switch:hover {
+    will-change: unset;
+  }
+
+  .legend > .switch.switched {
+    transform: none;
+  }
+}
+
 .legend .color-scale {
   display: flex;
   align-items: stretch;

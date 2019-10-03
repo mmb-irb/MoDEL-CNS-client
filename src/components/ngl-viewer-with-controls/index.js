@@ -51,12 +51,13 @@ import connectionLevel, {
   MEDIUM,
   HIGH,
 } from '../../utils/connection-level';
+import reducedMotion from '../../utils/reduced-motion';
 
 import style from './style.module.css';
 
 // Decide that the default should be to play the trajectory only on "big enough"
 // screens (as a proxy for performance and low-end device detection)
-const defaultStartsPlaying = window.innerWidth > 750;
+const defaultStartsPlaying = !reducedMotion() && window.innerWidth > 750;
 
 const NGLViewerWithControls = forwardRef(
   (

@@ -22,6 +22,8 @@ import {
 } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 
+import reducedMotion from '../../utils/reduced-motion';
+
 import style from './style.module.css';
 
 const MARGIN = { top: 20, right: 40, bottom: 20, left: 20 };
@@ -53,7 +55,7 @@ const EigenvalueGraph = ({
       .attr('width', 0)
       // transition on first display, uncover from left to right
       .transition()
-      .duration(50 * 43)
+      .duration(reducedMotion() ? 0 : 50 * 43)
       .attr('width', '100%');
 
     const refs = {
@@ -176,7 +178,8 @@ const EigenvalueGraph = ({
         .attr('x', (_, i) => x(i))
         .attr('width', x.bandwidth())
         .transition()
-        .delay((_, i) => i * 50)
+        .duration(reducedMotion() ? 0 : 250)
+        .delay(reducedMotion() ? 0 : (_, i) => i * 50)
         .attr('y', d => yEigen(d.eigenvalue))
         .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue));
       // full-height bars (for click and hover handlers)

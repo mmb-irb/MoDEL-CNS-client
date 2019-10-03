@@ -11,6 +11,12 @@
   transition: transform ease-in-out 0.5s;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .background-toggle > * {
+    transition-duration: 0;
+  }
+}
+
 .background-toggle.dark > * {
   transform: rotateY(0.5turn);
 }

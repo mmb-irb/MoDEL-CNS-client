@@ -19,6 +19,7 @@ import cn from 'classnames';
 import useToggleState from '../../hooks/use-toggle-state';
 import movePoints from './move-points';
 import getDrawLegend from './get-draw-legend';
+import reducedMotion from '../../utils/reduced-motion';
 
 import { IconButton } from '@material-ui/core';
 import { Sync } from '@material-ui/icons';
@@ -143,13 +144,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           );
       refs.xAxis
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
         .call(xAxis);
 
       refs.xAxisLegend
         .text(`← principal component ${processed.projections[0] + 1} →`)
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(${width / 2}, ${height - 5})`);
 
       // visual y axis
@@ -166,13 +167,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           );
       refs.yAxis
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
         .call(yAxis);
 
       refs.yAxisLegend
         .text(`← principal component ${processed.projections[1] + 1} →`)
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(5, ${height / 2}) rotate(90)`);
 
       refs.brush.on('end', () => {
@@ -218,8 +219,9 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           const xPoint = refs.xScale(xValue) * dPR;
           const yPoint = refs.yScale(yValue) * dPR;
           const delay = (i * MAX_DELAY * (isFirstTime ? 2 : 1)) / length;
-          const duration =
-            random(MIN_DURATION, MAX_DURATION) * (isFirstTime ? 2 : 1);
+          const duration = reducedMotion()
+            ? 0
+            : random(MIN_DURATION, MAX_DURATION) * (isFirstTime ? 2 : 1);
           const time = delay + duration;
           // update maxTime if needed
           if (maxTime < time) maxTime = time;

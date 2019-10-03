@@ -27,6 +27,7 @@
 }
 
 .portal-container {
+  display: none;
   margin-bottom: 0.5em;
   width: 25vw;
   height: 25vh;

@@ -1,12 +1,15 @@
 import React, { useLayoutEffect, useRef, forwardRef } from 'react';
 import { Card } from '@material-ui/core';
 
+import reducedMotion from '../../utils/reduced-motion';
+
 import style from './style.module.css';
 
-const KEYFRAMES = {
-  opacity: [0, 1],
-  transform: ['translateY(50px)', 'translateY(0)'],
-};
+const KEYFRAMES = { opacity: [0, 1] };
+
+if (!reducedMotion()) {
+  KEYFRAMES.transform = ['translateY(50px)', 'translateY(0)'];
+}
 
 const ANIMATION_OPTIONS = {
   fill: 'both',
