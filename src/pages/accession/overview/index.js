@@ -50,6 +50,7 @@ export default React.memo(() => {
             <Typography variant="h6">PDB information</Typography>
             <LazyImg
               src={imgSrc}
+              width="350"
               loading="lazy"
               alt={`3D view of the ${pdbInfo.identifier} structure`}
             />
