@@ -52,12 +52,13 @@
     "prettier": "1.18.2",
     "prop-types": "15.7.2",
     "react-scripts": "3.2.0",
-    "typescript": "3.6.3"
+    "typescript": "3.6.3",
+    "workbox-build": "4.3.1"
   },
   "homepage": ".",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && node style-embedder/index.js",
+    "build": "react-scripts build && node style-embedder/index.js && node sw-build/index.js",
     "typecheck": "tsc --project tsconfig.json",
     "test": "react-scripts test --transformIgnorePatterns='node_modules/(?!lodash-es)' --env=jest-environment-jsdom-fourteen",
     "eject": "react-scripts eject"
