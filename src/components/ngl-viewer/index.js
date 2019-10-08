@@ -107,7 +107,11 @@ const NGLViewer = memo(
           stageRef.current.handleResize();
         });
         // clean-up
-        return () => stageRef.current.dispose();
+        return () => {
+          stageRef.current.removeAllComponents();
+          stageRef.current.dispose();
+          stageRef.current = null;
+        };
       }, []);
 
       // background (with transition)
@@ -122,7 +126,7 @@ const NGLViewer = memo(
           while (true) {
             await frame();
             let currentTick = Date.now() - beginning;
-            // exit condition from while true loop
+            // exit condition from 'while (true)' loop
             // if we've gone over the full time of the animation
             if (currentTick > duration) break;
             if (darkBackground) currentTick = duration - currentTick;
