@@ -27,3 +27,6 @@ Have Node.js and npm installed and working
 | ------------------- | ----------------------------- | --------------------------------- |
 | NODE_ENV            | `development` or `production` | dev or prod flag                  |
 | REACT_APP_REST_ROOT | `<url>`                       | url of the API REST root endpoint |
+
+That is also where you can put Create React App advanced configuration, see
+[here](https://create-react-app.dev/docs/advanced-configuration).
