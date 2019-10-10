@@ -3,6 +3,7 @@
 const MINUTE = 60; // seconds
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
+const WEEK = 7 * DAY;
 
 workbox.core.skipWaiting();
 workbox.core.clientsClaim();
@@ -32,6 +33,21 @@ workbox.routing.registerRoute(
       new workbox.expiration.Plugin({
         maxEntries: 100,
         maxAgeSeconds: 40 * DAY,
+        purgeOnQuotaError: true,
+      }),
+    ],
+  }),
+);
+
+// static assets (usually, just fonts then, since images are handled before)
+workbox.routing.registerRoute(
+  /\/static\//,
+  new workbox.strategies.CacheFirst({
+    cacheName: 'static',
+    plugins: [
+      new workbox.expiration.Plugin({
+        maxEntries: 30,
+        maxAgeSeconds: 10 * WEEK,
         purgeOnQuotaError: true,
       }),
     ],
