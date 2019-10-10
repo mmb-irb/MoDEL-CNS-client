@@ -19,6 +19,8 @@ const isLocalhost = Boolean(
     ),
 );
 
+const QUICK_ENOUGH_TO_JUST_REFRESH = 2000; // 2 seconds;
+
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
@@ -71,6 +73,17 @@ function registerValidSW(swUrl, config) {
               // Execute callback
               if (config.onUpdate) {
                 config.onUpdate(registration);
+              }
+
+              if (window.performance) {
+                const elapsedTime =
+                  window.performance.timing.navigationStart -
+                  window.performance.now();
+                if (elapsedTime > QUICK_ENOUGH_TO_JUST_REFRESH) {
+                  window.location.reload();
+                }
+              } else {
+                // here we should display a message to the user
               }
             } else {
               // At this point, everything has been precached.
