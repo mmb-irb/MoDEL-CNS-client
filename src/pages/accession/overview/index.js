@@ -51,6 +51,7 @@ export default React.memo(() => {
             <LazyImg
               src={imgSrc}
               width="350"
+              height="350"
               loading="lazy"
               alt={`3D view of the ${pdbInfo.identifier} structure`}
             />
