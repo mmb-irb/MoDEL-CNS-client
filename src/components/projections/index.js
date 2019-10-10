@@ -144,13 +144,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           );
       refs.xAxis
         .transition()
-        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .call(xAxis);
 
       refs.xAxisLegend
         .text(`← principal component ${processed.projections[0] + 1} →`)
         .transition()
-        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(${width / 2}, ${height - 5})`);
 
       // visual y axis
@@ -167,13 +167,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           );
       refs.yAxis
         .transition()
-        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .call(yAxis);
 
       refs.yAxisLegend
         .text(`← principal component ${processed.projections[1] + 1} →`)
         .transition()
-        .duration(!isFirstTime && !reducedMotion && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(5, ${height / 2}) rotate(90)`);
 
       refs.brush.on('end', () => {
