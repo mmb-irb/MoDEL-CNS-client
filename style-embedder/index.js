@@ -31,7 +31,10 @@ const main = async () => {
       'sourceMappingURL=./static/css/',
     );
     // inline content of stylesheet inside html content
-    indexFile = indexFile.replace(link, `<style>${style}</style>`);
+    indexFile = indexFile.replace(
+      link,
+      `<style data-original-file="${href}">${style}</style>`,
+    );
   }
   // output resulting index.html file (by overwriting it)
   await asyncWriteFile('./build/index.html', indexFile, { encoding: 'utf8' });
