@@ -40,7 +40,7 @@ workbox.routing.registerRoute(
 
 // api calls (except for main trajectory file)
 workbox.routing.registerRoute(
-  /\/api\/rest\/.+(\.bin)$/,
+  /\/api\/rest\/(.(?!\.bin$))+$/,
   new workbox.strategies.StaleWhileRevalidate({
     cacheName: 'api-calls',
     plugins: [
