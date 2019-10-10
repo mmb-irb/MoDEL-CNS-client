@@ -64,7 +64,7 @@ const build = async () => {
   template = templateReplace(
     template,
     'imports',
-    `importScripts(${workboxBuild.getModuleURL('workbox-sw')})`,
+    `importScripts('${workboxBuild.getModuleURL('workbox-sw')}')`,
   );
   template = templateReplace(
     template,
