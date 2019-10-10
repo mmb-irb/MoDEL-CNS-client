@@ -26,10 +26,11 @@ workbox.routing.registerNavigationRoute(
 // see: https://developers.google.com/web/tools/workbox/guides/common-recipes
 // images
 workbox.routing.registerRoute(
-  /\.(?:png|gif|jpg|jpeg|webp|svg|ico)$/,
+  /(?:^https?:\/\/cdn\.rcsb\.org\/images\/).*?\.(?:png|gif|jpg|jpeg|webp|svg|ico)$/,
   new workbox.strategies.CacheFirst({
     cacheName: 'images',
     plugins: [
+      new workbox.cacheableResponse.Plugin({ statuses: [0, 200] }),
       new workbox.expiration.Plugin({
         maxEntries: 100,
         maxAgeSeconds: 40 * DAY,
