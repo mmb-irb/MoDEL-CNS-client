@@ -108,7 +108,9 @@ const NGLViewer = memo(
         });
         // clean-up
         return () => {
-          stageRef.current.removeAllComponents();
+          // NOTE: following line causes to fail when loading a new viewer with
+          // NOTE: previous structure data
+          // stageRef.current.removeAllComponents();
           stageRef.current.dispose();
           stageRef.current = null;
         };
