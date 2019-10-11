@@ -24,23 +24,38 @@ workbox.routing.registerNavigationRoute(
 
 // routing recipes
 // see: https://developers.google.com/web/tools/workbox/guides/common-recipes
-// images
+// images - Cache First
 workbox.routing.registerRoute(
-  /(?:^https?:\/\/cdn\.rcsb\.org\/images\/).*?\.(?:png|gif|jpg|jpeg|webp|svg|ico)$/,
+  /\.(?:png|gif|jpg|jpeg|webp|svg|ico)$/,
   new workbox.strategies.CacheFirst({
     cacheName: 'images',
     plugins: [
-      new workbox.cacheableResponse.Plugin({ statuses: [0, 200] }),
       new workbox.expiration.Plugin({
         maxEntries: 100,
         maxAgeSeconds: 40 * DAY,
+      }),
+    ],
+  }),
+);
+
+// external images - Cache First
+workbox.routing.registerRoute(
+  /^https?:\/\/.*?\.(?:png|gif|jpg|jpeg|webp|svg)$/,
+  new workbox.strategies.CacheFirst({
+    cacheName: 'external-images',
+    plugins: [
+      new workbox.cacheableResponse.Plugin({ statuses: [0, 200] }),
+      new workbox.expiration.Plugin({
+        maxEntries: 10,
+        maxAgeSeconds: 20 * DAY,
         purgeOnQuotaError: true,
       }),
     ],
   }),
 );
 
-// static assets (usually, just fonts then, since images are handled before)
+// static assets - Cache First
+// (usually, just fonts then, since images are handled before)
 workbox.routing.registerRoute(
   /\/static\//,
   new workbox.strategies.CacheFirst({
@@ -49,15 +64,17 @@ workbox.routing.registerRoute(
       new workbox.expiration.Plugin({
         maxEntries: 30,
         maxAgeSeconds: 10 * WEEK,
+        // it's alright if it's purged, we're using display-font: swap anyway
         purgeOnQuotaError: true,
       }),
     ],
   }),
 );
 
-// api calls (except for main trajectory file)
+// api calls - Stale While Revalidate
+// (except for trajectory files, because of ranged requests)
 workbox.routing.registerRoute(
-  /\/api\/rest\/(.(?!\.bin$))+$/,
+  /^https?:\/\/mmb.irbbarcelona.org\/.*\/api\/rest\/(.(?!\.bin$))+$/,
   new workbox.strategies.StaleWhileRevalidate({
     cacheName: 'api-calls',
     plugins: [
