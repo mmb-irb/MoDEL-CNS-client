@@ -126,7 +126,8 @@ const NGLViewer = memo(
         }
         (async () => {
           while (true) {
-            await frame();
+            await frame(); // async, should check if we still have the viewer
+            if (!stageRef.current) return;
             let currentTick = Date.now() - beginning;
             // exit condition from 'while (true)' loop
             // if we've gone over the full time of the animation
@@ -138,7 +139,8 @@ const NGLViewer = memo(
               .repeat(3)}`;
             stageRef.current.viewer.setBackground(color);
           }
-          await frame();
+          await frame(); // async, should check if we still have the viewer
+          if (!stageRef.current) return;
           // make sure we're set to the final colour
           // (in case the transition was stopped halfway through)
           stageRef.current.viewer.setBackground(
