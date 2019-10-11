@@ -1,53 +1,44 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useReducer } from 'react';
 import { autoLoad } from 'ngl';
 
+const nglFileReducer = (state, action) => {
+  switch (action.type) {
+    case 'INIT':
+      return { ...state, loading: true, file: null };
+    case 'SUCCESS':
+      return { ...state, loading: false, file: action.file };
+    case 'ERROR':
+      return { ...state, loading: false, error: action.error };
+    default:
+      throw new Error(`"${action.type}" is not a valid action`);
+  }
+};
+
 const useNGLFile = (url, { defaultRepresentation, ext }) => {
-  const [state, setState] = useState({
+  const [state, dispatch] = useReducer(nglFileReducer, {
     loading: !!url,
     file: null,
     error: null,
   });
 
-  const canceledRef = useRef(false);
-
   useEffect(() => {
     if (!url) {
-      setState({
-        loading: false,
-        file: null,
-        error: null,
-      });
+      dispatch({ type: 'SUCCESS' });
       return;
     }
 
-    setState({
-      loading: true,
-      file: null,
-      error: null,
-    });
-    autoLoad(url, { defaultRepresentation, ext }).then(
-      file => {
-        if (canceledRef.current) return;
-        setState({
-          loading: false,
-          file,
-          error: null,
-        });
-      },
-      error => {
-        if (canceledRef.current) return;
-        setState({
-          loading: false,
-          file: null,
-          error,
-        });
-      },
-    );
+    dispatch({ type: 'INIT' });
 
-    return () => (canceledRef.current = true);
+    let didCancel = false;
+
+    autoLoad(url, { defaultRepresentation, ext })
+      .then(file => !didCancel && dispatch({ type: 'SUCCESS', file }))
+      .catch(error => !didCancel && dispatch({ type: 'ERROR', error }));
+
+    return () => (didCancel = true);
   }, [url, defaultRepresentation, ext]);
 
-  return { ...state };
+  return state;
 };
 
 export default useNGLFile;
