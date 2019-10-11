@@ -8,6 +8,7 @@ exports[`<Header /> should render 1`] = `
     className="toolbar"
   >
     <Link
+      className="logo-link"
       title="home"
       to="/"
     >

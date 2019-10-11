@@ -14,7 +14,7 @@ import logoWebP from '../../images/logo.webp';
 const Header = () => (
   <AppBar position="sticky">
     <Toolbar className={style.toolbar}>
-      <Link to="/" title="home">
+      <Link to="/" title="home" className={style['logo-link']}>
         <picture>
           <source type="image/webp" srcSet={logoWebP} />
           <LazyImg
