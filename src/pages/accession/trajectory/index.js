@@ -388,18 +388,52 @@ const Analyses = memo(() => {
 
   return (
     <>
-      <Typography variant="h6">Protein functional analysis</Typography>
-      <p>{chains.length} chains were analysed</p>
-      <p>
-        Powered by{' '}
+      <Typography variant="h5">Protein functional analysis</Typography>
+      <br />
+      <Typography variant="subtitle2">
+        <strong>{chains.length}</strong> chains were analysed.
+      </Typography>
+      <Typography variant="body1">
+        Below you can see the families, domains, and sites, that an{' '}
+        <a
+          href="https://www.ebi.ac.uk/interpro/about/interproscan/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          InterProScan
+        </a>{' '}
+        analysis revealed for each of the chain sequences. This is a prediction
+        that might be helpful to discover functions, or to find similar
+        structures for example.
+      </Typography>
+      <br />
+      <Typography variant="body1">
+        You can interact with this visualisation as such:
+        <br />
+        <strong>Hover over their representation</strong> to see that some of
+        them will have a corresponding page on the{' '}
         <a
           href="https://www.ebi.ac.uk/interpro/"
           target="_blank"
           rel="noreferrer noopener"
         >
-          InterProScan
-        </a>
-      </p>
+          InterPro website
+        </a>{' '}
+        where you will be able to learn more about it.
+        <br />
+        <strong>Click on them</strong> to see the corresponding sequence
+        highlighted in the interactive trajectory viewer above. Clicking on an
+        other entity within the same chain will change the highlight to that
+        other entity.
+        <br />
+        <strong>Click on an empty space</strong> in this visualisation to remove
+        the highlight for that chain.
+        <br />
+        <strong>Scroll over the visualisation</strong> to zoom in or out of the
+        chain sequence. Alternatively, you can also interact with the top
+        navigation part (at the top of each visualisation) to zoom in and out or
+        to move within the sequence.
+      </Typography>
       <ul className={style['chain-analysis-list']}>
         {chains.map(chain => (
           <li key={chain}>
@@ -410,6 +444,33 @@ const Analyses = memo(() => {
           </li>
         ))}
       </ul>
+      <Typography variant="body2">
+        Data generated using{' '}
+        <a
+          href="https://www.ebi.ac.uk/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          EBI
+        </a>
+        's{' '}
+        <a
+          href="https://www.ebi.ac.uk/interpro/about/interproscan/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          InterProScan service
+        </a>{' '}
+        and visualised using the{' '}
+        <a
+          href="https://ebi-webcomponents.github.io/nightingale/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Nightingale visualisation library
+        </a>
+        .
+      </Typography>
     </>
   );
 });
