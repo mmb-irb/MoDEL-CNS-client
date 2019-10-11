@@ -253,6 +253,9 @@ const NGLViewerWithControls = forwardRef(
                   if (containerRef.current)
                     screenfull.toggle(containerRef.current);
                 }, [])}
+                className={cn(style['fullscreen-toggle'], {
+                  [style['is-fullscreen']]: isFullscreen,
+                })}
               >
                 <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
               </IconButton>

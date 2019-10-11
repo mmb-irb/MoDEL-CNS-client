@@ -24,6 +24,40 @@
   align-items: center;
 }
 
+@keyframes expand {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.5);
+  }
+}
+
+@keyframes compress {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(0.5);
+  }
+}
+
+.fullscreen-toggle:hover svg {
+  animation: expand 1s ease-in-out 500ms infinite;
+}
+
+.fullscreen-toggle.is-fullscreen:hover svg {
+  animation-name: compress;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fullscreen-toggle:hover svg {
+    animation: none !important;
+  }
+}
+
 .fullscreen-target {
   height: 100%;
   background: white;
