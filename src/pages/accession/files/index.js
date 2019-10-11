@@ -12,7 +12,9 @@ import {
   Typography,
   Chip,
 } from '@material-ui/core';
-import { InsertDriveFile, ExpandMore, Assignment } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile } from '@fortawesome/free-regular-svg-icons';
+import { faChevronDown, faServer } from '@fortawesome/free-solid-svg-icons';
 
 import Card from '../../../components/animated-card';
 
@@ -57,7 +59,7 @@ const api = [
       filename:
         'Especially for bigger files, consider using the programmatic API as documented',
       url: BASE_PATH + 'docs/#/files',
-      icon: <Assignment />,
+      icon: <FontAwesomeIcon icon={faServer} />,
     },
   ],
 ];
@@ -94,11 +96,11 @@ export default React.memo(() => {
               return (
                 <ExpansionPanel key={md5 || filename}>
                   <ExpansionPanelSummary
-                    expandIcon={<ExpandMore />}
+                    expandIcon={<FontAwesomeIcon icon={faChevronDown} />}
                     className={style.summary}
                   >
                     <Icon className={style.icon}>
-                      {icon || <InsertDriveFile />}
+                      {icon || <FontAwesomeIcon icon={faFile} />}
                     </Icon>
                     <div>
                       <Typography variant="subtitle2">{filename}</Typography>

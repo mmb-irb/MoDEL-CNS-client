@@ -22,7 +22,8 @@ import getDrawLegend from './get-draw-legend';
 import reducedMotion from '../../utils/reduced-motion';
 
 import { IconButton } from '@material-ui/core';
-import { Sync } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRandom } from '@fortawesome/free-solid-svg-icons';
 
 import style from './style.module.css';
 
@@ -422,7 +423,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           className={cn(style.switch, { [style.switched]: switched })}
           onClick={toggleSwitched}
         >
-          <Sync />
+          <FontAwesomeIcon icon={faRandom} />
         </IconButton>
         <p>position in simulation:</p>
         <div className={style['color-scale']}>

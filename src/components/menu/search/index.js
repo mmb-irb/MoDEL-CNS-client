@@ -3,8 +3,9 @@ import { parse, stringify } from 'qs';
 import { debounce } from 'lodash-es';
 
 import Icon from '@material-ui/core/Icon';
-import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import style from './style.module.css';
 
@@ -49,7 +50,10 @@ const Search = ({ history }) => {
   return (
     <span>
       <Icon>
-        <SearchIcon className={value && style['search-active']} />
+        <FontAwesomeIcon
+          icon={faSearch}
+          className={value && style['search-active']}
+        />
       </Icon>
       <TextField
         value={value || ''}

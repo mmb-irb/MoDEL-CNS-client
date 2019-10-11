@@ -6,7 +6,8 @@ import {
   Typography,
   Chip,
 } from '@material-ui/core';
-import { Link } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLink } from '@fortawesome/free-solid-svg-icons';
 
 import Card from '../../../components/animated-card';
 import LazyImg from '../../../components/lazy-img';
@@ -113,7 +114,7 @@ export default React.memo(() => {
               target="_blank"
               rel="noreferrer noopener"
             >
-              <Link />
+              <FontAwesomeIcon icon={faLink} />
               &nbsp;PDBe website
             </Button>
             <Button
@@ -125,7 +126,7 @@ export default React.memo(() => {
               target="_blank"
               rel="noreferrer noopener"
             >
-              <Link />
+              <FontAwesomeIcon icon={faLink} />
               &nbsp;RCSB website
             </Button>
           </CardActions>

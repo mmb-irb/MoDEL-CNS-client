@@ -2,7 +2,6 @@ import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { parse, stringify } from 'qs';
 import cn from 'classnames';
-// import { AutoSizer, Table, Column } from 'react-virtualized';
 import {
   CardContent,
   Table,
@@ -14,7 +13,8 @@ import {
   TableFooter,
   Chip,
 } from '@material-ui/core';
-import { Done } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 import Card from '../../components/animated-card';
 import Highlight from '../../components/highlight';
@@ -92,7 +92,7 @@ const Row = ({
       </TableCell>
       {/* membrane */}
       <TableCell>
-        <Done />
+        <FontAwesomeIcon icon={faCheck} />
       </TableCell>
       {/* preview */}
       <TableCell>

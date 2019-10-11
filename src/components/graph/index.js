@@ -23,7 +23,8 @@ import { ColormakerRegistry } from 'ngl';
 import cn from 'classnames';
 
 import { FormControlLabel, Checkbox, Button, Slider } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
 import { PdbCtx } from '../../contexts';
 import { NICE_NAMES, COLORS } from '../../utils/constants';
@@ -566,7 +567,8 @@ const Graph = ({
             disabled={selected instanceof Set && !selected.size}
             onClick={handleClick}
           >
-            <DeleteIcon />
+            <FontAwesomeIcon icon={faTrashAlt} />
+            &nbsp;
             <span>Clear selection</span>
           </Button>
         )}

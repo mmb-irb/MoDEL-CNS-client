@@ -76,61 +76,58 @@ const ChainAnalyses = memo(({ chain, accession }) => {
   const processedMatches = processIPScanResults(matches);
 
   return (
-    <>
-      Chain {chain}
-      <protvista-manager
-        attributes="length displaystart displayend highlight"
-        data-chain-length={length}
-      >
-        <protvista-navigation
-          length={length}
-          displaystart={1}
-          displayend={length}
-        />
-        <div className={style.entries}>
-          <PropertySetter property="data" value={sequence}>
-            <protvista-sequence
-              length={length}
-              displaystart={1}
-              displayend={length}
-              height="37"
-            />
-          </PropertySetter>
-          <PropertySetter property="data" value={sequence}>
-            <protvista-coloured-sequence
-              length={length}
-              scale="hydrophobicity-scale"
-              height="15"
-            />
-          </PropertySetter>
-          {processedMatches.length
-            ? processedMatches.map((match, index) => (
-                <div
-                  key={index} // I know...
+    <protvista-manager
+      attributes="length displaystart displayend highlight"
+      data-chain-length={length}
+    >
+      <protvista-navigation
+        length={length}
+        displaystart={1}
+        displayend={length}
+      />
+      <div className={style.entries}>
+        <PropertySetter property="data" value={sequence}>
+          <protvista-sequence
+            length={length}
+            displaystart={1}
+            displayend={length}
+            height="37"
+          />
+        </PropertySetter>
+        <PropertySetter property="data" value={sequence}>
+          <protvista-coloured-sequence
+            length={length}
+            scale="hydrophobicity-scale"
+            height="15"
+          />
+        </PropertySetter>
+        {processedMatches.length
+          ? processedMatches.map((match, index) => (
+              <div
+                key={index} // I know...
+              >
+                <span className={style.label}>{match.accession}</span>
+                <PropertySetter
+                  property="contributors"
+                  value={match.signatures || []}
                 >
-                  <span className={style.label}>{match.accession}</span>
-                  <PropertySetter
-                    property="contributors"
-                    value={match.signatures || []}
-                  >
-                    <PropertySetter property="data" value={[match]}>
-                      <protvista-interpro-track
-                        length={length}
-                        displaystart={1}
-                        displayend={length}
-                        shape="roundRectangle"
-                        class={
-                          match.signatures ? style['has-signatures'] : undefined
-                        }
-                      />
-                    </PropertySetter>
+                  <PropertySetter property="data" value={[match]}>
+                    <protvista-interpro-track
+                      length={length}
+                      displaystart={1}
+                      displayend={length}
+                      shape="roundRectangle"
+                      class={
+                        match.signatures ? style['has-signatures'] : undefined
+                      }
+                    />
                   </PropertySetter>
-                </div>
-              ))
-            : 'No entry was found for this sequence'}
-        </div>
-      </protvista-manager>
-    </>
+                </PropertySetter>
+              </div>
+            ))
+          : 'No entry was found for this sequence'}
+      </div>
+    </protvista-manager>
   );
 });
 

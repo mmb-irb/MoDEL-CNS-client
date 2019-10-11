@@ -60,3 +60,13 @@
     height: 700px;
   }
 }
+
+.chain-analysis-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chain-analysis-list > li {
+  margin: 1em 0;
+}

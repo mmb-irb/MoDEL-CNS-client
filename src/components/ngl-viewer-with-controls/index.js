@@ -18,26 +18,29 @@ import {
   FormControl,
   InputLabel,
 } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  SkipPrevious,
-  PlayArrow,
-  Pause,
-  SkipNext,
-  Fullscreen,
-  FullscreenExit,
-  ThreeSixty,
-  CenterFocusStrong,
-  BurstMode,
-  Videocam,
-  InvertColors,
-  Layers,
-  LayersClear,
-  Close,
-  Flip,
-  DirectionsWalk,
-  DirectionsRun,
-  DirectionsBike,
-} from '@material-ui/icons';
+  faDotCircle,
+  faImages,
+  faSquare,
+} from '@fortawesome/free-regular-svg-icons';
+import {
+  faStepBackward,
+  faStepForward,
+  faPause,
+  faPlay,
+  faExpand,
+  faCompress,
+  faSyncAlt,
+  faVideo,
+  faAdjust,
+  faCube,
+  faPaintBrush,
+  faWalking,
+  faRunning,
+  faBiking,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 
 import Slider from '../slider';
 
@@ -109,9 +112,9 @@ const NGLViewerWithControls = forwardRef(
     );
     const [speed, setSpeed] = useState(useMemo(() => get('speed', 50), []));
 
-    let SpeedIcon = DirectionsWalk;
-    if (speed > 45) SpeedIcon = DirectionsRun;
-    if (speed > 90) SpeedIcon = DirectionsBike;
+    let speedIcon = faWalking;
+    if (speed > 45) speedIcon = faRunning;
+    if (speed > 90) speedIcon = faBiking;
 
     // handlers
     // handle click or click & drag progress bar
@@ -197,7 +200,7 @@ const NGLViewerWithControls = forwardRef(
           <div className={style.controls}>
             {close && (
               <IconButton title="Close viewer" onClick={close}>
-                <Close />
+                <FontAwesomeIcon icon={faTimes} />
               </IconButton>
             )}
 
@@ -209,13 +212,28 @@ const NGLViewerWithControls = forwardRef(
                     handleFrameChange,
                   ])}
                 >
-                  <SkipPrevious />
+                  <FontAwesomeIcon icon={faStepBackward} />
                 </IconButton>
                 <IconButton
                   title={playing ? 'Pause' : 'Play'}
                   onClick={togglePlaying}
                 >
-                  {playing ? <Pause /> : <PlayArrow />}
+                  <div className={style['flip-container']}>
+                    <div
+                      className={cn(style['flip-card-container'], {
+                        [style.flipped]: playing,
+                      })}
+                    >
+                      <FontAwesomeIcon
+                        className={cn(style['flip-card'], style.front)}
+                        icon={faPlay}
+                      />
+                      <FontAwesomeIcon
+                        className={cn(style['flip-card'], style.back)}
+                        icon={faPause}
+                      />
+                    </div>
+                  </div>
                 </IconButton>
                 <IconButton
                   title="Next frame"
@@ -223,7 +241,7 @@ const NGLViewerWithControls = forwardRef(
                     handleFrameChange,
                   ])}
                 >
-                  <SkipNext />
+                  <FontAwesomeIcon icon={faStepForward} />
                 </IconButton>
               </>
             )}
@@ -236,12 +254,12 @@ const NGLViewerWithControls = forwardRef(
                     screenfull.toggle(containerRef.current);
                 }, [])}
               >
-                {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+                <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
               </IconButton>
             )}
 
             <IconButton title="Toggle spin" onClick={toggleSpinning}>
-              <ThreeSixty />
+              <FontAwesomeIcon icon={faSyncAlt} />
             </IconButton>
 
             <IconButton
@@ -250,7 +268,7 @@ const NGLViewerWithControls = forwardRef(
                 if (viewerRef.current) viewerRef.current.centerFocus();
               }, [])}
             >
-              <CenterFocusStrong />
+              <FontAwesomeIcon icon={faDotCircle} />
             </IconButton>
 
             <IconButton
@@ -262,7 +280,7 @@ const NGLViewerWithControls = forwardRef(
               onClick={toggleSmooth}
               disabled={!playing}
             >
-              {smooth ? <BurstMode /> : <Videocam />}
+              <FontAwesomeIcon icon={smooth ? faImages : faVideo} />
             </IconButton>
 
             <IconButton
@@ -271,11 +289,14 @@ const NGLViewerWithControls = forwardRef(
                 toggleDarkBackground();
                 setAsync('dark-background', !darkBackground);
               }}
-              className={cn(style['background-toggle'], {
-                [style['dark']]: darkBackground,
-              })}
             >
-              <InvertColors />
+              <div
+                className={cn(style['background-toggle'], {
+                  [style.dark]: darkBackground,
+                })}
+              >
+                <FontAwesomeIcon icon={faAdjust} />
+              </div>
             </IconButton>
 
             <IconButton
@@ -287,7 +308,7 @@ const NGLViewerWithControls = forwardRef(
                 setAsync('perspective', !perspective);
               }}
             >
-              {perspective ? <Layers /> : <LayersClear />}
+              <FontAwesomeIcon icon={perspective ? faSquare : faCube} />
             </IconButton>
 
             {!Number.isFinite(projection) && (
@@ -301,7 +322,7 @@ const NGLViewerWithControls = forwardRef(
                   setAsync('membrane-opacity', value / 100);
                 }}
               >
-                <Flip />
+                <FontAwesomeIcon icon={faPaintBrush} />
               </Slider>
             )}
 
@@ -315,7 +336,7 @@ const NGLViewerWithControls = forwardRef(
                 setAsync('speed', value);
               }}
             >
-              <SpeedIcon />
+              <FontAwesomeIcon icon={speedIcon} />
             </Slider>
 
             {!Number.isFinite(projection) && !noTrajectory && (

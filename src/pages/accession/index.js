@@ -2,7 +2,8 @@ import React, { Suspense, lazy, useContext } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { Typography, Button } from '@material-ui/core';
-import { Link } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLink } from '@fortawesome/free-solid-svg-icons';
 
 import useAPI from '../../hooks/use-api';
 import useNGLFile from '../../hooks/use-ngl-file';
@@ -190,7 +191,7 @@ const LinkSwitch = ({ accession, subPage }) => {
       href={`${BASE_PATH}current/projects/${accession}/${end}`}
       className={style['link-to-api']}
     >
-      <Link />
+      <FontAwesomeIcon icon={faLink} />
       &nbsp;data in this page
     </Button>
   );

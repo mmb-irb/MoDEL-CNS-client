@@ -8,6 +8,8 @@ import {
   TextField,
   InputAdornment,
 } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 import { ProjectCtx } from '../../../contexts';
 
@@ -398,9 +400,12 @@ const Analyses = memo(() => {
           InterProScan
         </a>
       </p>
-      <ul>
+      <ul className={style['chain-analysis-list']}>
         {chains.map(chain => (
           <li key={chain}>
+            <Typography variant="h6">
+              <FontAwesomeIcon icon={faAngleRight} /> Chain {chain}
+            </Typography>
             <ChainAnalyses chain={chain} accession={accession || identifier} />
           </li>
         ))}
