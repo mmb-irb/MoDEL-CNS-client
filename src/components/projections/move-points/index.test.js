@@ -58,7 +58,7 @@ describe('movePoints', () => {
       isFirstTime: true,
     });
 
-    expect(canvas.createPNGStream()).toMatchImageSnapshot();
+    expect(canvas.toBuffer()).toMatchImageSnapshot();
   });
   it('should render to canvas not for first time', async () => {
     await movePoints({
@@ -70,7 +70,7 @@ describe('movePoints', () => {
       isFirstTime: false,
     });
 
-    expect(canvas.createPNGStream()).toMatchImageSnapshot();
+    expect(canvas.toBuffer()).toMatchImageSnapshot();
   });
   it('should render to canvas, interrupt, and rerender', async () => {
     // don't await
@@ -94,6 +94,6 @@ describe('movePoints', () => {
       isFirstTime: false,
     });
 
-    expect(canvas.createPNGStream()).toMatchImageSnapshot();
+    expect(canvas.toBuffer()).toMatchImageSnapshot();
   });
 });
