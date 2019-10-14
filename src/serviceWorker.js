@@ -19,7 +19,7 @@ const isLocalhost = Boolean(
     ),
 );
 
-const QUICK_ENOUGH_TO_JUST_REFRESH = 2000; // 2 seconds;
+const QUICK_ENOUGH_TO_JUST_REFRESH = 750; // 750ms;
 
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
@@ -83,13 +83,18 @@ function registerValidSW(swUrl, config) {
                   window.location.reload();
                 }
               } else {
-                // here we should display a message to the user
+                window.dispatchEvent(
+                  new CustomEvent('sw', { detail: 'update' }),
+                );
               }
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
               console.log('Content is cached for offline use.');
+              window.dispatchEvent(
+                new CustomEvent('sw', { detail: 'install' }),
+              );
 
               // Execute callback
               if (config.onSuccess) {

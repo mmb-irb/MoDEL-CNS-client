@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { sleep } from 'timing-functions';
 
 import App from './App';
 
@@ -19,6 +20,12 @@ const loadPolyfills = async () => {
 const main = async () => {
   await loadPolyfills();
   ReactDOM.render(<App />, document.getElementById('root'));
+  await sleep(1000);
+  window.dispatchEvent(
+    new CustomEvent('sw update', {
+      detail: 'Updated content is available. Please reload the page.',
+    }),
+  );
 };
 
 main();

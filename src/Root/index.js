@@ -24,6 +24,14 @@ const Footer = lazy(async () => {
   return module;
 });
 
+const SnackBarContainer = lazy(async () => {
+  await schedule(100);
+  const module = await import(
+    /* webpackChunkName: 'snack-bar-container' */ '../components/snack-bar-container'
+  );
+  return module;
+});
+
 // Pages
 const Home = lazy(() => import(/* webpackChunkName: 'home' */ '../pages/home'));
 const Browse = lazy(() =>
@@ -107,6 +115,9 @@ const Root = () => (
       </Main>
       <Suspense fallback={null}>
         <Footer />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SnackBarContainer />
       </Suspense>
     </Body>
   </MuiThemeProvider>
