@@ -31,7 +31,7 @@ export default () => {
               <Button color="secondary" onClick={reload}>
                 Reload
               </Button>
-              <IconButton color="primary" onClick={reset}>
+              <IconButton color="primary" onClick={reset} aria-label="close">
                 <FontAwesomeIcon icon={faTimes} />
               </IconButton>
             </>,
@@ -40,7 +40,7 @@ export default () => {
         case 'install':
           setMessage('This website is now installed and available offline');
           setAction(
-            <IconButton color="primary" onClick={reset}>
+            <IconButton color="primary" onClick={reset} aria-label="close">
               <FontAwesomeIcon icon={faTimes} />
             </IconButton>,
           );
