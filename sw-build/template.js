@@ -5,9 +5,14 @@ const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 const WEEK = 7 * DAY;
 
+// https://developers.google.com/web/tools/workbox/modules/workbox-core#skip_waiting_and_clients_claim
 workbox.core.skipWaiting();
 workbox.core.clientsClaim();
 
+// https://developers.google.com/web/tools/workbox/modules/workbox-precaching#reading_precached_assets_directly
+workbox.precaching.cleanupOutdatedCaches();
+
+// https://developers.google.com/web/tools/workbox/modules/workbox-precaching#serving_precached_responses
 workbox.precaching.precacheAndRoute('{{precache}}', {}); // content will be injected here
 
 // navigation route (any navigation request to any part of the scope of the service worker)
