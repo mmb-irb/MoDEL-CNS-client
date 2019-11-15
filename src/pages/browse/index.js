@@ -27,6 +27,9 @@ import { BASE_PATH_PROJECTS, NICE_NAMES } from '../../utils/constants';
 
 import style from './style.module.css';
 
+// It is used to check if the user has the reduced motion setting active
+import reducedMotion from '../../utils/reduced-motion';
+
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 
@@ -37,8 +40,11 @@ const nextIconButtonProps = { title: 'Next page' };
 
 const keyframes = {
   opacity: [0, 1],
-  transform: ['translateX(2.5%)', 'translateX(0)'],
 };
+
+if (!reducedMotion()) {
+  keyframes.transform = ['translateX(2.5%)', 'translateX(0)'];
+}
 
 const Row = ({
   highlight,
