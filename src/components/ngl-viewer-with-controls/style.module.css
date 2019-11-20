@@ -146,6 +146,10 @@
   backface-visibility: hidden;
 }
 
+.flip-card.front {
+  transform: rotateY(0deg);
+}
+
 .flip-card.back {
   transform: rotateY(180deg);
 }
