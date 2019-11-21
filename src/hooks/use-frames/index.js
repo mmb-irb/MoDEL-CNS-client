@@ -24,7 +24,9 @@ const useFrames = (accession, frames, projection) => {
   } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/files/trajectory${
       Number.isFinite(projection) ? `.pca-${projection + 1}` : ''
-    }.bin`,
+    }`, // Here, if you ask for the trajectory.bin instead of just trajectory, you get the whole file
+    // This is because the only route of the API accepting frames selection is the "trajectory" endpoint
+    // Other paths such as "trajectory.bin" will be processed as "/:files"
     fetchOptions,
   );
 
