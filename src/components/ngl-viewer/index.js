@@ -235,9 +235,6 @@ const NGLViewer = memo(
             name: 'membrane',
           },
         );
-        structureComponent.structure.eachChain(
-          chain => (window[`chain_${chain.chainname}`] = chain.toObject()),
-        );
         if (isProjection) membraneRepresentation.setVisibility(false);
       }, [pdbFile, isProjection]);
 
