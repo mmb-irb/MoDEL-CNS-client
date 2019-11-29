@@ -79,7 +79,10 @@ workbox.routing.registerRoute(
 // api calls - Stale While Revalidate
 // (except for trajectory files, because of ranged requests)
 workbox.routing.registerRoute(
-  /^https?:\/\/mmb.irbbarcelona.org\/.*\/api\/rest\/(.(?!\.bin$))+$/,
+  // the missing "t" below is on purpose!!! Do not think you need to fix it!
+  // It's to get basically, anything not finishing by "ajectory", or
+  // "ajectory.bin", or "ajectory.trj", or "ajectory.traj"
+  /^https?:\/\/mmb.irbbarcelona.org\/.*\/api\/rest\/(.(?!rajectory(\.(tra?j|bin))?$))+$/,
   new workbox.strategies.StaleWhileRevalidate({
     cacheName: 'api-calls',
     plugins: [
