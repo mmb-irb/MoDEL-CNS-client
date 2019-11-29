@@ -1,20 +1,27 @@
+// React logic
 import React, { Suspense, lazy, useContext } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
+// Visual assets
 import { Typography, Button } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLink } from '@fortawesome/free-solid-svg-icons';
 
-import useAPI from '../../hooks/use-api';
+// Hooks
+import useAPI from '../../hooks/use-api'; // API acces
 import useNGLFile from '../../hooks/use-ngl-file';
 
-import ErrorBoundary from '../../components/error-boundary';
-import Loading from '../../components/loading';
+// Additional components
+import ErrorBoundary from '../../components/error-boundary'; // Catch errors in React components
+import Loading from '../../components/loading'; // Displays an animated "loading" circle
 
+// Load the 3 contexts
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
+// Constants
 import { BASE_PATH, BASE_PATH_PROJECTS } from '../../utils/constants';
 
+// CSS styles
 import style from './style.module.css';
 
 const Overview = lazy(() =>
@@ -31,28 +38,33 @@ const GenericAnalysisPage = lazy(() =>
 );
 const PCA = lazy(() => import(/* webpackChunkName: 'pca' */ './pca'));
 
+// Return an error message and print the error in the console
 const Error = ({ error }) => {
   console.error(error);
-  // returningg a fragment here to avoid having typescript complaining
+  // returning a fragment here to avoid having typescript complaining
   return <>Something wrong happened</>;
 };
 
 const SummarySwitch = () => {
+  // useContext is a React hook. Get the accession ID from the accession context
   const accession = useContext(AccessionCtx);
 
+  // Get data from the API. Payload contains the main data
   const { loading, payload, error } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/`,
   );
+  // Load data form the provided URL in ".pdb" format
   const pdbData = useNGLFile(
     `${BASE_PATH_PROJECTS}${accession}/files/md.imaged.rot.dry.pdb`,
-    { defaultRepresentation: false, ext: 'pdb' },
+    { ext: 'pdb' }, // This attribute was included before: defaultRepresentation: false
   );
 
+  // While loading
   if (loading) return <Loading />;
 
   if (payload && payload.accession && accession !== payload.accession) {
     // it means that the accession we extracted from the URL is not actually an
-    // accession but an identifier, so, if it exists, redirect to it
+    // accession but an identifier (e.g. PDB accession), so, if it exists, redirect to it
     return (
       <Route
         render={({ location }) => (
@@ -66,7 +78,7 @@ const SummarySwitch = () => {
       />
     );
   }
-
+  // Otherwise, if we still having data, redirect the user according to the URL path
   if (payload) {
     return (
       <ErrorBoundary>
@@ -165,7 +177,9 @@ const SummarySwitch = () => {
   return <Error error={error || 'something wrong happened'} />;
 };
 
+// Render a button which links to the API
 const LinkSwitch = ({ accession, subPage }) => {
+  // First, few modifications muts be done over the client URL path to be compatible with the API
   let end;
   switch (subPage) {
     case 'overview':
@@ -199,18 +213,20 @@ const LinkSwitch = ({ accession, subPage }) => {
 
 export default ({ match }) => {
   return (
+    // Set the accession context, which is used by different scripts including this
     <AccessionCtx.Provider value={match.params.accession}>
       <span className={style.container}>
+        {/* Render the accession */}
         <Typography variant="h4" className={style.title}>
           Accession: {match.params.accession}
         </Typography>
-
+        {/* Render a button which links to the API */}
         <LinkSwitch
           accession={match.params.accession}
           subPage={match.params.subPage}
         />
       </span>
-
+      {/* Load the main data summary */}
       <SummarySwitch />
     </AccessionCtx.Provider>
   );

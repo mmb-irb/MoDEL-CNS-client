@@ -1,4 +1,5 @@
 import React, { memo, useContext, useEffect } from 'react';
+// A hook to track whenever some element is on screen
 import { useInView } from 'react-intersection-observer';
 import { round } from 'lodash-es';
 
@@ -11,6 +12,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
+// Recover the metadata saved in this context by the accession script
 import { ProjectCtx } from '../../../contexts';
 
 import Card from '../../../components/animated-card';
@@ -21,9 +23,11 @@ import reducedMotion from '../../../utils/reduced-motion';
 
 import style from './style.module.css';
 
+// This component displays the trajectory metadata and it is also called by other scripts
 export const TrajectoryMetadata = memo(() => {
+  // Load metadata from the project context
   const { metadata } = useContext(ProjectCtx);
-
+  // Render the whole metadata
   return (
     <fieldset>
       <legend>
@@ -234,7 +238,7 @@ export const TrajectoryMetadata = memo(() => {
       </fieldset>
     </fieldset>
   );
-});
+}); // End of the metadata boxes
 
 const dbMap = new Map([
   ['InterPro', 'InterPro'],
@@ -256,14 +260,19 @@ const dbMap = new Map([
 ]);
 
 const Analyses = memo(() => {
+  // Load chains, accession and identifier from the project context
   const { chains, accession, identifier } = useContext(ProjectCtx);
-
+  // Portals create a window where a web page is pre rendered without navigating to
+  // You can navigate to this web page by clicking on the portal
+  // NOTE: see https://web.dev/hands-on-portals for tutorial on Portals
+  // TODO: Right now portals are not activated
+  /*
   useEffect(() => {
-    // Bypass React for DOM alteration
+    // bypass React for DOM alteration
+    // document.createElement is a different way to create React elements
     const popup = document.createElement('div');
     popup.className = style.popup;
     let portal, portalContainer;
-    // NOTE: see https://web.dev/hands-on-portals for tutorial on Portals
     if ('HTMLPortalElement' in window) {
       portalContainer = document.createElement('div');
       portalContainer.className = style['portal-container'];
@@ -288,6 +297,7 @@ const Analyses = memo(() => {
         };
       });
     }
+
     const link = document.createElement('a');
     link.rel = 'noopener';
     link.target = '_blank';
@@ -385,9 +395,11 @@ const Analyses = memo(() => {
       document.body.removeChild(popup);
     };
   }, []);
-
+  */
+  // Render the functional analysis with a brief introduction
   return (
     <>
+      {/* Brief introduction */}
       <Typography variant="h5">Protein functional analysis</Typography>
       <br />
       <Typography variant="subtitle2">
@@ -435,11 +447,13 @@ const Analyses = memo(() => {
         to move within the sequence.
       </Typography>
       <ul className={style['chain-analysis-list']}>
+        {/* Here, main data is displayed */}
         {chains.map(chain => (
           <li key={chain}>
             <Typography variant="h6">
               <FontAwesomeIcon icon={faAngleRight} /> Chain {chain}
             </Typography>
+            {/* ChainAnalyses is the main visual asset */}
             <ChainAnalyses chain={chain} accession={accession || identifier} />
           </li>
         ))}
@@ -475,9 +489,13 @@ const Analyses = memo(() => {
   );
 });
 
+// Define permanent options for the "useInView"
 const useInViewOptions = { triggerOnce: true, rootMargin: '100px' };
 
 const Trajectory = () => {
+  // useInView acts as a React hook
+  // Track if the NGL viewer (nglRef) and the analyses (nightingaleRef) are on screen
+  // The status (e.g. isNglVisible) is returned true/false when the element is in/out the screen respectively
   const [nglRef, isNglVisible] = useInView(useInViewOptions);
   const [nightingaleRef, isNightingaleVisible] = useInView(useInViewOptions);
 
@@ -485,10 +503,12 @@ const Trajectory = () => {
     <>
       <Card className={style.card}>
         <CardContent>
+          {/* Renders the whole metadata */}
           <TrajectoryMetadata />
         </CardContent>
       </Card>
       <Card className={style.card} ref={nglRef}>
+        {/* Render the NGL viewer when it is on screen*/}
         {isNglVisible ? (
           <NGLViewerWithControls className={style.container} />
         ) : (
@@ -498,6 +518,7 @@ const Trajectory = () => {
       <Card className={style.card} ref={nightingaleRef}>
         {isNightingaleVisible ? (
           <CardContent>
+            {/* Render all the previously defined analyses part when it is on screen*/}
             <Analyses />
           </CardContent>
         ) : (

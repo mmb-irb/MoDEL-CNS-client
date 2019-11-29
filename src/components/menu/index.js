@@ -13,6 +13,7 @@ const ProjectMenu = lazy(() =>
 
 const Search = lazy(() => import(/* webpackChunkName: 'search' */ './search'));
 
+// Render all buttons in the header and manage the user redirection when they are clicked
 export default () => (
   <menu className={style.menu}>
     <div className={style.main}>
@@ -45,6 +46,7 @@ export default () => (
           exact
           render={props => (
             <Suspense fallback={null}>
+              {/* Render the search bar */}
               <Search {...props} />
             </Suspense>
           )}

@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Comments here are for typescript
 /**
  * @param {ImgAttr} param0
  */

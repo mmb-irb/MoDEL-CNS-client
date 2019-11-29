@@ -53,6 +53,7 @@ const loadProtVista = () => {
   return Promise.all(customElements);
 };
 
+// The result of this function is memoized since it is a heavy work
 const ChainAnalyses = memo(({ chain, accession }) => {
   const { loading, payload } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/chains/${chain}`,

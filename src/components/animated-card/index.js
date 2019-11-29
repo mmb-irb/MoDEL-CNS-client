@@ -17,6 +17,7 @@ const ANIMATION_OPTIONS = {
   duration: 500,
 };
 
+// Make the card appear and slide softly from down to up when the page is loaded
 const AnimatedCard = forwardRef(({ overrideComponent, ...props }, ref) => {
   const containerRef = useRef(null);
 

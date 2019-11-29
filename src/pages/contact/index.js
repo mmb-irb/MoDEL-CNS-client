@@ -5,6 +5,7 @@ import Card from '../../components/animated-card';
 
 import style from './style.module.css';
 
+// Expose a link to get in touch with the IRB group
 const Contact = () => (
   <Card className={style.card}>
     <CardContent className={style['card-content']}>
