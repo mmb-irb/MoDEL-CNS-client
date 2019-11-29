@@ -265,8 +265,6 @@ const Analyses = memo(() => {
   // Portals create a window where a web page is pre rendered without navigating to
   // You can navigate to this web page by clicking on the portal
   // NOTE: see https://web.dev/hands-on-portals for tutorial on Portals
-  // TODO: Right now portals are not activated
-  /*
   useEffect(() => {
     // bypass React for DOM alteration
     // document.createElement is a different way to create React elements
@@ -324,6 +322,7 @@ const Analyses = memo(() => {
     popup.addEventListener('mouseenter', popupEnterHandle);
     popup.addEventListener('mouseleave', popupLeaveHandle);
 
+    // event handler for events emitted by the nightingale/protvista components
     const handler = event => {
       if (!event.detail) return;
       let bcrTarget, bcrPopup, bcrTrack;
@@ -388,6 +387,7 @@ const Analyses = memo(() => {
     };
     document.body.appendChild(popup);
     window.addEventListener('change', handler);
+    // clean-up logic
     return () => {
       window.removeEventListener('change', handler);
       popup.removeEventListener('mouseenter', popupEnterHandle);
@@ -395,7 +395,6 @@ const Analyses = memo(() => {
       document.body.removeChild(popup);
     };
   }, []);
-  */
   // Render the functional analysis with a brief introduction
   return (
     <>
