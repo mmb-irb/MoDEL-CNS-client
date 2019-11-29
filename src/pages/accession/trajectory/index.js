@@ -265,8 +265,7 @@ const Analyses = memo(() => {
   // Portals create a window where a web page is pre rendered without navigating to
   // You can navigate to this web page by clicking on the portal
   // NOTE: see https://web.dev/hands-on-portals for tutorial on Portals
-  // TODO: Right now portals are not activated
-  /*
+
   useEffect(() => {
     // bypass React for DOM alteration
     // document.createElement is a different way to create React elements
@@ -395,7 +394,7 @@ const Analyses = memo(() => {
       document.body.removeChild(popup);
     };
   }, []);
-  */
+
   // Render the functional analysis with a brief introduction
   return (
     <>
