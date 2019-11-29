@@ -60,7 +60,7 @@
   "homepage": ".",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && node style-embedder/index.js && node sw-build/index.js",
+    "build": "[ -f .env ] && react-scripts build && node style-embedder/index.js && node sw-build/index.js",
     "typecheck": "tsc --project tsconfig.json",
     "test": "react-scripts test --transformIgnorePatterns='node_modules/(?!lodash-es)' --env=jest-environment-jsdom-fourteen",
     "eject": "react-scripts eject"
