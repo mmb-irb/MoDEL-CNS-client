@@ -81,6 +81,7 @@ const NGLViewer = memo(
 
       const isProjection = Number.isFinite(projection);
 
+      // Get the frames
       const frames = getFrames(
         isProjection,
         metadata,

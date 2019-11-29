@@ -1,3 +1,4 @@
+// React logic
 import React, {
   useCallback,
   useState,
@@ -9,7 +10,7 @@ import React, {
 } from 'react';
 import cn from 'classnames';
 import screenfull from 'screenfull';
-
+// Visual assets
 import {
   CardContent,
   LinearProgress,
@@ -47,6 +48,7 @@ import Slider from '../slider';
 import { get, setAsync } from '../../utils/storage';
 import NGLViewer from '../ngl-viewer';
 
+// Hooks
 import useToggleState from '../../hooks/use-toggle-state';
 
 import connectionLevel, {

@@ -1,17 +1,23 @@
+// React logic
 import React from 'react';
 
+// Visual assets
 import { CardContent, Typography } from '@material-ui/core';
 
-import Card from '../../components/animated-card';
-import LazyImg from '../../components/lazy-img';
+// Additional components
+import Card from '../../components/animated-card'; // The exceled parcels in which almost all features are based
+import LazyImg from '../../components/lazy-img'; // Renders an image by a hook
 
+// CSS styles
 import style from './style.module.css';
 
+// Different formats and sizes from the same image. The most optimal is loaded
 import homeImage from '../../images/home-image.png';
 import homeImage300 from '../../images/home-image_300.png';
 import homeImageWebP from '../../images/home-image.webp';
 import homeImageWebP300 from '../../images/home-image_300.webp';
 
+// Expose the project presentation
 const Home = () => (
   <Card className={style.card}>
     <CardContent className={style['card-content']}>

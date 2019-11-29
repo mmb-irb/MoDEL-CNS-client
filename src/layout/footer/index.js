@@ -18,6 +18,7 @@ import logoIRBWebP from '../../images/logo-irb.webp';
 //   document.head.appendChild(el);
 // }
 
+// Show two images which are also links: Human Brain Project and IRB Barcelona
 const Footer = React.memo(() => (
   <footer>
     <Paper>

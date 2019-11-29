@@ -1,5 +1,6 @@
 let forced = false;
 
+// Check if the user prefers reduced motion settings
 const reducedMotion = () => {
   return (
     window.matchMedia('(prefers-reduced-motion: reduce)').matches || forced

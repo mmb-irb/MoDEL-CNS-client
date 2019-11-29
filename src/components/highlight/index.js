@@ -28,6 +28,7 @@ const getRegExFor = memoize(
 // Propierties are delcared as <Highlight highlight={highlight}> children </Highlight>
 // This function returns multiple reacts elements which contain text chunks tagged to be marked or not
 const Highlight = React.memo(({ highlight, children }) => {
+  // If multiple childs are requested then apply highlight to each of them separatedly
   if (Array.isArray(children)) {
     return children.map((child, i) => (
       <Highlight highlight={highlight} key={i}>
