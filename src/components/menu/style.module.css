@@ -1,10 +1,21 @@
 .menu {
-  position: absolute;
-  left: 200px;
-  right: 0;
+  overflow: hidden;
+  margin: 0;
 }
 
 .main {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  color: black;
+}
+
+@media (max-width: 990px) {
+  .main .home-text-button {
+    display: none;
+  }
+
+  .menu {
+    padding: 0;
+  }
 }

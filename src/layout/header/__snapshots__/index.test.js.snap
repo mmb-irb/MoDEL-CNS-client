@@ -1,18 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Header /> should render 1`] = `
-<WithStyles(AppBar)
+<WithStyles(ForwardRef(AppBar))
   position="sticky"
 >
-  <WithStyles(Toolbar)>
-    <img
-      alt="MoDEL - Centra Nervous System - Logo"
-      height="102.5px"
-      loading="lazy"
-      src="logo.png"
-      width="200px"
-    />
+  <WithStyles(ForwardRef(Toolbar))
+    className="toolbar"
+  >
+    <Link
+      className="logo-link"
+      title="home"
+      to="/"
+    >
+      <picture>
+        <source
+          srcSet="logo.webp"
+          type="image/webp"
+        />
+        <LazyImg
+          alt="Logo - Link to home page"
+          height="103px"
+          loading="lazy"
+          src="logo.png"
+          width="200px"
+        />
+      </picture>
+    </Link>
     <_default />
-  </WithStyles(Toolbar)>
-</WithStyles(AppBar)>
+  </WithStyles(ForwardRef(Toolbar))>
+</WithStyles(ForwardRef(AppBar))>
 `;

@@ -1,3 +1,4 @@
+// React logic
 import React, {
   useCallback,
   useState,
@@ -9,7 +10,7 @@ import React, {
 } from 'react';
 import cn from 'classnames';
 import screenfull from 'screenfull';
-
+// Visual assets
 import {
   CardContent,
   LinearProgress,
@@ -18,28 +19,36 @@ import {
   FormControl,
   InputLabel,
 } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  SkipPrevious,
-  PlayArrow,
-  Pause,
-  SkipNext,
-  Fullscreen,
-  FullscreenExit,
-  ThreeSixty,
-  CenterFocusStrong,
-  BurstMode,
-  Videocam,
-  InvertColors,
-  Layers,
-  LayersClear,
-  Close,
-} from '@material-ui/icons';
+  faDotCircle,
+  faImages,
+  faSquare,
+} from '@fortawesome/free-regular-svg-icons';
+import {
+  faStepBackward,
+  faStepForward,
+  faPause,
+  faPlay,
+  faExpand,
+  faCompress,
+  faSyncAlt,
+  faVideo,
+  faAdjust,
+  faCube,
+  faPaintBrush,
+  faWalking,
+  faRunning,
+  faBiking,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 
 import Slider from '../slider';
 
-import { get, setAsync } from '../../utils/storage/index';
+import { get, setAsync } from '../../utils/storage';
 import NGLViewer from '../ngl-viewer';
 
+// Hooks
 import useToggleState from '../../hooks/use-toggle-state';
 
 import connectionLevel, {
@@ -47,14 +56,19 @@ import connectionLevel, {
   MEDIUM,
   HIGH,
 } from '../../utils/connection-level';
+import reducedMotion from '../../utils/reduced-motion';
 
 import style from './style.module.css';
+
+// Decide that the default should be to play the trajectory only on "big enough"
+// screens (as a proxy for performance and low-end device detection)
+const defaultStartsPlaying = !reducedMotion() && window.innerWidth > 750;
 
 const NGLViewerWithControls = forwardRef(
   (
     {
       className,
-      startsPlaying = true,
+      startsPlaying = defaultStartsPlaying,
       noTrajectory,
       close,
       projection,
@@ -98,6 +112,11 @@ const NGLViewerWithControls = forwardRef(
         }
       }, []),
     );
+    const [speed, setSpeed] = useState(useMemo(() => get('speed', 50), []));
+
+    let speedIcon = faWalking;
+    if (speed > 45) speedIcon = faRunning;
+    if (speed > 90) speedIcon = faBiking;
 
     // handlers
     // handle click or click & drag progress bar
@@ -164,6 +183,7 @@ const NGLViewerWithControls = forwardRef(
             darkBackground={darkBackground}
             perspective={perspective}
             projection={projection}
+            speed={speed}
             {...props}
           />
           {noTrajectory || (
@@ -182,9 +202,10 @@ const NGLViewerWithControls = forwardRef(
           <div className={style.controls}>
             {close && (
               <IconButton title="Close viewer" onClick={close}>
-                <Close />
+                <FontAwesomeIcon icon={faTimes} />
               </IconButton>
             )}
+
             {noTrajectory || (
               <>
                 <IconButton
@@ -193,13 +214,28 @@ const NGLViewerWithControls = forwardRef(
                     handleFrameChange,
                   ])}
                 >
-                  <SkipPrevious />
+                  <FontAwesomeIcon icon={faStepBackward} />
                 </IconButton>
                 <IconButton
                   title={playing ? 'Pause' : 'Play'}
                   onClick={togglePlaying}
                 >
-                  {playing ? <Pause /> : <PlayArrow />}
+                  <div className={style['flip-container']}>
+                    <div
+                      className={cn(style['flip-card-container'], {
+                        [style.flipped]: playing,
+                      })}
+                    >
+                      <FontAwesomeIcon
+                        className={cn(style['flip-card'], style.front)}
+                        icon={faPlay}
+                      />
+                      <FontAwesomeIcon
+                        className={cn(style['flip-card'], style.back)}
+                        icon={faPause}
+                      />
+                    </div>
+                  </div>
                 </IconButton>
                 <IconButton
                   title="Next frame"
@@ -207,32 +243,39 @@ const NGLViewerWithControls = forwardRef(
                     handleFrameChange,
                   ])}
                 >
-                  <SkipNext />
+                  <FontAwesomeIcon icon={faStepForward} />
                 </IconButton>
               </>
             )}
-            {screenfull.enabled && (
+
+            {screenfull.isEnabled && (
               <IconButton
                 title={`${isFullscreen ? 'exit' : 'go'} fullscreen`}
                 onClick={useCallback(() => {
                   if (containerRef.current)
                     screenfull.toggle(containerRef.current);
                 }, [])}
+                className={cn(style['fullscreen-toggle'], {
+                  [style['is-fullscreen']]: isFullscreen,
+                })}
               >
-                {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+                <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
               </IconButton>
             )}
+
             <IconButton title="Toggle spin" onClick={toggleSpinning}>
-              <ThreeSixty />
+              <FontAwesomeIcon icon={faSyncAlt} />
             </IconButton>
+
             <IconButton
               title="Center focus"
               onClick={useCallback(() => {
                 if (viewerRef.current) viewerRef.current.centerFocus();
               }, [])}
             >
-              <CenterFocusStrong />
+              <FontAwesomeIcon icon={faDotCircle} />
             </IconButton>
+
             <IconButton
               title={`Toggle smooth interpolation ${
                 smooth
@@ -242,20 +285,25 @@ const NGLViewerWithControls = forwardRef(
               onClick={toggleSmooth}
               disabled={!playing}
             >
-              {smooth ? <BurstMode /> : <Videocam />}
+              <FontAwesomeIcon icon={smooth ? faImages : faVideo} />
             </IconButton>
+
             <IconButton
               title="Invert background color"
               onClick={() => {
                 toggleDarkBackground();
                 setAsync('dark-background', !darkBackground);
               }}
-              className={cn(style['background-toggle'], {
-                [style['dark']]: darkBackground,
-              })}
             >
-              <InvertColors />
+              <div
+                className={cn(style['background-toggle'], {
+                  [style.dark]: darkBackground,
+                })}
+              >
+                <FontAwesomeIcon icon={faAdjust} />
+              </div>
             </IconButton>
+
             <IconButton
               title={`Switch to ${
                 perspective ? 'ortographic' : 'perspective'
@@ -265,20 +313,36 @@ const NGLViewerWithControls = forwardRef(
                 setAsync('perspective', !perspective);
               }}
             >
-              {perspective ? <Layers /> : <LayersClear />}
+              <FontAwesomeIcon icon={perspective ? faSquare : faCube} />
             </IconButton>
+
             {!Number.isFinite(projection) && (
               <Slider
-                className={style['opacity-slider']}
-                label="Membrane label:"
+                className={style.slider}
+                label="Membrane opacity:"
                 title="Change membrane opacity"
                 value={membraneOpacity * 100}
                 handleChange={(_, value) => {
                   setMembraneOpacity(value / 100);
                   setAsync('membrane-opacity', value / 100);
                 }}
-              />
+              >
+                <FontAwesomeIcon icon={faPaintBrush} />
+              </Slider>
             )}
+
+            <Slider
+              className={style.slider}
+              label="Player speed:"
+              title="Change player speed"
+              value={speed}
+              handleChange={(_, value) => {
+                setSpeed(value);
+                setAsync('speed', value);
+              }}
+            >
+              <FontAwesomeIcon icon={speedIcon} />
+            </Slider>
 
             {!Number.isFinite(projection) && !noTrajectory && (
               <FormControl>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { render, fireEvent, cleanup } from 'react-testing-library';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 
 import EigenvalueGraph from '.';
 import style from './style.module.css';
@@ -16,7 +16,7 @@ describe('<EigenvalueGraph />', () => {
 
     afterAll(() => wrapper.unmount());
 
-    it('should render', () => {
+    it('should render and handle clicks', () => {
       const Component = () => {
         const [projections, setProjections] = useState([]);
         ref.current = projections;
@@ -31,9 +31,7 @@ describe('<EigenvalueGraph />', () => {
       };
       wrapper = render(<Component />);
       expect(wrapper.container).toBeInstanceOf(HTMLElement);
-    });
 
-    it('should handle clicks', () => {
       expect(ref.current).toEqual([]);
       let target = wrapper.container.querySelector(
         `.${style.target} rect.${style['has-projection']}`,
@@ -53,7 +51,7 @@ describe('<EigenvalueGraph />', () => {
 
     afterAll(() => wrapper.unmount());
 
-    it('should render', () => {
+    it('should render and handle clicks', () => {
       const Component = () => {
         const [projections, setProjections] = useState([0]);
         ref.current = projections;
@@ -68,9 +66,7 @@ describe('<EigenvalueGraph />', () => {
       };
       wrapper = render(<Component />);
       expect(wrapper.container).toBeInstanceOf(HTMLElement);
-    });
 
-    it('should handle clicks', () => {
       expect(ref.current).toEqual([0]);
       let target = wrapper.container.querySelector(
         `.${style.target} rect.${style['has-projection']}`,

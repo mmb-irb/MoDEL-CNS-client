@@ -1,23 +1,33 @@
-import React, { memo, useContext } from 'react';
+import React, { memo, useContext, useEffect } from 'react';
+// A hook to track whenever some element is on screen
+import { useInView } from 'react-intersection-observer';
 import { round } from 'lodash-es';
 
 import {
-  Card,
   CardContent,
   Typography,
   TextField,
   InputAdornment,
 } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
+// Recover the metadata saved in this context by the accession script
 import { ProjectCtx } from '../../../contexts';
 
+import Card from '../../../components/animated-card';
 import NGLViewerWithControls from '../../../components/ngl-viewer-with-controls';
+import ChainAnalyses from '../../../components/chain-analyses';
+
+import reducedMotion from '../../../utils/reduced-motion';
 
 import style from './style.module.css';
 
+// This component displays the trajectory metadata and it is also called by other scripts
 export const TrajectoryMetadata = memo(() => {
+  // Load metadata from the project context
   const { metadata } = useContext(ProjectCtx);
-
+  // Render the whole metadata
   return (
     <fieldset>
       <legend>
@@ -27,49 +37,42 @@ export const TrajectoryMetadata = memo(() => {
         <legend>Counts</legend>
         <TextField
           className={style['text-field']}
-          readOnly
           label="System atoms"
           title="Total number of atoms in the system"
           value={metadata.SYSTATS}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Proteins atoms"
           title="Number of protein atoms in the system"
           value={metadata.PROTATS}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Proteins residues"
           title="Number of protein residues in the system"
           value={metadata.PROT}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Phospholipids"
           title="Number of membrane molecules in the system"
           value={metadata.DPPC}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Solvent molecules"
           title="Number of solvent molecules in the system"
           value={metadata.SOL}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Positive ions"
           title="Number of positively charged ions in the system"
           value={metadata.NA}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Negative ions"
           title="Number of negatively charged ions in the system"
           value={metadata.CL}
@@ -79,14 +82,12 @@ export const TrajectoryMetadata = memo(() => {
         <legend>Simulation box</legend>
         <TextField
           className={style['text-field']}
-          readOnly
           label="Type"
           title="Box type"
           value={metadata.BOXTYPE}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Size X"
           title="Simulated system box X dimension"
           value={metadata.BOXSIZEX}
@@ -100,7 +101,6 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Size Y"
           title="Simulated system box Y dimension"
           value={metadata.BOXSIZEY}
@@ -114,7 +114,6 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Size Z"
           title="Simulated system box Z dimension"
           value={metadata.BOXSIZEZ}
@@ -128,13 +127,15 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Volume"
           title="Simulated system box volume"
-          value={round(
-            +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
-            5,
-          )}
+          value={
+            metadata.BOXSIZEX &&
+            round(
+              +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
+              5,
+            )
+          }
           InputProps={{
             endAdornment: (
               <InputAdornment variant="filled" position="end">
@@ -148,7 +149,6 @@ export const TrajectoryMetadata = memo(() => {
         <legend>Other</legend>
         <TextField
           className={style['text-field']}
-          readOnly
           label="Length"
           title="Simulation length"
           value={metadata.LENGTH}
@@ -162,7 +162,6 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Timestep"
           title="Simulation timestep"
           value={metadata.TIMESTEP}
@@ -176,14 +175,12 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Snapshots"
           title="Number of snapshots"
           value={metadata.SNAPSHOTS}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Frequency"
           title="Frequency of snapshots"
           value={metadata.FREQUENCY}
@@ -197,14 +194,12 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Force field"
           title="Force field"
           value={metadata.FF}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Temperature"
           title="Temperature"
           value={metadata.TEMP}
@@ -218,28 +213,24 @@ export const TrajectoryMetadata = memo(() => {
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Water type"
           title="Water type"
           value={metadata.WAT}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Ensemble"
           title="Simulation ensemble"
           value={metadata.ENSEMBLE}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Pressure coupling"
           title="Pressure coupling method"
           value={metadata.PCOUPLING}
         />
         <TextField
           className={style['text-field']}
-          readOnly
           label="Membrane"
           title="Membrane type"
           value={metadata.MEMBRANE}
@@ -247,19 +238,294 @@ export const TrajectoryMetadata = memo(() => {
       </fieldset>
     </fieldset>
   );
+}); // End of the metadata boxes
+
+const dbMap = new Map([
+  ['InterPro', 'InterPro'],
+  // special cases
+  ['TIGRFAM', 'tigrfams'],
+  ['PROSITE_PROFILES', 'profile'],
+  ['PROSITE_PATTERNS', 'prosite'],
+  ['SUPERFAMILY', 'ssf'],
+  ['GENE3D', 'cathgene3d'],
+  // just the same, but lowercase
+  ['CDD', 'cdd'],
+  ['HAMAP', 'hamap'],
+  ['PANTHER', 'panther'],
+  ['PFAM', 'pfam'],
+  ['PIRSF', 'pirsf'],
+  ['PRINTS', 'prints'],
+  ['SFLD', 'sfld'],
+  ['SMART', 'smart'],
+]);
+
+const Analyses = memo(() => {
+  // Load chains, accession and identifier from the project context
+  const { chains, accession, identifier } = useContext(ProjectCtx);
+  // Portals create a window where a web page is pre rendered without navigating to
+  // You can navigate to this web page by clicking on the portal
+  // NOTE: see https://web.dev/hands-on-portals for tutorial on Portals
+  useEffect(() => {
+    // bypass React for DOM alteration
+    // document.createElement is a different way to create React elements
+    const popup = document.createElement('div');
+    popup.className = style.popup;
+    let portal, portalContainer;
+    if ('HTMLPortalElement' in window) {
+      portalContainer = document.createElement('div');
+      portalContainer.className = style['portal-container'];
+      portal = document.createElement('portal');
+      portalContainer.appendChild(portal);
+      popup.appendChild(portalContainer);
+      portal.addEventListener('click', () => {
+        const bcr = portal.getBoundingClientRect();
+        portal.animate(
+          { transform: [`scale(1) translate(${-bcr.left}px, ${-bcr.top}px)`] },
+          {
+            duration: reducedMotion() ? 0 : 1000,
+            easing: 'cubic-bezier(.23,-0.26,0,1)',
+            fill: 'both',
+          },
+        ).onfinish = () => {
+          // TODO: whenever the bug removing history when activating a portal is
+          // TODO: fixed, use this piece of code
+          // portal.activate();
+          // TODO: in the meantime... (yes, it does an ugly flash 🤷‍)
+          window.location.href = portal.src;
+        };
+      });
+    }
+
+    const link = document.createElement('a');
+    link.rel = 'noopener';
+    link.target = '_blank';
+    popup.appendChild(link);
+
+    let displayed = false;
+    let timeout;
+
+    const clearPopup = () => {
+      link.textContent = '';
+      link.href = '';
+      if (portal) {
+        portalContainer.style.display = 'none';
+        portal.src = null;
+        portal.removeAttribute('src');
+      }
+      popup.style.visibility = 'hidden';
+      popup.style.transform = 'translate(0, 0)';
+    };
+
+    const popupEnterHandle = () => clearTimeout(timeout);
+    const popupLeaveHandle = () => (timeout = setTimeout(clearPopup, 1000));
+
+    popup.addEventListener('mouseenter', popupEnterHandle);
+    popup.addEventListener('mouseleave', popupLeaveHandle);
+
+    // event handler for events emitted by the nightingale/protvista components
+    const handler = event => {
+      if (!event.detail) return;
+      let bcrTarget, bcrPopup, bcrTrack;
+      switch (event.detail.eventtype) {
+        case 'mouseover':
+          if (!event.detail.feature.accession) return;
+
+          clearTimeout(timeout);
+
+          const IP_DB = dbMap.get(event.detail.feature.db);
+          const href =
+            IP_DB &&
+            `https://www.ebi.ac.uk/interpro/entry/${IP_DB}/${event.detail.feature.accession}/`;
+          if (portal && IP_DB) portal.src = href;
+          link.textContent = `${event.detail.feature.db} - ${event.detail.feature.accession}`;
+          link.href = href;
+          if (IP_DB) {
+            if (portal) portalContainer.style.display = 'block';
+          } else {
+            if (portal) {
+              portalContainer.style.display = 'none';
+              portal.removeAttribute('src');
+              portal.src = null;
+            }
+            link.removeAttribute('href');
+          }
+
+          bcrTarget = event.detail.target.getBoundingClientRect();
+          bcrPopup = popup.getBoundingClientRect();
+          bcrTrack = event.detail.target
+            .closest('protvista-interpro-track')
+            .getBoundingClientRect();
+
+          // x
+          const translateX = Math.min(
+            Math.max(
+              // center the popup in the middle of the region
+              bcrTarget.left + bcrTarget.width / 2 - bcrPopup.width / 2,
+              // make sure the popup doesn't overflow to the left
+              bcrTrack.left,
+            ),
+            // make sure the popup doesn't overflow to the right
+            bcrTrack.right - bcrPopup.width,
+          );
+          // y
+          const translateY = window.scrollY + bcrTarget.top - bcrPopup.height;
+
+          popup.style.visibility = 'visible';
+          popup.style.transform = `translate(${translateX}px, ${translateY}px)`;
+
+          displayed = true;
+          break;
+        case 'mouseout':
+          if (!displayed) return; // no need to do DOM operation, it's already invisible
+          timeout = setTimeout(clearPopup, 1000);
+
+          displayed = false;
+          break;
+        default:
+        // ignore
+      }
+    };
+    document.body.appendChild(popup);
+    window.addEventListener('change', handler);
+    // clean-up logic
+    return () => {
+      window.removeEventListener('change', handler);
+      popup.removeEventListener('mouseenter', popupEnterHandle);
+      popup.removeEventListener('mouseleave', popupLeaveHandle);
+      document.body.removeChild(popup);
+    };
+  }, []);
+  // Render the functional analysis with a brief introduction
+  return (
+    <>
+      {/* Brief introduction */}
+      <Typography variant="h5">Protein functional analysis</Typography>
+      <br />
+      <Typography variant="subtitle2">
+        <strong>{chains.length}</strong> chains were analysed.
+      </Typography>
+      <Typography variant="body1">
+        Below you can see the families, domains, and sites, that an{' '}
+        <a
+          href="https://www.ebi.ac.uk/interpro/about/interproscan/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          InterProScan
+        </a>{' '}
+        analysis revealed for each of the chain sequences. This is a prediction
+        that might be helpful to discover functions, or to find similar
+        structures for example.
+      </Typography>
+      <br />
+      <Typography variant="body1">
+        You can interact with this visualisation as such:
+        <br />
+        <strong>Hover over their representation</strong> to see that some of
+        them will have a corresponding page on the{' '}
+        <a
+          href="https://www.ebi.ac.uk/interpro/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          InterPro website
+        </a>{' '}
+        where you will be able to learn more about it.
+        <br />
+        <strong>Click on them</strong> to see the corresponding sequence
+        highlighted in the interactive trajectory viewer above. Clicking on an
+        other entity within the same chain will change the highlight to that
+        other entity.
+        <br />
+        <strong>Click on an empty space</strong> in this visualisation to remove
+        the highlight for that chain.
+        <br />
+        <strong>Scroll over the visualisation</strong> to zoom in or out of the
+        chain sequence. Alternatively, you can also interact with the top
+        navigation part (at the top of each visualisation) to zoom in and out or
+        to move within the sequence.
+      </Typography>
+      <ul className={style['chain-analysis-list']}>
+        {/* Here, main data is displayed */}
+        {chains.map(chain => (
+          <li key={chain}>
+            <Typography variant="h6">
+              <FontAwesomeIcon icon={faAngleRight} /> Chain {chain}
+            </Typography>
+            {/* ChainAnalyses is the main visual asset */}
+            <ChainAnalyses chain={chain} accession={accession || identifier} />
+          </li>
+        ))}
+      </ul>
+      <Typography variant="body2">
+        Data generated using{' '}
+        <a
+          href="https://www.ebi.ac.uk/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          EBI
+        </a>
+        's{' '}
+        <a
+          href="https://www.ebi.ac.uk/interpro/about/interproscan/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          InterProScan service
+        </a>{' '}
+        and visualised using the{' '}
+        <a
+          href="https://ebi-webcomponents.github.io/nightingale/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Nightingale visualisation library
+        </a>
+        .
+      </Typography>
+    </>
+  );
 });
 
-const Trajectory = () => (
-  <>
-    <Card className={style.card}>
-      <CardContent>
-        <TrajectoryMetadata />
-      </CardContent>
-    </Card>
-    <Card className={style.card}>
-      <NGLViewerWithControls className={style.container} />
-    </Card>
-  </>
-);
+// Define permanent options for the "useInView"
+const useInViewOptions = { triggerOnce: true, rootMargin: '100px' };
+
+const Trajectory = () => {
+  // useInView acts as a React hook
+  // Track if the NGL viewer (nglRef) and the analyses (nightingaleRef) are on screen
+  // The status (e.g. isNglVisible) is returned true/false when the element is in/out the screen respectively
+  const [nglRef, isNglVisible] = useInView(useInViewOptions);
+  const [nightingaleRef, isNightingaleVisible] = useInView(useInViewOptions);
+
+  return (
+    <>
+      <Card className={style.card}>
+        <CardContent>
+          {/* Renders the whole metadata */}
+          <TrajectoryMetadata />
+        </CardContent>
+      </Card>
+      <Card className={style.card} ref={nglRef}>
+        {/* Render the NGL viewer when it is on screen*/}
+        {isNglVisible ? (
+          <NGLViewerWithControls className={style.container} />
+        ) : (
+          <div style={{ height: '50vh' }} />
+        )}
+      </Card>
+      <Card className={style.card} ref={nightingaleRef}>
+        {isNightingaleVisible ? (
+          <CardContent>
+            {/* Render all the previously defined analyses part when it is on screen*/}
+            <Analyses />
+          </CardContent>
+        ) : (
+          <div style={{ height: '50vh' }} />
+        )}
+      </Card>
+    </>
+  );
+};
 
 export default Trajectory;

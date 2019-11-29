@@ -10,6 +10,7 @@ import {
   axisLeft,
   axisRight,
   event,
+  easeBackOut,
 } from 'd3';
 
 import {
@@ -20,7 +21,10 @@ import {
   TableBody,
   Button,
 } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+
+import reducedMotion from '../../utils/reduced-motion';
 
 import style from './style.module.css';
 
@@ -53,7 +57,7 @@ const EigenvalueGraph = ({
       .attr('width', 0)
       // transition on first display, uncover from left to right
       .transition()
-      .duration(50 * 43)
+      .duration(reducedMotion() ? 0 : 50 * 43)
       .attr('width', '100%');
 
     const refs = {
@@ -99,7 +103,7 @@ const EigenvalueGraph = ({
         g.attr('transform', `translate(${width - MARGIN.right}, 0)`).call(
           axisRight(yExpl)
             .ticks(6)
-            .tickFormat(d => `${d * 100}%`),
+            .tickFormat(d => `${(typeof d === 'number' ? d : 0) * 100}%`),
         );
       refs.yExplAxis.call(yExplAxis);
 
@@ -120,7 +124,7 @@ const EigenvalueGraph = ({
         .merge(explLine)
         .attr('d', d => lineFn(d.map(item => item.cumulativeExplained)))
         .transition()
-        .duration(2000)
+        .duration(2500)
         .attr('opacity', 1);
 
       // area
@@ -141,7 +145,7 @@ const EigenvalueGraph = ({
         .merge(explArea)
         .attr('d', d => areaFn(d.map(item => item.cumulativeExplained)))
         .transition()
-        .duration(2000)
+        .duration(2500)
         .attr('opacity', 1);
 
       // eigenvalue
@@ -176,7 +180,9 @@ const EigenvalueGraph = ({
         .attr('x', (_, i) => x(i))
         .attr('width', x.bandwidth())
         .transition()
-        .delay((_, i) => i * 50)
+        .ease(easeBackOut.overshoot(5))
+        .duration(reducedMotion() ? 0 : 500)
+        .delay(reducedMotion() ? 0 : (_, i) => i * 50)
         .attr('y', d => yEigen(d.eigenvalue))
         .attr('height', d => height - MARGIN.bottom - yEigen(d.eigenvalue));
       // full-height bars (for click and hover handlers)
@@ -298,7 +304,8 @@ const EigenvalueGraph = ({
             onClick={() => setProjections([])}
             className={style.delete}
           >
-            <Delete />
+            <FontAwesomeIcon icon={faTrashAlt} />
+            &nbsp;
             <span>Clear selection</span>
           </Button>
         </>

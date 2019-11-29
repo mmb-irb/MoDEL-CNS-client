@@ -1,4 +1,4 @@
-import React, { useContext, Fragment } from 'react';
+import React, { useContext } from 'react';
 import prettyBytes from 'pretty-bytes';
 
 import {
@@ -12,7 +12,11 @@ import {
   Typography,
   Chip,
 } from '@material-ui/core';
-import { InsertDriveFile, ExpandMore, Assignment } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile } from '@fortawesome/free-regular-svg-icons';
+import { faChevronDown, faServer } from '@fortawesome/free-solid-svg-icons';
+
+import Card from '../../../components/animated-card';
 
 import formatNumber from '../../../utils/number-formatter';
 import getEstimate from '../../../utils/get-download-time-estimate';
@@ -24,8 +28,15 @@ import style from './style.module.css';
 
 const groupPerTypeReducer = (group, file) => {
   let groupName;
-  if (file.filename.toLowerCase().endsWith('pdb')) {
+  const name = file.filename.toLowerCase();
+  if (name.endsWith('.pdb') || name.endsWith('.gro')) {
     groupName = 'Structure/topology';
+  } else if (
+    name.endsWith('.xtc') ||
+    name.endsWith('.traj') ||
+    name.endsWith('.dcd')
+  ) {
+    groupName = 'Trajectory';
   } else {
     groupName = 'Other';
   }
@@ -48,7 +59,7 @@ const api = [
       filename:
         'Especially for bigger files, consider using the programmatic API as documented',
       url: BASE_PATH + 'docs/#/files',
-      icon: <Assignment />,
+      icon: <FontAwesomeIcon icon={faServer} />,
     },
   ],
 ];
@@ -63,8 +74,8 @@ export default React.memo(() => {
   return (
     <>
       <Typography variant="h5">Files</Typography>
-      {[...groupedFiles, api].map(([key, set]) => (
-        <Fragment key={key}>
+      {[...groupedFiles, api].map(([key, set], i) => (
+        <Card overrideComponent key={typeof key === 'string' ? key : i}>
           <Typography variant="h6" className={style.title}>
             &nbsp;⤷&nbsp;
             {key}
@@ -85,11 +96,11 @@ export default React.memo(() => {
               return (
                 <ExpansionPanel key={md5 || filename}>
                   <ExpansionPanelSummary
-                    expandIcon={<ExpandMore />}
+                    expandIcon={<FontAwesomeIcon icon={faChevronDown} />}
                     className={style.summary}
                   >
                     <Icon className={style.icon}>
-                      {icon || <InsertDriveFile />}
+                      {icon || <FontAwesomeIcon icon={faFile} />}
                     </Icon>
                     <div>
                       <Typography variant="subtitle2">{filename}</Typography>
@@ -145,7 +156,7 @@ export default React.memo(() => {
               );
             },
           )}
-        </Fragment>
+        </Card>
       ))}
     </>
   );

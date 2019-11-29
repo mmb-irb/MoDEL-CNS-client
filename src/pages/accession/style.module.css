@@ -1,3 +1,13 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.title {
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
 .link-to-api {
-  float: right;
+  flex-shrink: 0;
 }

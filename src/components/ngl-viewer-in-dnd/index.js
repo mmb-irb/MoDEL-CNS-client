@@ -1,7 +1,8 @@
 import React, { lazy, Suspense, useRef, useEffect, memo } from 'react';
 
 import { Rnd } from 'react-rnd';
-import { Card } from '@material-ui/core';
+
+import Card from '../animated-card';
 
 import style from './style.module.css';
 

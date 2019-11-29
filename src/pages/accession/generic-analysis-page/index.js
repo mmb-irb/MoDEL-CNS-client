@@ -1,8 +1,10 @@
 import React, { lazy, Suspense, useState, useContext } from 'react';
 
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { CardContent, Typography } from '@material-ui/core';
 
+import Card from '../../../components/animated-card';
 import NGLViewerInDND from '../../../components/ngl-viewer-in-dnd';
+import Loading from '../../../components/loading';
 
 import useAPI from '../../../hooks/use-api';
 
@@ -41,36 +43,43 @@ const Analysis = ({
     analysis === 'fluctuation' ? new Set() : null,
   );
 
+  if (loading) return <Loading />;
+
+  if (!payload) return 'Something bad happened';
+
+  const showDND = !!(
+    (typeof selected === 'number' && Number.isFinite(selected)) ||
+    (selected && selected.size)
+  );
+
   return (
-    <Suspense fallback={<span>Loading</span>}>
+    <Suspense fallback={<Loading />}>
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">Statistics</Typography>
-          {!loading && payload && <StatisticsTable y={payload.y} />}
+          <StatisticsTable y={payload.y} />
         </CardContent>
       </Card>
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6" />
-          {!loading && payload && (
-            <Graph
-              y={payload.y}
-              step={payload.step}
-              defaultPrecision={defaultPrecision}
-              xLabel={xLabel}
-              xScaleFactor={xScaleFactor}
-              yLabel={yLabel}
-              type={graphType}
-              startsAtOne={startsAtOne}
-              onHover={analysis === 'fluctuation' ? setHovered : undefined}
-              hovered={hovered}
-              onSelect={setSelected}
-              selected={selected}
-            />
-          )}
+          <Graph
+            y={payload.y}
+            step={payload.step}
+            defaultPrecision={defaultPrecision}
+            xLabel={xLabel}
+            xScaleFactor={xScaleFactor}
+            yLabel={yLabel}
+            type={graphType}
+            startsAtOne={startsAtOne}
+            onHover={analysis === 'fluctuation' ? setHovered : undefined}
+            hovered={hovered}
+            onSelect={setSelected}
+            selected={selected}
+          />
         </CardContent>
       </Card>
-      {Number.isFinite(selected) || (selected && selected.size) ? (
+      {showDND && (
         <NGLViewerInDND
           accession={accession}
           hovered={hovered}
@@ -78,7 +87,7 @@ const Analysis = ({
           selected={selected}
           setSelected={setSelected}
         />
-      ) : null}
+      )}
     </Suspense>
   );
 };

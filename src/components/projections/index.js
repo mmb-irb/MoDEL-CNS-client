@@ -19,9 +19,11 @@ import cn from 'classnames';
 import useToggleState from '../../hooks/use-toggle-state';
 import movePoints from './move-points';
 import getDrawLegend from './get-draw-legend';
+import reducedMotion from '../../utils/reduced-motion';
 
 import { IconButton } from '@material-ui/core';
-import { Sync } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRandom } from '@fortawesome/free-solid-svg-icons';
 
 import style from './style.module.css';
 
@@ -54,7 +56,9 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
     const canvas = select(containerRef.current).append('canvas');
     const graph = select(containerRef.current).append('svg');
 
-    const context = canvas.node().getContext('2d');
+    const context = canvas
+      .node()
+      .getContext('2d', { alpha: false, desynchronized: true });
 
     const brushInstance = brush();
 
@@ -79,7 +83,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
 
     // debounce it to prevent redrawing that too much
     refs.drawLegend = debounce(
-      getDrawLegend(refs.legendCanvas.node().getContext('2d')),
+      getDrawLegend(refs.legendCanvas.node().getContext('2d', { alpha: true })),
       MAX_DELAY + MAX_DURATION,
     );
 
@@ -108,7 +112,12 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
       graph.attr('width', width).attr('height', height);
-      canvas.attr('width', width * dPR).attr('height', height * dPR);
+      if (canvas.attr('width') !== `${width * dPR}`) {
+        canvas.attr('width', width * dPR);
+      }
+      if (canvas.attr('height') !== `${height * dPR}`) {
+        canvas.attr('height', height * dPR);
+      }
       canvas.style('width', `${width}px`).style('height', `${height}px`);
 
       refs.brushElement.call(refs.brush);
@@ -122,7 +131,6 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       // y axis
       refs.yScale.range([height - MARGIN.bottom, MARGIN.top]);
       if (!brushing) refs.yScale.domain(processed.yMinMax);
-
       // visual x axis
       const xAxis = g =>
         g
@@ -137,13 +145,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           );
       refs.xAxis
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .call(xAxis);
 
       refs.xAxisLegend
         .text(`← principal component ${processed.projections[0] + 1} →`)
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(${width / 2}, ${height - 5})`);
 
       // visual y axis
@@ -160,13 +168,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           );
       refs.yAxis
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .call(yAxis);
 
       refs.yAxisLegend
         .text(`← principal component ${processed.projections[1] + 1} →`)
         .transition()
-        .duration(!isFirstTime && MAX_DELAY + MAX_DURATION)
+        .duration(!isFirstTime && !reducedMotion() && MAX_DELAY + MAX_DURATION)
         .attr('transform', `translate(5, ${height / 2}) rotate(90)`);
 
       refs.brush.on('end', () => {
@@ -212,8 +220,9 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           const xPoint = refs.xScale(xValue) * dPR;
           const yPoint = refs.yScale(yValue) * dPR;
           const delay = (i * MAX_DELAY * (isFirstTime ? 2 : 1)) / length;
-          const duration =
-            random(MIN_DURATION, MAX_DURATION) * (isFirstTime ? 2 : 1);
+          const duration = reducedMotion()
+            ? 0
+            : random(MIN_DURATION, MAX_DURATION) * (isFirstTime ? 2 : 1);
           const time = delay + duration;
           // update maxTime if needed
           if (maxTime < time) maxTime = time;
@@ -334,11 +343,13 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
         .on('mouseout', reset)
         .on('click', handleGraphEventWith(handleClick));
 
+      /**
+       * @param {(object: object) => void} handler
+       */
       const handleLegendEventWith = handler => () => {
-        const {
-          left,
-          width,
-        } = refs.legendCanvas.node().getBoundingClientRect();
+        const node = refs.legendCanvas.node();
+        if (!(node && 'getBoundingClientRect' in node)) return;
+        const { left, width } = node.getBoundingClientRect();
         const { pageX } = event;
         const position = (pageX - left) / width;
         const datumIndex = Math.floor(position * processed.data.length);
@@ -412,7 +423,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           className={cn(style.switch, { [style.switched]: switched })}
           onClick={toggleSwitched}
         >
-          <Sync />
+          <FontAwesomeIcon icon={faRandom} />
         </IconButton>
         <p>position in simulation:</p>
         <div className={style['color-scale']}>

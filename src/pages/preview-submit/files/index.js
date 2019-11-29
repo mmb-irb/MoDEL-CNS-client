@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 import { Card, CardHeader, CardContent, Fab, Chip } from '@material-ui/core';
-import { Add, Lock } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faLock } from '@fortawesome/free-solid-svg-icons';
 
 import cn from 'classnames';
 import prettyBytes from 'pretty-bytes';
@@ -94,7 +95,9 @@ const Files = ({ files, setFiles, submitMode }) => {
               key={file.url}
               label={`${file.name} (${prettyBytes(file.size)})`}
               onClick={stopEvent}
-              deleteIcon={submitMode ? <Lock /> : undefined}
+              deleteIcon={
+                submitMode ? <FontAwesomeIcon icon={faLock} /> : undefined
+              }
               onDelete={submitMode ? stopEvent : handleDelete(file)}
             />
           ))}
@@ -106,7 +109,7 @@ const Files = ({ files, setFiles, submitMode }) => {
           className={style.fab}
           onClick={() => fileInputRef.current.click()}
         >
-          <Add />
+          <FontAwesomeIcon icon={faPlus} />
         </Fab>
       </Card>
     </label>

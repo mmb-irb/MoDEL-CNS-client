@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { format } from 'd3';
 
 import {
@@ -13,7 +13,7 @@ import { NICE_NAMES } from '../../utils/constants';
 
 const formatter = format('.4f');
 
-const StatisticsTable = memo(({ y }) => {
+const StatisticsTable = ({ y = {} }) => {
   return (
     <Table>
       <TableHead>
@@ -24,23 +24,22 @@ const StatisticsTable = memo(({ y }) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {y &&
-          Object.entries(y).map(([key, { average, stddev }]) => (
-            <TableRow key={key}>
-              <TableCell>{NICE_NAMES.get(key) || key}</TableCell>
-              <TableCell>
-                {formatter(average)}
-                nm
-              </TableCell>
-              <TableCell>
-                {formatter(stddev)}
-                nm
-              </TableCell>
-            </TableRow>
-          ))}
+        {Object.entries(y).map(([key, { average, stddev }]) => (
+          <TableRow key={key}>
+            <TableCell>{NICE_NAMES.get(key) || key}</TableCell>
+            <TableCell>
+              {formatter(average)}
+              nm
+            </TableCell>
+            <TableCell>
+              {formatter(stddev)}
+              nm
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
-});
+};
 
 export default StatisticsTable;

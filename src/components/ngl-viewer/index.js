@@ -7,9 +7,10 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { debounce, throttle, clamp } from 'lodash-es';
 import cn from 'classnames';
-import { Stage } from 'ngl';
+import { Stage, ColormakerRegistry, Matrix4 } from 'ngl';
 import { frame } from 'timing-functions';
 
 import payloadToNGLFile from './payload-to-ngl-file';
@@ -31,7 +32,11 @@ const changeOpacity = throttle((representation, membraneOpacity) => {
     representation.setVisibility(true);
   }
 }, 100);
+
 const DEFAULT_NUMBER_OF_FRAMES = 25;
+const DEFAULT_ORIENTATION_TRANSITION_DURATION = 500; // 500 ms
+
+const CHAIN_SELECTION = 'polymer and not hydrogen';
 
 const NGLViewer = memo(
   forwardRef(
@@ -51,24 +56,32 @@ const NGLViewer = memo(
         requestedFrame,
         darkBackground,
         perspective,
+        speed,
       },
       ref,
     ) => {
       // data from context
       const accession = useContext(AccessionCtx);
-      const { metadata } = useContext(ProjectCtx);
+      const { metadata, curatedOrientation } = useContext(ProjectCtx);
       const pdbData = useContext(PdbCtx);
 
       // references
       const containerRef = useRef(null);
       const stageRef = useRef(null);
-      const originalOritentationRef = useRef(null);
       const firstTime = useRef(true);
+      // curatedOrientation might be null
+      const originalOritentationRef = useRef(
+        curatedOrientation ? new Matrix4().set(...curatedOrientation) : null,
+      );
+
+      // in-view hook
+      const [inViewRef, isInView] = useInView();
 
       const { loading: loadingPDB, file: pdbFile } = pdbData;
 
       const isProjection = Number.isFinite(projection);
 
+      // Get the frames
       const frames = getFrames(
         isProjection,
         metadata,
@@ -88,13 +101,20 @@ const NGLViewer = memo(
       useEffect(() => {
         // set-up
         stageRef.current = new Stage(containerRef.current);
+        // wait for a render to screen, then
         frame().then(() => {
           if (!stageRef.current) return;
+          // make sure NGL knows the size it has available
           stageRef.current.handleResize();
-          stageRef.current.autoView();
         });
         // clean-up
-        return () => stageRef.current.dispose();
+        return () => {
+          // NOTE: following line causes to fail when loading a new viewer with
+          // NOTE: previous structure data
+          // stageRef.current.removeAllComponents();
+          stageRef.current.dispose();
+          stageRef.current = null;
+        };
       }, []);
 
       // background (with transition)
@@ -107,9 +127,11 @@ const NGLViewer = memo(
         }
         (async () => {
           while (true) {
-            await frame();
+            await frame(); // async, should check if we still have the viewer
+            if (!stageRef.current) return;
             let currentTick = Date.now() - beginning;
-            // exit condition from while true loop
+            // exit condition from 'while (true)' loop
+            // if we've gone over the full time of the animation
             if (currentTick > duration) break;
             if (darkBackground) currentTick = duration - currentTick;
             const color = `#${Math.round((currentTick * 0xff) / duration)
@@ -118,7 +140,10 @@ const NGLViewer = memo(
               .repeat(3)}`;
             stageRef.current.viewer.setBackground(color);
           }
-          await frame();
+          await frame(); // async, should check if we still have the viewer
+          if (!stageRef.current) return;
+          // make sure we're set to the final colour
+          // (in case the transition was stopped halfway through)
           stageRef.current.viewer.setBackground(
             darkBackground ? 'black' : 'white',
           );
@@ -143,7 +168,7 @@ const NGLViewer = memo(
           if (!onProgress) return;
           const progress = clamp(
             frame /
-              (stageRef.current.compList[0].trajList[0].trajectory.numframes -
+              (stageRef.current.compList[0].trajList[0].trajectory.frameCount -
                 1),
             0,
             1,
@@ -164,7 +189,7 @@ const NGLViewer = memo(
         }, 500),
         [],
       );
-      // connect to events
+      // connect the handle to events
       useEffect(() => {
         window.addEventListener('resize', handleResize);
         return () => {
@@ -180,13 +205,27 @@ const NGLViewer = memo(
           pdbFile,
         );
 
-        structureComponent.autoView();
-        originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
+        // set the view somehow, in any case no transition duration is set
+        // because it's the first time we do that
+
+        // if an original orientation was aleady defined
+        // (manually created, and stored in the API)
+        structureComponent.autoView(CHAIN_SELECTION, 0);
+        if (originalOritentationRef.current) {
+          // use it to set the initial orientation
+          stageRef.current.animationControls.orient(
+            originalOritentationRef.current,
+            0,
+          );
+        } else {
+          originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
+        }
 
         // main structure
         structureComponent.addRepresentation('cartoon', {
-          sele: 'polymer and not hydrogen',
+          sele: CHAIN_SELECTION,
           name: 'structure',
+          opacity: 1,
         });
         // membrane
         const membraneRepresentation = structureComponent.addRepresentation(
@@ -278,6 +317,9 @@ const NGLViewer = memo(
           isProjection,
           Number.isFinite(requestedFrame),
         );
+        if (stageRef.current.compList[0]) {
+          stageRef.current.compList[0].autoView(CHAIN_SELECTION, 0);
+        }
         if (!file) return;
 
         const component = stageRef.current.compList[0];
@@ -288,7 +330,8 @@ const NGLViewer = memo(
         frames.signals.frameChanged.add(handleFrameChange);
         frames.trajectory.setFrame(0);
 
-        component.autoView();
+        component.autoView(CHAIN_SELECTION, 0);
+        originalOritentationRef.current = stageRef.current.viewerControls.getOrientation();
 
         return () => frames.signals.frameChanged.remove(handleFrameChange);
       }, [
@@ -304,17 +347,26 @@ const NGLViewer = memo(
       // play/pause
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
-        stageRef.current.compList[0].trajList[0].trajectory.player[
-          playing ? 'play' : 'pause'
-        ]();
-      }, [pdbFile, dcdPayload, playing]);
+        const { player } = stageRef.current.compList[0].trajList[0].trajectory;
+        player[playing && isInView ? 'play' : 'pause']();
+        return () => player.pause();
+      }, [pdbFile, dcdPayload, playing, isInView]);
+
+      // speed
+      useEffect(() => {
+        stageRef.current &&
+          stageRef.current.compList[0] &&
+          stageRef.current.compList[0].trajList[0] &&
+          stageRef.current.compList[0].trajList[0].trajectory.player.setParameters(
+            { timeout: 500 / (Math.log2(speed + 1) + 1) },
+          );
+      }, [speed, loadingDCD]);
 
       // spinning
       useEffect(() => {
         if (
           stageRef.current &&
           stageRef.current.spinAnimation &&
-          stageRef.current.spinAnimation.paused &&
           spinning === stageRef.current.spinAnimation.paused
         ) {
           stageRef.current.toggleSpin();
@@ -336,7 +388,7 @@ const NGLViewer = memo(
       // smoothing, player interpolation
       useEffect(() => {
         if (!(pdbFile && dcdPayload)) return;
-        stageRef.current.compList[0].trajList[0].trajectory.player.interpolateType = smooth
+        stageRef.current.compList[0].trajList[0].trajectory.player.parameters.interpolateType = smooth
           ? 'linear'
           : '';
       }, [pdbFile, dcdPayload, smooth]);
@@ -348,6 +400,84 @@ const NGLViewer = memo(
         return handleResize.cancel;
       }, [pdbFile, dcdPayload, handleResize]);
 
+      // listen to change event from nightingale component
+      useEffect(() => {
+        const handler = ({ detail }) => {
+          // escape case for event listener
+          if (
+            !detail ||
+            !(detail.eventtype === 'click' || detail.eventtype === 'reset')
+          ) {
+            return;
+          }
+          let offset = 0;
+          let highlight = '';
+          const addOffsetMappingFn = item => +item + offset;
+          for (const manager of document.querySelectorAll(
+            'protvista-manager',
+          )) {
+            // get highlight value for each manager
+            const thisHiglight = manager.attributeValues.get('highlight');
+            const nextOffset = offset + +manager.dataset.chainLength;
+            if (!thisHiglight) {
+              // if none, escape
+              offset = nextOffset;
+              continue;
+            }
+            const [start, end] = thisHiglight
+              .split(':')
+              .map(addOffsetMappingFn);
+            highlight += ` or ${start}-${end}`;
+            offset = nextOffset;
+          }
+          highlight = highlight.substr(4); // remove initial ' or '
+
+          const structureComponent = stageRef.current.compList[0];
+
+          const previousStructureRepresentation =
+            structureComponent &&
+            structureComponent.reprList.find(
+              representation => representation.name === 'structure',
+            );
+          if (previousStructureRepresentation) {
+            structureComponent.removeRepresentation(
+              previousStructureRepresentation,
+            );
+          }
+          // no highlight, then default coloring
+          if (!highlight) {
+            structureComponent.addRepresentation('cartoon', {
+              sele: CHAIN_SELECTION,
+              name: 'structure',
+              opacity: 1,
+            });
+            stageRef.current.animationControls.orient(
+              originalOritentationRef.current,
+              DEFAULT_ORIENTATION_TRANSITION_DURATION,
+            );
+            return;
+          }
+
+          // otherwise, highlight accordingly
+          const colorSchemeID = ColormakerRegistry.addSelectionScheme(
+            [['yellow', highlight], ['white', '*']],
+            'custom label',
+          );
+          structureComponent.addRepresentation('cartoon', {
+            sele: CHAIN_SELECTION,
+            name: 'structure',
+            opacity: 1,
+            color: colorSchemeID,
+          });
+          structureComponent.autoView(
+            highlight,
+            DEFAULT_ORIENTATION_TRANSITION_DURATION,
+          );
+        };
+        window.addEventListener('change', handler);
+        return () => window.removeEventListener('change', handler);
+      }, []);
+
       // Expose public methods and getters/setters
       useImperativeHandle(
         ref,
@@ -357,7 +487,7 @@ const NGLViewer = memo(
             if (!originalOritentationRef.current) return;
             stageRef.current.animationControls.orient(
               originalOritentationRef.current,
-              500,
+              DEFAULT_ORIENTATION_TRANSITION_DURATION,
             );
           },
           get currentFrame() {
@@ -394,9 +524,17 @@ const NGLViewer = memo(
         }),
         [pdbFile, dcdPayload, handleResize],
       );
+
+      // workaround to have multiple ref logic on one element
+      // https://github.com/thebuilder/react-intersection-observer/issues/186#issuecomment-468641525
+      const handleRef = node => {
+        inViewRef(node);
+        containerRef.current = node;
+      };
+
       return (
         <div
-          ref={containerRef}
+          ref={handleRef}
           className={cn(className, style.container, {
             [style['loading-pdb']]: loadingPDB,
             [style['loading-trajectory']]: !noTrajectory && loadingDCD,

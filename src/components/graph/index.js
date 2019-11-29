@@ -6,10 +6,11 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { fromPairs, noop } from 'lodash-es';
+import { fromPairs, noop, flatten } from 'lodash-es';
 import {
   select,
   scaleLinear,
+  scaleLog,
   axisBottom,
   axisLeft,
   extent,
@@ -21,9 +22,9 @@ import {
 import { ColormakerRegistry } from 'ngl';
 import cn from 'classnames';
 
-import { FormControlLabel, Checkbox, Button } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { Slider } from '@material-ui/lab';
+import { FormControlLabel, Checkbox, Button, Slider } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
 import { PdbCtx } from '../../contexts';
 import { NICE_NAMES, COLORS } from '../../utils/constants';
@@ -76,13 +77,20 @@ const Graph = ({
     drawRef.current && pdbData && pdbData.file && drawRef.current();
   }, [pdbData]);
 
+  const precisionScale = useMemo(
+    () => scaleLog().range([NUMBER_OF_DATA_POINTS_ON_SCREEN_AT_MAX_ZOOM, 1]),
+    [],
+  );
+
   // should only be run once
   useEffect(() => {
     let canvas;
     let canvasContext;
     if (type === 'dash') {
       canvas = select(containerRef.current).append('canvas');
-      canvasContext = canvas.node().getContext('2d');
+      canvasContext = canvas
+        .node()
+        .getContext('2d' /*, {desynchronized: true}*/);
     }
     const graph = select(containerRef.current).append('svg');
     const defs = graph.append('defs');
@@ -134,12 +142,27 @@ const Graph = ({
     //   ↳ results in similar precision at maximum zoom regardless of data size
     const maxZoomExtent =
       yEntries[0][1].data.length / NUMBER_OF_DATA_POINTS_ON_SCREEN_AT_MAX_ZOOM;
+
+    precisionScale.domain([1, maxZoomExtent]);
+
     const graphZoom = zoom().scaleExtent([1, maxZoomExtent]);
     graph.call(graphZoom);
     graphZoom.on('zoom', () => {
       allDotGroups.selectAll('g.dot-group').attr('opacity', 0);
+
+      let precision;
+      if (type === 'line') {
+        if (event.sourceEvent.type === 'wheel') {
+          precision =
+            2 ** Math.floor(Math.log2(precisionScale(event.transform.k)));
+
+          setPrecision(precision);
+        }
+      }
+
       drawRef.current({
         rescaleX: event.transform.rescaleX.bind(event.transform),
+        precision,
       });
     });
 
@@ -206,10 +229,11 @@ const Graph = ({
       const y = scaleLinear()
         .domain(
           extent(
-            yEntries
-              .filter(([key]) => labels[key])
-              .map(([, { data }]) => extent(data))
-              .flat(),
+            flatten(
+              yEntries
+                .filter(([key]) => labels[key])
+                .map(([, { data }]) => extent(data)),
+            ),
           ),
         )
         .nice()
@@ -543,7 +567,8 @@ const Graph = ({
             disabled={selected instanceof Set && !selected.size}
             onClick={handleClick}
           >
-            <DeleteIcon />
+            <FontAwesomeIcon icon={faTrashAlt} />
+            &nbsp;
             <span>Clear selection</span>
           </Button>
         )}

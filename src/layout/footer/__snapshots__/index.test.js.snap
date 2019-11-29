@@ -2,10 +2,8 @@
 
 exports[`<Footer /> should render 1`] = `
 <footer>
-  <WithStyles(Paper)
-    position="static"
-  >
-    <WithStyles(Toolbar)
+  <WithStyles(ForwardRef(Paper))>
+    <WithStyles(ForwardRef(Toolbar))
       className="footer"
     >
       <a
@@ -13,26 +11,38 @@ exports[`<Footer /> should render 1`] = `
         rel="noreferrer noopener"
         target="_blank"
       >
-        <img
-          alt="Human Brain Project website"
-          height="100px"
-          loading="lazy"
-          src="logo-hbp.png"
-        />
+        <picture>
+          <source
+            srcSet="logo-hbp.webp"
+            type="image/webp"
+          />
+          <LazyImg
+            alt="Human Brain Project website"
+            height="100px"
+            loading="lazy"
+            src="logo-hbp.png"
+          />
+        </picture>
       </a>
       <a
         href="https://www.irbbarcelona.org/"
         rel="noreferrer noopener"
         target="_blank"
       >
-        <img
-          alt="IRB Barcelona website"
-          height="100px"
-          loading="lazy"
-          src="logo-irb.png"
-        />
+        <picture>
+          <source
+            srcSet="logo-irb.webp"
+            type="image/webp"
+          />
+          <LazyImg
+            alt="IRB Barcelona website"
+            height="100px"
+            loading="lazy"
+            src="logo-irb.png"
+          />
+        </picture>
       </a>
-    </WithStyles(Toolbar)>
-  </WithStyles(Paper)>
+    </WithStyles(ForwardRef(Toolbar))>
+  </WithStyles(ForwardRef(Paper))>
 </footer>
 `;

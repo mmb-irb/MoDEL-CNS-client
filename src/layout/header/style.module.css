@@ -1,0 +1,18 @@
+.toolbar {
+  display: flex;
+}
+
+@media (max-width: 600px) {
+  .toolbar {
+    padding: 0 !important;
+  }
+
+  .logo-link {
+    width: 100px;
+  }
+
+  .logo-link img {
+    width: 100px;
+    height: 51px;
+  }
+}

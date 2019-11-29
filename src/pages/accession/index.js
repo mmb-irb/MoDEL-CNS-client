@@ -1,16 +1,27 @@
+// React logic
 import React, { Suspense, lazy, useContext } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
+// Visual assets
 import { Typography, Button } from '@material-ui/core';
-import { Link } from '@material-ui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLink } from '@fortawesome/free-solid-svg-icons';
 
-import useAPI from '../../hooks/use-api';
+// Hooks
+import useAPI from '../../hooks/use-api'; // API acces
 import useNGLFile from '../../hooks/use-ngl-file';
 
+// Additional components
+import ErrorBoundary from '../../components/error-boundary'; // Catch errors in React components
+import Loading from '../../components/loading'; // Displays an animated "loading" circle
+
+// Load the 3 contexts
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
+// Constants
 import { BASE_PATH, BASE_PATH_PROJECTS } from '../../utils/constants';
 
+// CSS styles
 import style from './style.module.css';
 
 const Overview = lazy(() =>
@@ -21,127 +32,154 @@ const Trajectory = lazy(() =>
   import(/* webpackChunkName: 'trajectory' */ './trajectory'),
 );
 const GenericAnalysisPage = lazy(() =>
-  import(/* webpackChunkName: 'generic-analysis-page' */ './generic-analysis-page'),
+  import(
+    /* webpackChunkName: 'generic-analysis-page' */ './generic-analysis-page'
+  ),
 );
 const PCA = lazy(() => import(/* webpackChunkName: 'pca' */ './pca'));
 
-const loadingSpan = <span>Loading</span>;
-const Loading = () => loadingSpan;
-
+// Return an error message and print the error in the console
 const Error = ({ error }) => {
   console.error(error);
-  return 'Something wrong happened';
+  // returning a fragment here to avoid having typescript complaining
+  return <>Something wrong happened</>;
 };
 
 const SummarySwitch = () => {
+  // useContext is a React hook. Get the accession ID from the accession context
   const accession = useContext(AccessionCtx);
 
+  // Get data from the API. Payload contains the main data
   const { loading, payload, error } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/`,
   );
+  // Load data form the provided URL in ".pdb" format
   const pdbData = useNGLFile(
     `${BASE_PATH_PROJECTS}${accession}/files/md.imaged.rot.dry.pdb`,
-    { defaultRepresentation: false, ext: 'pdb' },
+    { ext: 'pdb' }, // This attribute was included before: defaultRepresentation: false
   );
 
+  // While loading
   if (loading) return <Loading />;
+
+  if (payload && payload.accession && accession !== payload.accession) {
+    // it means that the accession we extracted from the URL is not actually an
+    // accession but an identifier (e.g. PDB accession), so, if it exists, redirect to it
+    return (
+      <Route
+        render={({ location }) => (
+          <Redirect
+            to={{
+              ...location,
+              pathname: location.pathname.replace(accession, payload.accession),
+            }}
+          />
+        )}
+      />
+    );
+  }
+  // Otherwise, if we still having data, redirect the user according to the URL path
   if (payload) {
     return (
-      <ProjectCtx.Provider value={payload}>
-        <PdbCtx.Provider value={pdbData}>
-          <Switch>
-            <Route
-              path="/browse/:accession/overview"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <Overview />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/files"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <Files />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/trajectory"
-              exact
-              render={props => (
-                <Suspense fallback={loadingSpan}>
-                  <Trajectory {...props} />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/pca"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <PCA />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/rmsd"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <GenericAnalysisPage
-                    analysis="rmsd"
-                    defaultPrecision={2 ** 6}
-                    xLabel="Time (ns)"
-                    xScaleFactor={0.001}
-                    yLabel="RMSd (nm)"
-                  />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/rgyr"
-              exact
-              render={() => (
-                <Suspense fallback={loadingSpan}>
-                  <GenericAnalysisPage
-                    analysis="rgyr"
-                    defaultPrecision={2 ** 6}
-                    xLabel="Time (ns)"
-                    xScaleFactor={0.001}
-                    yLabel="Rgyr (nm)"
-                  />
-                </Suspense>
-              )}
-            />
-            <Route
-              path="/browse/:accession/fluctuation"
-              exact
-              component={() => (
-                <Suspense fallback={loadingSpan}>
-                  <GenericAnalysisPage
-                    analysis="fluctuation"
-                    xLabel="Atom"
-                    yLabel="Fluctuation (nm)"
-                    startsAtOne
-                    graphType="dash"
-                  />
-                </Suspense>
-              )}
-            />
-            <Route render={() => 404} />
-          </Switch>
-        </PdbCtx.Provider>
-      </ProjectCtx.Provider>
+      <ErrorBoundary>
+        <ProjectCtx.Provider value={payload}>
+          <PdbCtx.Provider value={pdbData}>
+            <Switch>
+              <Route
+                path="/browse/:accession/overview"
+                exact
+                render={() => (
+                  <Suspense fallback={<Loading />}>
+                    <Overview />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/files"
+                exact
+                render={() => (
+                  <Suspense fallback={<Loading />}>
+                    <Files />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/trajectory"
+                exact
+                render={props => (
+                  <Suspense fallback={<Loading />}>
+                    <Trajectory {...props} />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/pca"
+                exact
+                render={() => (
+                  <Suspense fallback={<Loading />}>
+                    <PCA />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/rmsd"
+                exact
+                render={() => (
+                  <Suspense fallback={<Loading />}>
+                    <GenericAnalysisPage
+                      analysis="rmsd"
+                      defaultPrecision={2 ** 6}
+                      xLabel="Time (ns)"
+                      xScaleFactor={0.001}
+                      yLabel="RMSd (nm)"
+                    />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/rgyr"
+                exact
+                render={() => (
+                  <Suspense fallback={<Loading />}>
+                    <GenericAnalysisPage
+                      analysis="rgyr"
+                      defaultPrecision={2 ** 6}
+                      xLabel="Time (ns)"
+                      xScaleFactor={0.001}
+                      yLabel="Rgyr (nm)"
+                    />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/fluctuation"
+                exact
+                component={() => (
+                  <Suspense fallback={<Loading />}>
+                    <GenericAnalysisPage
+                      analysis="fluctuation"
+                      xLabel="Atom"
+                      yLabel="Fluctuation (nm)"
+                      startsAtOne
+                      graphType="dash"
+                    />
+                  </Suspense>
+                )}
+              />
+              <Route render={() => 404} />
+            </Switch>
+          </PdbCtx.Provider>
+        </ProjectCtx.Provider>
+      </ErrorBoundary>
     );
   }
 
   return <Error error={error || 'something wrong happened'} />;
 };
 
+// Render a button which links to the API
 const LinkSwitch = ({ accession, subPage }) => {
+  // First, few modifications muts be done over the client URL path to be compatible with the API
   let end;
   switch (subPage) {
     case 'overview':
@@ -167,22 +205,29 @@ const LinkSwitch = ({ accession, subPage }) => {
       href={`${BASE_PATH}current/projects/${accession}/${end}`}
       className={style['link-to-api']}
     >
-      <Link />
+      <FontAwesomeIcon icon={faLink} />
       &nbsp;data in this page
     </Button>
   );
 };
 
-export default ({ match }) => (
-  <AccessionCtx.Provider value={match.params.accession}>
-    <Typography variant="h4">
-      Accession: {match.params.accession}
-      <LinkSwitch
-        accession={match.params.accession}
-        subPage={match.params.subPage}
-      />
-    </Typography>
-
-    <SummarySwitch />
-  </AccessionCtx.Provider>
-);
+export default ({ match }) => {
+  return (
+    // Set the accession context, which is used by different scripts including this
+    <AccessionCtx.Provider value={match.params.accession}>
+      <span className={style.container}>
+        {/* Render the accession */}
+        <Typography variant="h4" className={style.title}>
+          Accession: {match.params.accession}
+        </Typography>
+        {/* Render a button which links to the API */}
+        <LinkSwitch
+          accession={match.params.accession}
+          subPage={match.params.subPage}
+        />
+      </span>
+      {/* Load the main data summary */}
+      <SummarySwitch />
+    </AccessionCtx.Provider>
+  );
+};
