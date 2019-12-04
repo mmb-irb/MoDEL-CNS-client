@@ -41,6 +41,8 @@ const [MIN_DURATION, MAX_DURATION] = [375, 625];
 
 const colorScale = scaleSequential(interpolateViridis);
 
+// This component renders a graph
+// This graph is displayed when user selects 2 projections
 const Projections = ({ data, projections, step, setRequestedFrame }) => {
   const containerRef = useRef(null);
   const legendRef = useRef(null);

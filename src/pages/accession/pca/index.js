@@ -59,6 +59,7 @@ const PCA = () => {
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">PCA eigenvalues</Typography>
+          {/* Bars graph which allows to select a specific projection */}
           <EigenvalueGraph
             data={payload.y}
             totalEigenvalue={totalEigenvalue}
@@ -73,6 +74,7 @@ const PCA = () => {
           <p>{plainTextExplanation(projections, explanation)}</p>
           {projections.length === 1 && (
             <Suspense fallback={nglPlaceholder}>
+              {/* When only 1 frame is selected use the regula ngl viewer */}
               <NGLViewerWithControls
                 accession={accession}
                 className={style['ngl-viewer-with-controls']}
@@ -82,6 +84,7 @@ const PCA = () => {
           )}
           {projections.length === 2 && (
             <Suspense fallback={projectionPlaceholder}>
+              {/* When only 2 frames are selected use the projections graph */}
               <Projections
                 step={payload.step}
                 data={payload.y}
@@ -90,9 +93,11 @@ const PCA = () => {
               />
             </Suspense>
           )}
+          {/* When more than 2 frames are selected display nothing */}
         </CardContent>
       </Card>
       {Number.isFinite(requestedFrame) && (
+        // This small viewer is displayed when the user clicks in some point of the Projections graph
         <NGLViewerInDND
           accession={accession}
           requestedFrame={requestedFrame}

@@ -14,15 +14,19 @@ const NGLViewerWithControls = lazy(() =>
 
 const MIN_NGL_DIMENSION = 150;
 
+// This component render a small NGL viewer
+// It is called when user clicks in a point in the projections component
+// Also it is called by the generic analysis page
 const NGLViewerInDND = memo(
   ({
-    accession,
-    hovered,
-    analysis,
-    selected,
-    setSelected,
-    requestedFrame,
-    setRequestedFrame,
+    // The following arguments are only available when the components is called from...
+    accession, // Both
+    hovered, // Generic analysis page
+    analysis, // Generic analysis page
+    selected, // Generic analysis page
+    setSelected, // Generic analysis page
+    requestedFrame, // Projections
+    setRequestedFrame, // Projections
   }) => {
     const nglViewRef = useRef(null);
     const rndRef = useRef(null);
@@ -75,7 +79,9 @@ const NGLViewerInDND = memo(
               }
               close={() => {
                 (setRequestedFrame || setSelected)(null);
-                setSelected(analysis === 'fluctuation' ? new Set() : null);
+                if (setSelected)
+                  // Check if setSelected is available
+                  setSelected(analysis === 'fluctuation' ? new Set() : null);
               }}
             />
           </Suspense>

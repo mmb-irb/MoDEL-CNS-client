@@ -1,0 +1,1988 @@
+[33mcommit b6ae3c214c18183f56dfb6cd0d4c1d961d578c3a[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 877344e 0fdbfa8
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Fri Nov 29 16:52:01 2019 +0100
+
+    merge
+
+[33mcommit 877344e7af9d32b70d34f9b059ee477ca0c48be1[m
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Fri Nov 29 16:50:37 2019 +0100
+
+    trajectroy frames are sent through API URL instead of the header
+
+[33mcommit 0fdbfa80002ca7b7a839d2798bc405b856b61436[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Nov 29 14:13:46 2019 +0100
+
+    comments
+
+[33mcommit 1e50ea7f8911a775f5184124eeb623569ebddb3e[m
+Merge: 8cb9aea d6e9640
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Fri Nov 29 12:57:30 2019 +0100
+
+    Merge branch 'dani_bugfix'
+
+[33mcommit d6e9640549cfef1398a96f819b9e9ac9e65f9652[m
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Fri Nov 29 12:52:48 2019 +0100
+
+    comments
+
+[33mcommit 8cb9aeab5ef8e17d9f8ba617386d736c6dee1dab[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Nov 29 11:50:09 2019 +0100
+
+    enforce presence of ".env" to be able to run "npm run build"
+
+[33mcommit 363e9b59a06d557b5adc6e9439bfd57ff6038712[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Nov 29 11:42:34 2019 +0100
+
+    better regular expression for api call cache
+
+[33mcommit 0c388cf958747284054f43c4b0f055b2dbca16e2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Nov 29 11:25:54 2019 +0100
+
+    README
+
+[33mcommit 5486efc392b895abbf092e02b3dab6c461d5ba3c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Nov 29 11:25:26 2019 +0100
+
+    audit fix
+
+[33mcommit c5a77410bc904e744a6e6e93015d1cfd6f19138d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Nov 28 14:44:11 2019 +0100
+
+    remove previously set objects to window (was for debugging)
+
+[33mcommit 452c308f26a5367a9e5be5c0cd106148404b0b18[m
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Mon Nov 25 16:02:09 2019 +0100
+
+    Highlight also works with several children
+
+[33mcommit f8fa153f66662abe1e44cb12ed5218e6a69a1d77[m
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Thu Nov 21 15:31:15 2019 +0100
+
+    bugfix: trajectory preview loaded the whole file instead of the selected number of frames
+
+[33mcommit 943e5325c245e439b90967abd6c3243d22c8e958[m
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Wed Nov 20 17:26:38 2019 +0100
+
+    bugfix in the play/pause flip card of the ngl viewer
+
+[33mcommit e9b40f75c19db3077eecb6e66af4bd798981991f[m
+Author: Dani Beltrán <daniel.beltran@irbbarcelona.org>
+Date:   Fri Nov 15 13:39:13 2019 +0100
+
+    bugfix in reduced motion
+
+[33mcommit 22b77e70bd20e7520096a40948518d22c3c2f414[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 14 13:31:28 2019 +0200
+
+    aria attributes for close buttons
+
+[33mcommit 63da28709b1f92bc01ce71fc3ca1a130e4b11023[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 14 12:41:36 2019 +0200
+
+    communicate to user sw capabilities
+
+[33mcommit 758c6aca84c100c8c72495f1635cc91c4f177112[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 14 11:07:53 2019 +0200
+
+    changes to sw template
+
+[33mcommit d737f2b216818529eea0acd42defcfa5782f90ae[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 14 10:07:26 2019 +0200
+
+    simplify testing code
+
+[33mcommit 936efbc158e7744888e24079a0a7414f1da0b3fe[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 16:23:50 2019 +0200
+
+    better experience on narrow screens
+
+[33mcommit 341818c4b329988f2495489543923718202cb8c8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 16:08:47 2019 +0200
+
+    better fullscreen toggle button
+
+[33mcommit bb0543893fb79d801fadbe47da3775f80909e81f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 15:27:43 2019 +0200
+
+    better trajectory page
+
+[33mcommit 92747a7c6b7d88b10eb6ab460ae37a696991947c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 14:01:36 2019 +0200
+
+    use useReducer for useNGLFile custom hook
+
+[33mcommit 6be1968b5b8a7d3c016fc2c67f8d029fc2145baa[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 13:36:51 2019 +0200
+
+    visual changes
+
+[33mcommit d75f695ff4abf10c14e13894f6e1a82740787269[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 10:45:51 2019 +0200
+
+    fix race condition
+
+[33mcommit 56ad68babef1026c9a0f661b1c0b4dd48785a9f1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 09:44:41 2019 +0200
+
+    update deps
+
+[33mcommit 65ae61402ca555add3461bb4cf563a1a02c890e0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 11 09:40:35 2019 +0200
+
+    changes to service worker strategies
+
+[33mcommit 32dc911bd2d400c131ab55e28d752d3082725716[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 21:45:21 2019 +0200
+
+    also cache images from rcsb
+
+[33mcommit b532e33612240534f883a09078ec2d67b46367ff[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 21:09:52 2019 +0200
+
+    added service worker strategy for static assets
+
+[33mcommit 9c9872ee3bab637736201229e4a9a16d6ff1d833[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 18:14:42 2019 +0200
+
+    fix error when reusing loaded structure in new viewers
+
+[33mcommit 8db5d6d32bb55e56c4319292e9d7473a861553d2[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 17:56:43 2019 +0200
+
+    correct use of the reducedMotion helper
+
+[33mcommit 298fb96980e2e4d2552dff8960012db4320aa8d3[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 17:56:06 2019 +0200
+
+    stopped warning about lazy-loaded image without dimensions
+
+[33mcommit c4b2b8c44a5d89339957b27b78a665ba4e6d1643[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 12:16:58 2019 +0200
+
+    fix api caching route regular expression
+
+[33mcommit 66f3a0e549f2bf3ea1478356004e4c4755d8a21b[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 11:55:43 2019 +0200
+
+    fix syntax error in service worker
+
+[33mcommit 4e8a44cb937ada7b716779d5e49658905439aa7c[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 11:34:55 2019 +0200
+
+    upgrade deps
+
+[33mcommit 08942f3cddf2071db42c21b51dcf6a0bf848a1f3[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 11:27:18 2019 +0200
+
+    refresh on new service worker if updated really quickly
+
+[33mcommit 36b42bf1995a27e2ae56a99496cdd7277510f613[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Thu Oct 10 11:18:52 2019 +0200
+
+    better service worker
+
+[33mcommit cc762fabb8fcfd3f2f84bea4502025997c637898[m
+Author: Aurélien Luciani <aurelien.luciani@gmail.com>
+Date:   Wed Oct 9 15:12:29 2019 +0200
+
+    add link to CRA config from README file
+
+[33mcommit e5af489dcf6d3dfd45a481d69704e194e40ff3df[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 8 15:43:48 2019 +0200
+
+    try to fix having /api/ being intercepted by service worker
+
+[33mcommit 17028e102fc9a6bfbfede7bbcb5a4373d82e388c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 8 14:40:26 2019 +0200
+
+    change <noscript /> message
+
+[33mcommit 4f07f27263698015833dabb0f6313037318268c1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 8 14:39:53 2019 +0200
+
+    update deps
+
+[33mcommit d6e7be83792f6bf18fc23e3b93f0524470e0ff9c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 8 12:17:04 2019 +0200
+
+    small changes
+
+[33mcommit 6e68e01d0eafe8bbb949baf9d3e257558a372aac[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 3 15:37:34 2019 +0200
+
+    update deps
+
+[33mcommit f74ce805efec690854394fc9ebe961700c526181[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 3 15:22:29 2019 +0200
+
+    add mock for matchMedia
+
+[33mcommit de182ff47647ee3db6eaa15a45c4527dea3785b2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 3 15:19:47 2019 +0200
+
+    better structure orientation management
+
+[33mcommit 1c499a1a656ee9230ce4649817221c5d81bb156b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 3 15:17:47 2019 +0200
+
+    pause the player on unmount to avoid having loose event handlers triggering when nothing is visible
+
+[33mcommit c9248440b2814d8f43107ec229d4e149faa4ec87[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 3 15:16:57 2019 +0200
+
+    more comments
+
+[33mcommit 7f37ef5086b210aea6deea8fdfc281c6ad46d6e0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 3 15:16:06 2019 +0200
+
+    specify size for lazy image on accession summary page
+
+[33mcommit 0aae2ab4db0fd53f5853c986df18fae19c20491f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 3 11:42:40 2019 +0200
+
+    better global handling of "@media (prefers-reduced-motion: reduce)"
+
+[33mcommit f2611e54b5a594e0c8c1e38e58adea557118e795[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 2 15:01:05 2019 +0200
+
+    fix popups on nightingale components
+
+[33mcommit 40a9438af510b47633cbca76c84904fabd0f835c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 1 14:55:15 2019 +0200
+
+    changed cubic-beziers
+
+[33mcommit 0e9221b1262f8b45a851d6deced8558776ec0a53[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 1 14:47:12 2019 +0200
+
+    more generic animating-in sections (no need to be a material-ui <Card />)
+
+[33mcommit dae0249609dddf2e5269a57939690ffb62be16c4[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 1 09:33:40 2019 +0200
+
+    fix problem with some transition between generic analyses pages
+
+[33mcommit dea97b5994174f64cb6babeb142145d044159bcb[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Sep 30 16:34:41 2019 +0200
+
+    follow up, invert order of animation when removing sections
+
+[33mcommit bfc0e8e403db1432a50c28d4a92ba8b40d42f7ec[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Sep 30 16:22:45 2019 +0200
+
+    browsing animations 😍
+
+[33mcommit 13065240b188ab8af8f04f21e0541d4bc1b0259c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Sep 30 11:48:01 2019 +0200
+
+    nicer global loading component
+
+[33mcommit c45bd93365c63f9ee6735763ff0f8e691e5cbb8d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Sep 30 10:51:42 2019 +0200
+
+    more comments
+
+[33mcommit 4e535fde5ca03bc88cb040c15358cbdd39f921b1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Sep 30 10:34:17 2019 +0200
+
+    remove Fetch Abort polyfill since we switched to the axios library
+
+[33mcommit 52ff458bb412d2288098dcddffeec517b38e4a13[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Sep 27 16:06:17 2019 +0200
+
+    performance optimisations
+
+[33mcommit 1a06b35b528a934b36a4fb1470aeb66bb2434c89[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Sep 27 12:41:09 2019 +0200
+
+    added handling of "curated" initial orientations
+
+[33mcommit 7ebf901ec28101fa44840e13f0a551236cb60436[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Sep 26 15:45:46 2019 +0200
+
+    fix errors related to data fetching cancelling
+
+[33mcommit 34f35afc31b1ddeabb808d51bef57821038391f8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Sep 25 15:22:13 2019 +0200
+
+    better focus of the selected regions
+
+[33mcommit 848c50584bdbc8a76448163b703c4265ef072e96[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Sep 20 09:47:02 2019 +0200
+
+    update deps
+
+[33mcommit 36e67966a4ef916b70d26992999eac21aa867ba7[m
+Merge: aededd4 0c86009
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Sep 19 11:32:07 2019 +0200
+
+    merge/revert commit
+
+[33mcommit 0c8600923708e99caec49eaba1a0b2af99fc5590[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Sep 19 11:26:21 2019 +0200
+
+    update deps
+
+[33mcommit aededd4d1cb5ffe024714fa7d1d7ab578d817d29[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Sep 18 15:56:44 2019 +0200
+
+    update deps
+
+[33mcommit 5e13dab399c15248914f0678ae506d3a963a1411[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Sep 18 14:33:55 2019 +0200
+
+    add nightingale components
+
+[33mcommit 37fa78092fa04a89f074d3dd29c71d72249d388e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Aug 12 15:27:22 2019 +0200
+
+    fix weak specificity for disappearing home button on narrow screens
+
+[33mcommit 13d3599423d5a12f18ebeaec329745a6532d844e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Aug 12 09:11:34 2019 +0200
+
+    fix relative urls for injected CSS sourceMaps
+
+[33mcommit c8c2159504d9c6afcbaba49790e8655befd15cc2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Aug 7 10:12:55 2019 +0200
+
+    add README to the custom script to improve critical CSS loading
+
+[33mcommit f7fe9c44ed1af4926760e8e0291f215e2ded8a8f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Aug 5 12:37:05 2019 +0200
+
+    fix relative urls for fonts
+
+[33mcommit 19a2b8b5aef95e2362cdc5115602bb0b56c5d5eb[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Aug 5 12:34:26 2019 +0200
+
+    fix relative urls for fonts
+
+[33mcommit 71ecdeccc5cabe7cfe722114e6991ed702b58bd9[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Aug 5 11:48:44 2019 +0200
+
+    added logic to inline some stylesheets inside index.html
+
+[33mcommit db28b42a6c24de5b60533571fd62b60ec2d277a9[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 17:02:40 2019 +0200
+
+    move back header in main bundle
+
+[33mcommit ab3dc6c75a9af72fcbc74abc0fdceb98b10f159d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 16:37:11 2019 +0200
+
+    added .htaccess
+
+[33mcommit 34be8fb31f08a943d00375300c3d63d63d646861[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 16:37:00 2019 +0200
+
+    remove unnecessary computed property
+
+[33mcommit 2e281ad5b7a5fb293e60082fb763c687048ab588[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 15:39:45 2019 +0200
+
+    improve accessibility
+
+[33mcommit 341efcdd968373f8748825cfc919de9cb2e93ffa[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 15:11:01 2019 +0200
+
+    try to fix Lighthouse warning about viewport size, needs further investigation
+
+[33mcommit 5ff712d379148d098047c30cdbfb5ca22dbcb71f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 15:10:27 2019 +0200
+
+    added meta description
+
+[33mcommit 81180dddc301e7985304ef05e1282e044f610190[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 14:50:54 2019 +0200
+
+    better header for narrower screens
+
+[33mcommit 3adde7bfbc0cb206d373f70a673084ea305f9321[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 14:37:39 2019 +0200
+
+    better call-to-action button on non-browse pages
+
+[33mcommit 620d32ce3e082ac667aca2716c2cd966c0dbaf0c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 13:44:12 2019 +0200
+
+    optimisations for smaller screens
+
+[33mcommit 4dee2d4d2a4d04ec3889d6641ed9e8518ab2c797[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 12:19:38 2019 +0200
+
+    update deps
+
+[33mcommit 45e040a5d49ab49622275d88873fe0f22ed08185[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 12:18:31 2019 +0200
+
+    prevent logos overflowing on narrower screens
+
+[33mcommit 7bfdd84eeae43bd7d6a46175e4763740791e62a2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 12:18:06 2019 +0200
+
+    remove error message further down in the called functions
+
+[33mcommit 730e1e99c25ddb29a54f5f9a6230c04806449d94[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 12:17:29 2019 +0200
+
+    remove opening new tab when going to API documentation page
+
+[33mcommit 7b6c2cf96797a92e9210fec58acf6a9325f62ba8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Aug 1 12:00:06 2019 +0200
+
+    image optimisations
+
+[33mcommit 4078b31a9cb8c56ad3376b9c5ca2a3f060fcfac3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jul 31 15:34:41 2019 +0200
+
+    try to have valid manifest
+
+[33mcommit 6aad7f4d3a5a1faff01e8d8638cc797d9d60815f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jul 31 13:55:52 2019 +0200
+
+    correct shameless copy-paste from server documentation
+
+[33mcommit 54b5a5f579e8e043cf74a4046845a497b18e082f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jul 31 11:32:45 2019 +0200
+
+    better env-specific variable loading logic
+
+[33mcommit e2b0c12d168f515f0c027d3395a8a6cf51ce5ed2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jul 31 11:32:11 2019 +0200
+
+    last try at typescript in js (gave up for now)
+
+[33mcommit 8dad384c8bac5954df8c2285bc0efd7d604bfc2b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 29 18:24:50 2019 +0200
+
+    added typescript, wip
+
+[33mcommit fe5234ca9fe14f3ac8ac45074a4981fd9ae9e78f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 29 13:33:50 2019 +0200
+
+    change img to have typescript happy about loading attribute
+
+[33mcommit 1393919f0e352fedff582cb9b68d2c750078bf95[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 29 09:41:03 2019 +0200
+
+    update deps
+
+[33mcommit 760dfb2264cf664f1da3f5173d49e2842d8f55f9[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 22 11:47:14 2019 +0200
+
+    forgot something
+
+[33mcommit a7c17b0a585379ba35666276092ecf673f4f163d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 22 11:45:42 2019 +0200
+
+    forgot something
+
+[33mcommit d40f8687ea2cdfe73a963c1478ac492524b0eff5[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 22 11:31:48 2019 +0200
+
+    better titles on small screens
+
+[33mcommit 7eb12d549f13fbfb09e25741a996dc62b2d9e134[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 22 09:35:09 2019 +0200
+
+    update @material-ui to use Slider from core
+
+[33mcommit e17df41eb29b7718ae42b2bb9450f3502bf1904c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 22 09:21:55 2019 +0200
+
+    update deps
+
+[33mcommit 4564489ca304b67507c433945f938725765f542c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 22 09:00:26 2019 +0200
+
+    added canvas desync hint and fix precision on fluctuation graph
+
+[33mcommit 2af3f710c1be4391d6fd4c138e976c6d40889ec2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 18 15:54:29 2019 +0200
+
+    added way to merge ranges when contiguous
+
+[33mcommit 8d0e45e4ed3cd849a726471440e994de7a6958d5[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 18 15:47:45 2019 +0200
+
+    audit fix
+
+[33mcommit ef8fedcb860d4209bcb253acf63c10d286911695[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 18 15:46:53 2019 +0200
+
+    add AbortController polyfill
+
+[33mcommit 706550f442a6f2768fbbe1595676a8db29c92ddc[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 15:41:55 2019 +0200
+
+    fix z-index for fab button on home page
+
+[33mcommit dcd48b48a17902e954b0d217211ca367b350bb04[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 15:31:58 2019 +0200
+
+    fix loading progress info
+
+[33mcommit 486fd450328931ac4b8c65c6c5567d60c19f2b97[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 15:10:26 2019 +0200
+
+    fix progress value not calculated properly
+
+[33mcommit e067d8b5e9aeb93d92c61fbeff9882c3ca7fcb3d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 14:53:46 2019 +0200
+
+    added more types for files page
+
+[33mcommit 0004c88a6d95fe296402c4e5cd9b2d0d62c3be0a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 14:18:05 2019 +0200
+
+    added speed control
+
+[33mcommit 905d677904038a5207143505a020d870cf7ae2ca[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 11:27:01 2019 +0200
+
+    fix header active marker overflowing
+
+[33mcommit a2567a0b6e83a361101c91de39ac7b4797633199[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 10:50:10 2019 +0200
+
+    update deps
+
+[33mcommit f9716e7bcfe6f88cb54c936a5dbbd2ed550df4d7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jul 16 10:25:13 2019 +0200
+
+    forgot one change
+
+[33mcommit d702e8e3b537dc05b3df3b598667d93d803f5706[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 15 16:02:05 2019 +0200
+
+    changes to make project more generic
+
+[33mcommit 88edbafc973d700a3b78a82bbb379ab7202e6f58[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jul 15 15:59:43 2019 +0200
+
+    turn off typescript for a bit
+
+[33mcommit 18dbed7e44196db5ae2687ee7503264f09065fe8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jul 12 14:53:53 2019 +0200
+
+    add changes made by create-react-app
+
+[33mcommit 17c9a47ccffbc2877f38a844c69b903c091a464b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jul 12 14:45:59 2019 +0200
+
+    added Typescript to project (without enforcing it yet)
+
+[33mcommit ab2520e990ad581e95bda896501a52c4a062a39d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 11 15:47:13 2019 +0200
+
+    pan now keeps whatever zoom level was entered by the user
+
+[33mcommit bf7427968b14fc28ef522c97dd9b9925598a1cf2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 11 15:33:06 2019 +0200
+
+    added an error boundary component for nicer error display
+
+[33mcommit 2c1214f77780dff8765ddf1a2654b40631aed066[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 11 14:12:21 2019 +0200
+
+    change variable name
+
+[33mcommit 68b4357c948c2fffc3df4c8b1d33f925676e1f65[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 11 14:06:50 2019 +0200
+
+    make precision dynamic (relative to zoom)
+
+[33mcommit eabce6a479ee2728584eceb45d38a324278f668a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jul 11 11:38:40 2019 +0200
+
+    remove requirement for Array.prototype.flat
+
+[33mcommit 3cc5688603eb73eb1e2cfc8846db5053eb99f4ab[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jun 21 08:59:28 2019 +0200
+
+    fix spin never stopping
+
+[33mcommit 401b541e10f4f1600e3718dbf445926b8b91ea0e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jun 20 15:48:13 2019 +0200
+
+    update tests
+
+[33mcommit e5c2afff1c8271d038d2a3fdb05207a03c8d03a2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jun 20 15:39:39 2019 +0200
+
+    change wording
+
+[33mcommit c4cbcd112353634101921ba967f014332b3e95c0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jun 20 15:38:41 2019 +0200
+
+    updated ngl to version 2
+
+[33mcommit 934b592e5b66096b5340fc0698ad501484086f92[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jun 20 14:48:18 2019 +0200
+
+    update deps
+
+[33mcommit caa678b537028d0e55c1f2d8ce2b19ae4f1c46c3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jun 19 15:34:59 2019 +0200
+
+    handle accession/identifier distinction, and published/unpublished projects
+
+[33mcommit 9e11a7e111d5d696d3c4e873501addb6866113f1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 28 11:40:44 2019 +0200
+
+    change code to handle change of format for PCA data
+
+[33mcommit ba027d889f7b4546bd8dd48aedac84c7aac46c90[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 27 15:53:32 2019 +0200
+
+    added analysis list in browse page
+
+[33mcommit dbd72555b29391a6da0aebf3bd7f7adf0bb8be21[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 27 14:52:17 2019 +0200
+
+    fix linting
+
+[33mcommit bba9d9508ec6f52abb1b5948f66b1fc3a70300fa[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 27 14:45:32 2019 +0200
+
+    Added a "clear selection" button for projections
+
+[33mcommit 6c33d443762947bef53abf9e68c198f213e8ad2a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 27 14:35:38 2019 +0200
+
+    added button to switch axes
+
+[33mcommit 9719c2c1b266eb6ede815f009760c43fc033d710[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 27 14:35:16 2019 +0200
+
+    added text to make it clear ngl view can be opened from projection graph
+
+[33mcommit 3002c948081bba8689dce8b56f033e3a46ee65b8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 27 13:39:06 2019 +0200
+
+    fix ordering of projections
+
+[33mcommit 3adee28f62813f2b368ca2f398f868d824f0a005[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 27 13:38:15 2019 +0200
+
+    better logo
+
+[33mcommit 7beb5a7ac474663e350b1ad714774c25bc79e4cb[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 23 15:12:17 2019 +0200
+
+    more tests and refactoring
+
+[33mcommit 4e486b76383ef007abea3bc22e9f47ace8da5475[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 22 16:09:04 2019 +0200
+
+    added visual tests for PCA projections graph drawing
+
+[33mcommit 300ddaaf40d76d65802ce2c9c7825ea55794b50c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 22 15:46:26 2019 +0200
+
+    added ability to do snapshot tests on images
+
+[33mcommit 01ddd53c4aebb8cfef2cc702fb3ef3ea78be6209[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 22 14:05:33 2019 +0200
+
+    more tests and refactoring
+
+[33mcommit 9b9beb0475717ef3e769b15b8a1b1e87bce47cb8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 22 14:05:19 2019 +0200
+
+    changes for PWA
+
+[33mcommit c36e4ca58df8eb583d742e8f657ba51f41d8dc92[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 20 16:07:08 2019 +0200
+
+    added more tests
+
+[33mcommit 2327b93d506e730ff23ac320b2dcd307d642425f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri May 17 16:43:09 2019 +0200
+
+    more tests and refactoring
+
+[33mcommit 5a987caf3ead6febe65ef2f75d26b954c00edbff[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 16 12:23:22 2019 +0200
+
+    hook tests to git push
+
+[33mcommit 31f67f941a543a27b3a722ba4b114eb2086de2d7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 16 12:15:18 2019 +0200
+
+    added tests
+
+[33mcommit d74c3f6b3810dd6c9e2c729c07cd43f79db1e7dd[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 16 10:27:55 2019 +0200
+
+    remove console.log
+
+[33mcommit 5f1aa5a065353a961a075525d351f741badd8ea3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 16 10:25:42 2019 +0200
+
+    change logic for using getDownloadTimeEstimate
+
+[33mcommit deda848ac93160d3565bcc7310b3d70f4e5813dc[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 16 10:07:44 2019 +0200
+
+    change prop for Chip component to handle warning
+
+[33mcommit e447e318afdd7b4f9b7461e141c7aaf257dbc5b7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 15 15:38:05 2019 +0200
+
+    update deps
+
+[33mcommit 997bdb0468064e3a26eedb61b7fc62ea42278df2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 15 15:36:23 2019 +0200
+
+    added persistent settings
+
+[33mcommit b862f37e4cfbd517dae2ce67d6cd014e305fe578[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 15 14:17:41 2019 +0200
+
+    fix visualisation for PCA projections in NGL
+
+[33mcommit 7982ccf990ccba493729cf66ff05a77c5062befe[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 15 11:48:16 2019 +0200
+
+    fix displaying or not of frame number selector
+
+[33mcommit d6e352b0a0c236728063c8d0d35d807d701a569d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 14 17:00:54 2019 +0200
+
+    use Array.from second argument
+
+[33mcommit 8acad75b5a59c2ced0b93a3d1c063a954b1d2bb0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 14 16:14:10 2019 +0200
+
+    avoid breaking reading non-existing DOM node data
+
+[33mcommit a8083e8f53d912597890e41423c4f26ccf204d3e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 14 15:50:00 2019 +0200
+
+    update deps
+
+[33mcommit 3f59a3bcbfd93d4f3b533635ce2dde46066af3e7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 14 15:46:23 2019 +0200
+
+    better ngl-viewer
+
+[33mcommit bf21fb084386920abce5b7e0a0dfefaafaee7ec2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 14 15:19:26 2019 +0200
+
+    better ngl-viewer
+
+[33mcommit f9944269889e09393d43f8277dd7c4280e1f6345[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 14 12:25:09 2019 +0200
+
+    change hooks logic to separate progress handling
+
+[33mcommit d0cd49111719fd8c9d8d7f0b801915152b27da95[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 14 12:23:50 2019 +0200
+
+    revert ngl update
+
+[33mcommit a945b9fd637e92268e629c63f22fd754f1721f3f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 9 15:29:16 2019 +0200
+
+    wrap ngl-viewer-in-dnd in memo
+
+[33mcommit 1171e038b075eb13862f77e0f180ab3c3143ba47[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 9 15:20:23 2019 +0200
+
+    refactor NGL in drag-and-drop window
+
+[33mcommit ccb132ca1e01cdc02c65da62bf755202e84aae2d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 9 11:41:09 2019 +0200
+
+    optimise performance
+
+[33mcommit 43bbf1f8995d72ec97ac99f08f1cb915dc2d1762[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 9 11:40:47 2019 +0200
+
+    update ngl to next version (fix ignored scroll event preventDefault on newer versions of Chrome)
+
+[33mcommit 04a3dc727dd8272169de6b0049d3c3810a95c974[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed May 8 08:59:51 2019 +0200
+
+    fix lost colours for legend and hover dot
+
+[33mcommit dac5e48b30cf0e4cfb3f653f4bc06927ecd9ac0d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 7 16:40:48 2019 +0200
+
+    clean up after previous commit
+
+[33mcommit 34069cf92e58876eefb87aa18e3b6bc76e7831e3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue May 7 16:39:29 2019 +0200
+
+    optimise PCA graph by calculating one radius interpolation, and avoid recomputing Delaunay graph
+
+[33mcommit c0f1e7e479a280ad4b6f012a99a6377aedfea88f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 14:09:56 2019 +0200
+
+    fix linting warnings related to React hooks
+
+[33mcommit 705d0afb9b016f1166d9c11167419ad86b96a62d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 11:38:02 2019 +0200
+
+    move styles from inline to CSS
+
+[33mcommit 4cbcfa4fed7b345228ef35ab62673077bd6427ba[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 11:29:55 2019 +0200
+
+    remove unused import
+
+[33mcommit 8628f5046acddb4b8ae859f0063e8bedd5a9567d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 11:06:23 2019 +0200
+
+    optimise loading of images
+
+[33mcommit 42f517c8ebc6be09ba271b45526130ce72600812[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 10:04:17 2019 +0200
+
+    remove console.log
+
+[33mcommit 601f5a75275bba2fcb3f71c6a83e088448c8f7d7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 10:03:08 2019 +0200
+
+    display NGL when needed on PCA page
+
+[33mcommit 9c1db48b0628e3fd183a652719af4588ec5eee77[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 09:08:03 2019 +0200
+
+    fix projection graph hover when targeting first frame
+
+[33mcommit acd63a28b5daef8cde681ea160f983ecd00f0399[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon May 6 09:04:18 2019 +0200
+
+    modify color scale cursos to have target centered
+
+[33mcommit e847be366d5c4d189986b5843788962293db10d2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri May 3 13:10:53 2019 +0200
+
+    avoid displaying empty table
+
+[33mcommit 9d95bf69d4700b582c94b75786f8cd1dfd2a8520[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri May 3 12:57:27 2019 +0200
+
+    better display of projection legends, plus start handling selection of n projections
+
+[33mcommit 2ac01999c7d27aeb30a01ebeb8ef0cd85054e92b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 2 15:13:12 2019 +0200
+
+    more of previous commit
+
+[33mcommit 51005df0b564275f90b302ccc3e73d60f06602e3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 2 15:12:42 2019 +0200
+
+    more of previous commit
+
+[33mcommit 54da79d1b4b368658df45655c615f66aa23a525f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 2 14:38:05 2019 +0200
+
+    use Delaunay instead of Voronoi diagram, also, delay calculating it after animation
+
+[33mcommit 4f5c24850c9b1ee1b528bf75b8ffab14060b33ae[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 2 11:00:14 2019 +0200
+
+    fix color of hover circle that was lost in previous commit
+
+[33mcommit 14d451d2024810f4fedf38c122418c8b89b127dc[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu May 2 10:56:22 2019 +0200
+
+    refactor drawing of legend
+
+[33mcommit 94e2e7aa16b3c9927b982496a3beb45f8803f52f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Apr 29 16:00:41 2019 +0200
+
+    update deps
+
+[33mcommit 80f876d90594c2f3215629f103515160fd3788df[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Apr 29 15:27:39 2019 +0200
+
+    better projection visualisation
+
+[33mcommit 7b559c9cadbaea3210a46361bdc80448bad823a6[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Apr 29 13:57:45 2019 +0200
+
+    fix pagination
+
+[33mcommit 1114b0fe112aee6c0772582c60735862cd6078c1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Apr 29 11:09:34 2019 +0200
+
+    better background change
+
+[33mcommit 85bc2d769929eccc50b41c5b9bbaaaab3060105e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 18 10:08:49 2019 +0200
+
+    borders on ngl viewer
+
+[33mcommit 73aaec611ef119d9381593c13205bbf717e29624[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 18 09:48:09 2019 +0200
+
+    added toggle for camera type
+
+[33mcommit 42fe8a06a87a4220f35410eb88dc271988693309[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 18 09:40:18 2019 +0200
+
+    Better progress bar
+
+[33mcommit 277c9b7c3a55a7acfce49885f09e6972d482e7a7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 18 09:15:30 2019 +0200
+
+    nicer background color change button
+
+[33mcommit 3d9f754bc16dbad8dba66932451acc67c47a3715[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Apr 17 22:52:07 2019 +0200
+
+    add ability to switch background colour on ngl instance, plus corresponding button
+
+[33mcommit 4b46ffb85c0993affc0253c93f1176bdf111f08a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Apr 17 22:51:16 2019 +0200
+
+    fix error where ngl viewer was not getting visible
+
+[33mcommit 5b37c8ace31bd9830f15085d4caf8972b0a5485f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Apr 17 11:53:30 2019 +0200
+
+    optimise performance for footer
+
+[33mcommit 9f0b66717198889c5edaaaa9f65e9d626085ad57[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Apr 17 11:06:52 2019 +0200
+
+    avoid warning
+
+[33mcommit 733a37dd8f8cc073c3412261309c388ff2035916[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Apr 15 15:02:16 2019 +0200
+
+    added brush zoom
+
+[33mcommit be4cf1f86533c3d78ec659a9f44404670a6ea70b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Apr 12 12:54:45 2019 +0200
+
+    fix for Retina display
+
+[33mcommit f50f8f2691af4ed1819bc512f78e68302878f140[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Apr 12 12:38:22 2019 +0200
+
+    improvements on PCA page and ngl viewer in floating window
+
+[33mcommit 74f9fdb9a3eb09abe1fc12804c471d17dcf19071[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 4 14:26:40 2019 +0200
+
+    fix margin
+
+[33mcommit 333864ff0f5a1059f72270031f5cb3527e40e28d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 4 12:55:12 2019 +0200
+
+    fix margin
+
+[33mcommit 67e180c0cd59a9747cf54f120a55591a2f9b3848[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 4 12:52:59 2019 +0200
+
+    update deps
+
+[33mcommit a6a08b908652b1ee4f4cce277641f9dfdb78657b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 4 12:41:11 2019 +0200
+
+    added tooltip to eigenvalue bar graph
+
+[33mcommit f15cd9234931991805c7bb15bcfe2b8d7ec2a570[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Apr 4 08:27:27 2019 +0100
+
+    display info about selected components in PCA
+
+[33mcommit 851fca2fcb3b2c3dcabf379d02f281344992cfb2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Apr 2 17:00:36 2019 +0100
+
+    improvements on PCA graphs
+
+[33mcommit 0780c8abf1233e40b836298126cecf7c48ee163a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Mar 29 15:52:58 2019 +0000
+
+    added bigger click targets
+
+[33mcommit 5cfb4ea997bc58b214436678e537bc9f94d4987e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Mar 28 19:21:10 2019 +0000
+
+    added indication of which bar is represented on which axis
+
+[33mcommit dcd79a94dccc12ce9e03ccc54fcb66c76446d90d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Mar 26 16:27:46 2019 +0100
+
+    remove useless redraw
+
+[33mcommit a0cf48956babd6cb86d412a83b6c2082ef98b98b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Mar 26 16:25:32 2019 +0100
+
+    added PCA page
+
+[33mcommit 71d525a7bc322c529989b3d8b301dbb12c0bd4b6[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Mar 8 15:08:22 2019 +0100
+
+    better highlighting of atoms and residues in ngl-viewer
+
+[33mcommit 8df971cd4653d07cc608673ac8c5460d1d9bd941[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Mar 8 11:10:02 2019 +0100
+
+    better styling for ngl viewer controls
+
+[33mcommit 68ec399538ee88507e7779e62c97e32304444fe7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Mar 8 11:04:59 2019 +0100
+
+    update deps
+
+[33mcommit c7b6941d3c7f4de8e56bd80c422924f240210fde[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Mar 8 11:03:31 2019 +0100
+
+    conditionally display analysis links, and more code-splitting
+
+[33mcommit f8d1d3bed12ddde4cdd6d280b980316f564ced5e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Mar 7 13:09:21 2019 +0100
+
+    update deps
+
+[33mcommit 45e3af0b3dd4f56a3ff327743d2448206c288cc8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Mar 7 13:01:08 2019 +0100
+
+    added pagination
+
+[33mcommit 87b4d97290b1427d635dce66e4fbd748503d402a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Mar 6 15:56:42 2019 +0100
+
+    added link to data on every page, and better page menu
+
+[33mcommit 69c661d812c40a46234355525c290bcbab3d1ef8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Mar 5 16:46:06 2019 +0100
+
+    added a file page
+
+[33mcommit 9fad3957c84264331003da9d9d130bdd0f4d2aa8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Mar 5 09:42:06 2019 +0100
+
+    update deps
+
+[33mcommit e52addeb34bbc20ebbbb8c03bc8cbd543e94bf37[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Feb 27 09:26:43 2019 +0100
+
+    change to connection level module
+
+[33mcommit ea405c009faf708f8e94dddb1966f588b3a2efc9[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Feb 26 16:13:33 2019 +0100
+
+    implement changing number of frames to load, and dynamically choose best value on load
+
+[33mcommit 3054cf24e8ea63f9bbc27909c89a0c5f4426f726[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Feb 26 12:28:14 2019 +0100
+
+    add connection level module
+
+[33mcommit 98b19be41766e29ec3963678062a8a37a31d5876[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Feb 26 10:27:13 2019 +0100
+
+    update deps
+
+[33mcommit e4a61a6a8baac71eb2448509b2c2d7e61cbbb833[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Feb 26 10:22:26 2019 +0100
+
+    fix linting error for react useCallback
+
+[33mcommit 3449e49c28ed742fa8b3a48f420680177c198d61[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Feb 25 11:58:37 2019 +0100
+
+    update deps
+
+[33mcommit b94065bf0afe0a7a37c94a9b9ffaf4c13f73a06c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Feb 25 11:56:14 2019 +0100
+
+    fix incorrect way of loading single frames of trajectories
+
+[33mcommit dc910508d8eb7563c9b39a71fe59920335a345cd[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Feb 25 11:54:44 2019 +0100
+
+    use new feature of API (request by frame and atoms)
+
+[33mcommit c6e1d99263649905fd172b29e0dfb00a09f41d36[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Feb 18 15:40:19 2019 +0100
+
+    fix ranged request
+
+[33mcommit fa0caba5ddba826a2621099a131bbe779ed9fd16[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Feb 6 10:52:58 2019 +0100
+
+    fix not loading of trajectory on fluctuation page
+
+[33mcommit d94265847dc672c5495609eaf29f8a0b9160cf50[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Feb 6 10:02:29 2019 +0100
+
+    dynamic max zoom (depending on # of data points)
+
+[33mcommit 9bdf102b3a0e6fd524629e02a518e65f859047d2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Feb 6 10:02:03 2019 +0100
+
+    higher default number of frames after API optimisation
+
+[33mcommit a88a87daefb3fbccf4354100452177c93afa6037[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Feb 5 12:46:54 2019 +0100
+
+    better display on loading state for trajectory
+
+[33mcommit 12fb53605a97e9e44f111094969ac5c2d993e7ed[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Feb 5 11:01:44 2019 +0100
+
+    update deps
+
+[33mcommit a72d645d15386623840f0e2fd10556d53ead7c5b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Feb 4 14:16:01 2019 +0100
+
+    update deps and use 10 frames spread, instead of just from the start
+
+[33mcommit 604c01209c5365939cdc9779f5f61d2428209549[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 30 16:17:05 2019 +0100
+
+    load specific frames for simulation
+
+[33mcommit 2f70c4019d1631850a8f8a9bab7eade7fce58a65[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jan 22 10:19:47 2019 +0100
+
+    only import necessary parts from ngl
+
+[33mcommit 50486a921ef855e0b7385bf625b9a8d66972f5f7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jan 22 10:07:33 2019 +0100
+
+    more generic name for x axis data, and better rounding of time values
+
+[33mcommit 068d988be9aa6c39cb487b8fc48c89762dea71d0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 16:05:05 2019 +0100
+
+    MemoryRouter => HashRouter
+
+[33mcommit 26ed1ad3e981ff99b8c8ce1a5f172735d6d97875[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 16:01:52 2019 +0100
+
+    revert previous changes
+
+[33mcommit 66c7598bef13ddfd50bdf8285be5c0f5ae846ebb[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 15:51:24 2019 +0100
+
+    use PUBLIC_URL
+
+[33mcommit 4a9131488d10905e667a5724bfc9d90604e646ac[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 15:21:33 2019 +0100
+
+    added .htaccess file
+
+[33mcommit a24b73b35d627dee785584c9f058fa1216d1aeea[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 14:44:06 2019 +0100
+
+    get basename from config
+
+[33mcommit 0c76892c1d14197862259554e3891e1707b6ba40[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 13:27:46 2019 +0100
+
+    change navigation logic (hash to browser history)
+
+[33mcommit 126f40d744015492c2bc657103593703f7a50165[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 12:04:14 2019 +0100
+
+    update prettier
+
+[33mcommit 526821cec01aa15a1102c120f8ecb731363dd661[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 11:38:08 2019 +0100
+
+    optimisations for line graphs
+
+[33mcommit ca862a1c40f6e0dbef57c69ade5e4281d66b6f4d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 11:03:03 2019 +0100
+
+    fix lines reappearing when zooming or panning
+
+[33mcommit e757846afa5a0682c92664e57c2355f7e7081c71[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 10:35:43 2019 +0100
+
+    refactor
+
+[33mcommit de99f1094101de74bda0395d4868aaba25e9f1f1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 10:03:33 2019 +0100
+
+    remove unneeded logic
+
+[33mcommit 77ffb3945ae5164c1875194c9d09963b3bfbbaec[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 21 09:48:18 2019 +0100
+
+    remov mean and stddev display when unselected
+
+[33mcommit e33fb3814f16452f4160602a2c18e69050161bb1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 18 15:37:25 2019 +0100
+
+    style changes for ngl viewer controls inside rnd
+
+[33mcommit 1846fd1bb45a936c67df8aa520f3e812e42b61e8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 18 15:16:44 2019 +0100
+
+    forgot one file in previous commit
+
+[33mcommit 7332c1e807945aeac818200cff3d3a71a48c1b81[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 18 15:15:07 2019 +0100
+
+    added controls to rnd ngl player
+
+[33mcommit a8a6217612c76fbf3fa6ef3afca0408858281b90[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 18 11:20:15 2019 +0100
+
+    fix fluctuation atom selection, and add atom color scheme
+
+[33mcommit a10e03dc75fcd97944e1e795e78cc55597478ad1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jan 17 14:41:28 2019 +0100
+
+    better interaction fluctuation and ngl viewer
+
+[33mcommit be707065365435052f595daf1a2aaeb209d02405[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 16 16:33:17 2019 +0100
+
+    better visualisations
+
+[33mcommit 4dd13d5d81fc4a758cfee78a91f397dde67c4949[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jan 15 16:17:16 2019 +0100
+
+    better graph component
+
+[33mcommit 08c006c87e79a253422f46ed3a094edc9991958d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jan 15 12:44:08 2019 +0100
+
+    added basic ngl interactive view on fluctuation page
+
+[33mcommit fa4c04e46e8692c7f9c403395336966233c018bf[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jan 15 10:39:40 2019 +0100
+
+    added information about graph at the bottom
+
+[33mcommit 4b55f72cbff5a64d64fc2997e793ff7e1e3446d3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jan 15 10:39:21 2019 +0100
+
+    added mean and standard deviation display on graphs (optional)
+
+[33mcommit 080f73286e65e98e60faa4929fcf1591d418e134[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Jan 15 10:37:37 2019 +0100
+
+    fix incorrectly too precise tick values
+
+[33mcommit c6659aa23dde77bb098e462c060eb9641fd20d12[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 16:21:21 2019 +0100
+
+    remove a log
+
+[33mcommit 93806214306bb66546e5f9414674b4290d4c0864[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 16:20:31 2019 +0100
+
+    fix problem when useAPI was reused for different urls
+
+[33mcommit 40582d0bb44c1af2d81889bd0ab4f69f441a77a3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 16:01:49 2019 +0100
+
+    optimisations, refactoring, and code-splitting
+
+[33mcommit 47b0a9df7a97d8977a7bac23c28d0ba1831a360b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 15:19:22 2019 +0100
+
+    remove unused code
+
+[33mcommit 613dc5eba9b47485b63e0bca3e23956fca1e423a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 14:52:50 2019 +0100
+
+    take into account pixel ratio for drawing canvas
+
+[33mcommit 00a06a0363ed4c6eefcaa6718c385a5844fdf643[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 14:16:41 2019 +0100
+
+    fix accessor after change in API
+
+[33mcommit 78c3651c6089bec8657fd5c8728f40cce08ae904[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 14:12:15 2019 +0100
+
+    change opacity level
+
+[33mcommit be003982f5399fe62c3e293f21ecb8f3bb5dc490[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 13:39:48 2019 +0100
+
+    improve performance of drawing dashes by using canvas
+
+[33mcommit e31b17d1705c8609d16c4d8181c0a5a7fa96808c[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 10:19:18 2019 +0100
+
+    hide scale ticks outside of data bounds
+
+[33mcommit bfe87056bcdde3c14030a1b38ee755ff9c4e5d34[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Jan 14 08:50:21 2019 +0100
+
+    better handling of data arrays starting at 1
+
+[33mcommit 97f6e3d155ed5b93f0f62d2da047f3661d3158f9[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 11 14:31:07 2019 +0100
+
+    fix bug where scale was not kept across all redrawing
+
+[33mcommit b4ea6206875ee7f6dc37e9a8da6d3f17931d57b5[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 11 13:54:14 2019 +0100
+
+    disable transition if zooming or panning
+
+[33mcommit b914f83bf236e1b70e8105a90bf3e634c3561593[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 11 13:53:27 2019 +0100
+
+    hide info when zooming or panning
+
+[33mcommit fe52a80f9845eb284c993aefe288b5aee147d1e7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 11 12:55:15 2019 +0100
+
+    limit zoom
+
+[33mcommit db1d602714582cdfe1de10bac09eb06163fe025f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 11 12:54:57 2019 +0100
+
+    hide info when outside of range
+
+[33mcommit f4b0e54971b08b14cff9df1008d3df4098011789[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Jan 11 12:24:44 2019 +0100
+
+    update deps
+
+[33mcommit 995287c9035504701c95b0637b460ee6f2725586[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jan 10 16:18:24 2019 +0100
+
+    reimplemented zoom, readded fluctuation
+
+[33mcommit b0d7e250aebd5044a6f29d5722603e044eeb4395[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 9 16:26:22 2019 +0100
+
+    clean up
+
+[33mcommit af6ce6327030777e2026ca90d8b1cb2c726722c6[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 9 16:21:07 2019 +0100
+
+    fix small bugs on line graph
+
+[33mcommit 3988bb6504416927f357a22294df60524ac1f74f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 9 16:05:23 2019 +0100
+
+    update deps
+
+[33mcommit d3af9e95637ec399e666f3d735dfa3083aa8951f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 9 15:59:07 2019 +0100
+
+    changes to refactor line graphs
+
+[33mcommit f8c77fdafadef545bd8a962040455abcd2015b4a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Jan 3 10:12:24 2019 +0100
+
+    optimisations (?) and more comments
+
+[33mcommit 55b7ce9b41026f4e484178796440d1d969a7a38a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 2 16:12:03 2019 +0100
+
+    finished refactoring Trajectory, and created new custom hook for toggle states
+
+[33mcommit 394b42dbe9ecd79d15836b4dbcd584902b76f291[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 2 12:24:46 2019 +0100
+
+    refactor OpacitySlider and TrajectoryMetadata
+
+[33mcommit ae333e17800181c73c4245a4ff44679b74df5db3[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 2 12:04:52 2019 +0100
+
+    remove unused imports
+
+[33mcommit e3baf3b52944c315f9ea3af040c22b911d16ff31[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 2 11:48:39 2019 +0100
+
+    optimise useImperativeMethods in NGLViewer
+
+[33mcommit e0d043891f2d986d45591cc60200533af4cc06a6[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 2 11:45:37 2019 +0100
+
+    fix centerFocus
+
+[33mcommit 2b47355064257b9105038577e962799cee6b66a0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 2 11:28:02 2019 +0100
+
+    update deps
+
+[33mcommit e93d84efef493ca023b6cbdcd1cab67b2933a484[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Jan 2 11:21:03 2019 +0100
+
+    finished changing NGLViewer component
+
+[33mcommit 511c79689e60f104a3793ca1389e07c9affb49d7[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Dec 21 13:42:49 2018 +0100
+
+    complete API changes to NGLViewer
+
+[33mcommit 96adf4a9b0af00b76a350b7fc6a19e9acba54c19[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Dec 20 14:55:53 2018 +0100
+
+    start changing ngl-player to React hooks
+
+[33mcommit 4e8f91e6ef90f49693eff0c16e4740f4de15f0d1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Dec 20 14:55:29 2018 +0100
+
+    modify custom hooks
+
+[33mcommit ad23fa7cb3ca415c921a37b72e0144aa7c950013[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Dec 20 10:23:49 2018 +0100
+
+    refactor
+
+[33mcommit fcec59eeb840e9de94dd6bf0b6356b6a14f30c9e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Dec 19 14:50:48 2018 +0100
+
+    fix display on pdb accession on summary page
+
+[33mcommit 5af8ae6a1aa88390c1c2c1f604fd84887b936328[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 17:05:37 2018 +0100
+
+    change logic of search to debounce
+
+[33mcommit a67f094982bb14e1896ddfd7e056be78c61b58ab[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 13:39:49 2018 +0100
+
+    reduce throttle time
+
+[33mcommit 609b4aca224b15169f1951b9b84490e50685daf0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 13:38:24 2018 +0100
+
+    throttle changes on browse page when doing text search
+
+[33mcommit a60cddb9948f402a638cd21592bd9c4d42e70a56[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 12:48:45 2018 +0100
+
+    better useAPI, and corresponding changes to Browse page
+
+[33mcommit cf371720c98952835a29f908155a2a82c728a8b0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 12:48:26 2018 +0100
+
+    change class name for magnifying glass
+
+[33mcommit b44c2e4984385eae68d77a1d11175ad9bfc3268b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 11:15:40 2018 +0100
+
+    handle no data from API
+
+[33mcommit c067750a7323070a5943567e92b52f6a1b774e19[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 11:04:34 2018 +0100
+
+    refactor to use useCallback
+
+[33mcommit 678953dfdd2d8f69e9eeb8f175590a68c7ea368b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 10:27:53 2018 +0100
+
+    memoize RegEx creation
+
+[33mcommit 62637092b98b13bff64b0a31be47a4cca1dd5b36[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 10:16:20 2018 +0100
+
+    better search highlighting
+
+[33mcommit 9c4e5f8ea65f1712528469221664fab2f9f5345b[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 18 08:31:25 2018 +0100
+
+    update deps
+
+[33mcommit 25aa1760e61cf20900850f6df117be211187f39a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Dec 11 16:47:06 2018 +0000
+
+    connect browse page to text search
+
+[33mcommit ae1c538c6cb164926b168891e5fef624cc66bc63[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Dec 5 11:42:13 2018 +0100
+
+    update deps
+
+[33mcommit 38081cefb3b82cf41052ffeaedceb989c2e10cc5[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Dec 3 15:21:44 2018 +0100
+
+    refactor
+
+[33mcommit 09ba82de774b59673a01da8cf087321999880c3d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Dec 3 15:19:56 2018 +0100
+
+    remove React strict mode temporarily
+
+[33mcommit f94ee0c05731d4dbd13db5edef9289019bc5e517[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Dec 3 15:19:22 2018 +0100
+
+    change material-ui theme
+
+[33mcommit 89f509cdf406a7c933d973caad3ccf1e3e27dd65[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Dec 3 15:16:59 2018 +0100
+
+    change highlight component
+
+[33mcommit 201fc57b260197cfb61e6882f8f16a1a563c82cb[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Dec 3 09:41:29 2018 +0100
+
+    update FabButton to Fab
+
+[33mcommit e7c86731e692e2d2cb4a052458d75408d76103c2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Nov 29 11:45:48 2018 +0100
+
+    started connected data loading through hooks
+
+[33mcommit 80b96d36e0b6dbacae76008802d06724f2f0de45[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Nov 29 11:45:23 2018 +0100
+
+    update deps
+
+[33mcommit 7676435a1d04d18f160c63dd3382586d7af39526[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 29 14:57:05 2018 +0100
+
+    added footer
+
+[33mcommit 400b90d87dda19ea0410df7958b63eb52b5a3bd4[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 29 11:40:31 2018 +0100
+
+    rename some simulation statistics fields
+
+[33mcommit 3e310aaa19af548480779bdb66b0c4148ccfb719[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 29 08:34:58 2018 +0100
+
+    change snapshot resolution
+
+[33mcommit 6442fb477f77f5e0800da7365554676338b8b7ae[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 25 18:30:06 2018 +0200
+
+    fix rounding error
+
+[33mcommit b8eab5a9ccec9d17b1a24420693235865c7b56f4[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 25 17:00:01 2018 +0200
+
+    bugfixes
+
+[33mcommit 8e09c8ec535ee5ff65b61cdb6b9afe6da79fcca2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 24 16:26:52 2018 +0200
+
+    change favicon
+
+[33mcommit 76429609a104afd2b2c667440ce1155f95c442df[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 24 15:59:58 2018 +0200
+
+    update deps
+
+[33mcommit 4e1e85970d80cee2777a9194536ccde2a469d9b2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 24 14:36:12 2018 +0200
+
+    better simulation metadata styles
+
+[33mcommit 383c930f71cec378ffeb68d2ba48d0ab209961d2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 24 14:12:51 2018 +0200
+
+    added simulation metadata
+
+[33mcommit bfe52b776c3e3d265f3721bd25cc75bb471e7846[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 24 12:37:25 2018 +0200
+
+    refactor code for fluctuation
+
+[33mcommit 1bc1507965971541ee1b9e76218926b4405748f8[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 24 12:36:34 2018 +0200
+
+    added logo
+
+[33mcommit d790b4c36842adaaafd74ca692c5a13397627396[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 23 16:04:30 2018 +0200
+
+    better handling of non-membrane projects
+
+[33mcommit 6024bbb4a66af6a57dbf7853eb293f3c97b9ac91[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 23 16:04:02 2018 +0200
+
+    added trajectory loading message
+
+[33mcommit 6934ed9ecc847dc34e7a6a8820b9fe38c80a58c1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 23 15:11:06 2018 +0200
+
+    added static content
+
+[33mcommit 3a4d88a8aaf4a23ac1be8d6240c494d5603d5ff0[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 22 16:31:56 2018 +0200
+
+    started implementing zoom
+
+[33mcommit f8937925eb81c7389f61966f9900e2956d319e8a[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Fri Oct 19 14:49:02 2018 +0200
+
+    multiple
+
+[33mcommit 3918649255e99d85f2241ccb0ad8e01f34e13913[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 18 16:42:38 2018 +0200
+
+    multiple
+
+[33mcommit 605c3b8e0ab455c815ccaf087115ebbc1608e12e[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Wed Oct 17 16:52:32 2018 +0200
+
+    multiple
+
+[33mcommit 6f2789362fbfe82ac1b8ffdd24a9efbd843af7cf[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 16 16:46:54 2018 +0200
+
+    started changing graph legend
+
+[33mcommit 8fad75a7b147a0d9ba9f02fd6fbab2f7aa441bb2[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 16 16:13:39 2018 +0200
+
+    calculate range from reduced array
+
+[33mcommit 7daad50f8d55700c4bffdf6b6a648b4b794de791[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 16 15:43:13 2018 +0200
+
+    finish overview page
+
+[33mcommit 62233c5e4de11868f95e97520cc519f4513c879f[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Tue Oct 16 12:23:28 2018 +0200
+
+    work on browse page, and other subpages with d3
+
+[33mcommit 3dbd4786dd84e8e1c2fcad7fd363da6ed258bceb[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Mon Oct 15 08:56:51 2018 +0200
+
+    use fixed-version packages
+
+[33mcommit c91ce8dc8946f29195aa637967a8b3f9958ddf5d[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 11 16:41:42 2018 +0200
+
+    added basic rgyr data
+
+[33mcommit 074a31f2b61d84b0d695ab33971d0957e7c386f1[m
+Author: Aurélien Luciani <aurelien.luciani@irbbarcelona.org>
+Date:   Thu Oct 11 12:29:34 2018 +0200
+
+    first commit

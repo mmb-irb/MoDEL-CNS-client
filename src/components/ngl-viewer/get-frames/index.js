@@ -10,12 +10,11 @@ const getFrames = (
   // multiple frames loaded, as a trajectory
   if (metadata && !noTrajectory) {
     const frameStep = Math.floor(metadata.frameCount / nFrames);
-    console.log(`${1}:${metadata.frameCount}:${frameStep}`);
     return `${1}:${metadata.frameCount}:${frameStep}`;
   }
-  // only one specific frame loaded
+  // only one specific frame loaded, as a projection
   if (metadata && noTrajectory && Number.isFinite(requestedFrame)) {
-    return (requestedFrame + 1).ToString();
+    return (requestedFrame + 1).toString();
   }
 };
 
