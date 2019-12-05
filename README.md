@@ -1,5 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). See the corresponding documentation to see how you cani
-nteract with it apart from what is written in the following README.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). See the corresponding documentation to see how you can interact with it apart from what is written in the following README.
 
 ## Requirements
 
