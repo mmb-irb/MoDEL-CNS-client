@@ -22,6 +22,7 @@ const loadPolyfills = async () => {
 };
 
 const main = async () => {
+  console.log('Ima wistleblower! :D');
   // Load an "IntersectionObserver" polyfill if needed
   await loadPolyfills();
   // Loads the "App", which is the main script
