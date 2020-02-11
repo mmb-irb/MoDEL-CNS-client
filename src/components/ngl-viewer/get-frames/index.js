@@ -1,3 +1,6 @@
+// This function expects to receive a specific frame or the number of frames to load
+// This function returns a string which specifies the frames to be loaded
+// This string is standarized in a API friendly format
 const getFrames = (
   isProjection,
   metadata,

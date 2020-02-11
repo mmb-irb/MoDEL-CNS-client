@@ -18,9 +18,12 @@ import getFrames from './get-frames';
 
 import { AccessionCtx, ProjectCtx, PdbCtx } from '../../contexts';
 
-import useFrames from '../../hooks/use-frames';
-
 import style from './style.module.css';
+
+// To get frames
+import { BASE_PATH_PROJECTS } from '../../utils/constants';
+import extractCounts from './extract-counts';
+import axios from 'axios';
 
 const changeOpacity = throttle((representation, membraneOpacity) => {
   representation.setParameters({ opacity: membraneOpacity });
@@ -81,21 +84,90 @@ const NGLViewer = memo(
 
       const isProjection = Number.isFinite(projection);
 
-      // Get the frames
-      const frames = getFrames(
-        isProjection,
-        metadata,
-        noTrajectory,
-        nFrames,
-        requestedFrame,
+      // Set stored variables
+      const dcdLoadingRef = useRef(null);
+      const dcdPayloadRef = useRef(null);
+      const dcdProgressRef = useRef(null);
+      const dcdCountsRef = useRef({});
+
+      // Hook for frames
+      useEffect(
+        () => {
+          // Get the frames to be loaded in a standarized string format for the API
+          const frames = getFrames(
+            isProjection,
+            metadata,
+            noTrajectory,
+            nFrames,
+            requestedFrame,
+          );
+
+          // Set the url to ask the API
+          const url = `${BASE_PATH_PROJECTS}${accession}/files/trajectory${
+            isProjection ? `.pca-${projection + 1}.bin` : ''
+            // Frames are included only when there is no projection (i.e. it is not a pca analysis)
+          }${Boolean(frames && !isProjection) ? `?frames=${frames}` : ''}`;
+          // Here, if you ask for the trajectory.bin instead of just trajectory, you get the whole file
+          // This is because the only route of the API accepting frames selection is the "trajectory" endpoint
+          // Other paths such as "trajectory.bin" will be processed as "/:files"
+
+          // Set the loading status as true
+          dcdLoadingRef.current = true;
+
+          // Ask the API through axios (https://www.npmjs.com/package/axios)
+          // Some extra load features are passed through axios
+          // Set a cancel 'token'
+          const source = axios.CancelToken.source();
+          let didCancel = false;
+          // Set a function to track the download progress
+          const onDownloadProgress = progressEvent => {
+            // Check if progress is measurable. If so, mesure it.
+            if (progressEvent.lengthComputable)
+              dcdProgressRef.current =
+                progressEvent.loaded / progressEvent.total;
+          };
+
+          // Send a request to the API in a Promise/await manner
+          axios(url, {
+            cancelToken: source.token,
+            onDownloadProgress,
+            responseType: 'arraybuffer',
+          })
+            // If the request has succeed
+            .then(response => {
+              if (didCancel) return;
+              dcdCountsRef.current = extractCounts(response);
+              dcdPayloadRef.current = response.data;
+              dcdLoadingRef.current = false;
+            })
+            // Otherwise
+            .catch(error => {
+              if (didCancel) return;
+              console.error('Error while loading the trajectory: ' + error);
+            });
+
+          return () => {
+            // Cancel the request
+            source.cancel();
+            didCancel = true;
+          };
+        },
+        // Dependencies
+        [
+          projection,
+          isProjection,
+          metadata,
+          noTrajectory,
+          nFrames,
+          requestedFrame,
+          accession,
+        ],
       );
 
-      const {
-        loading: loadingDCD,
-        frameData: dcdPayload,
-        progress: dcdProgress,
-        counts,
-      } = useFrames(accession, frames, projection);
+      const dcdLoading = dcdLoadingRef.current;
+      const dcdPayload = dcdPayloadRef.current;
+      const dcdProgress = dcdProgressRef.current;
+      const dcdCounts = dcdCountsRef.current;
 
       // Stage creation and removal on mounting and unmounting
       useEffect(() => {
@@ -305,14 +377,14 @@ const NGLViewer = memo(
       useEffect(() => {
         if (!(pdbFile && stageRef.current.compList[0].trajList[0])) return;
         stageRef.current.compList[0].trajList[0].trajectory.player.pause();
-      }, [pdbFile, loadingDCD]);
+      }, [pdbFile, dcdLoading]);
 
       // DCD file, trajectory
       useEffect(() => {
         const file = payloadToNGLFile(
           pdbFile,
           dcdPayload,
-          counts.atoms,
+          dcdCounts.atoms,
           nFrames,
           isProjection,
           Number.isFinite(requestedFrame),
@@ -340,7 +412,7 @@ const NGLViewer = memo(
         dcdPayload,
         handleFrameChange,
         nFrames,
-        counts.atoms,
+        dcdCounts,
         isProjection,
       ]);
 
@@ -360,7 +432,7 @@ const NGLViewer = memo(
           stageRef.current.compList[0].trajList[0].trajectory.player.setParameters(
             { timeout: 500 / (Math.log2(speed + 1) + 1) },
           );
-      }, [speed, loadingDCD]);
+      }, [speed, dcdLoading]);
 
       // spinning
       useEffect(() => {
@@ -537,11 +609,11 @@ const NGLViewer = memo(
           ref={handleRef}
           className={cn(className, style.container, {
             [style['loading-pdb']]: loadingPDB,
-            [style['loading-trajectory']]: !noTrajectory && loadingDCD,
+            [style['loading-trajectory']]: !noTrajectory && dcdLoading,
             [style['light-theme']]: !darkBackground,
           })}
           data-loading={
-            loadingPDB || (!noTrajectory && loadingDCD)
+            loadingPDB || (!noTrajectory && dcdLoading)
               ? `Loading ${
                   loadingPDB
                     ? 'structure'

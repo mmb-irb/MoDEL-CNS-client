@@ -18,6 +18,7 @@ import {
   TableRow,
   TablePagination,
   TableFooter,
+  Typography,
   Chip,
 } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -55,7 +56,7 @@ const keyframes = {
   opacity: [0, 1],
 };
 
-// Same image vertical position is iterated between 0 and 50 pixels
+// Same image vertical position is iterated between 0 and 50 pixels (It may have no effect)
 // This is only set when user has not activated the reduced motion option from the navigator
 if (!reducedMotion()) {
   keyframes.transform = ['translateX(2.5%)', 'translateX(0)'];
@@ -163,9 +164,6 @@ const Row = ({
 };
 
 const Browse = ({ location, history }) => {
-  //console.log(location);
-  //console.log(history.size);
-
   // This "parse" comes from the "qs" library
   // Add the prefix "?search=" to the location.search
   const search = parse(location.search, { ignoreQueryPrefix: true });
@@ -182,24 +180,48 @@ const Browse = ({ location, history }) => {
     window.scrollTo(0, 0);
   }, [search.page]);
 
+  // Save the previous payload. It is rendered in low opacity when the new payload is empty
+  const previousPayload = useRef(null);
+
   // Download all necessary data from the API
+  // 'payload' contains the main data
   const ApiUrl = `${BASE_PATH_PROJECTS}?${searchString}`;
-  const { loading, payload, error, previousPayload } = useAPI(ApiUrl); // payload contains the main data
+  const { loading, payload, error } = useAPI(ApiUrl);
 
   // While loading
-  if (loading && !previousPayload) return <Loading />;
+  // Code above is runned multiple times (around 5) each time the browser is loaded
+  if (loading && !previousPayload.current) return <Loading />;
+
   // When error
+  // This usually happens when the API does not work properly
   if (error) {
-    console.error(error);
-    return 'Something wrong happened';
+    return error.toString();
   }
-  // When no data
-  if (!loading && !payload) return 'no data';
+
+  // Define the results for the final render since it won't support 'null's
+  let results;
+  if (payload) {
+    results = payload.projects;
+    previousPayload.current = payload;
+  } else if (previousPayload.current)
+    results = previousPayload.current.projects;
+  else results = [];
+
   // When success
   return (
     <Card>
       <CardContent>
-        <Table>
+        {/* Render a 'no results' card when there are no results for the last search */}
+        {!loading && !payload ? (
+          <Card className={style['no-results-card']}>
+            <Typography variant="h5" className={style['no-results-text']}>
+              No results were found
+            </Typography>
+          </Card>
+        ) : (
+          []
+        )}
+        <Table className={cn({ [style['invalid-results']]: !payload })}>
           {/* Table head with the names of each colum */}
           <TableHead className={style['table-head']}>
             <TableRow>
@@ -212,11 +234,10 @@ const Browse = ({ location, history }) => {
             </TableRow>
           </TableHead>
           {/* Table body with the content, which is defined above in the Row constant */}
-          <TableBody
-            className={cn(style['table-body'], { [style.loading]: loading })}
-          >
+          {/* When the search has no results the table gets an opacity of 0.25 */}
+          <TableBody className={cn(style['table-body'])}>
             {/* Create a row for each project in the payload*/}
-            {(payload || previousPayload).projects.map((project, index) => (
+            {results.map((project, index) => (
               <Row
                 // Load the propierties (inputs) that the class "Row" is expecting
                 {...project} // Load identifier, accession, published, pdbInfo and analyses
@@ -233,7 +254,7 @@ const Browse = ({ location, history }) => {
                 // Many of the following variables are methods from TablePagination (They are tagged as MTP). https://material-ui.com/api/table-pagination/
                 rowsPerPageOptions={rowsPerPageOptions} // (MTP) Optional numbers of rows displayed in each page. It can be modified by the user.
                 colSpan={6} // Set the anchor of columns which is taken as a reference for the horizontal position of the footer
-                count={(payload || previousPayload).totalCount} // (MTP) Total number of rows
+                count={results.length} // (MTP) Total number of rows
                 rowsPerPage={+search.limit || DEFAULT_LIMIT} // (MTP) The actual number of rows displayed
                 page={(+search.page || DEFAULT_PAGE) - 1} // (MTP) The actual page
                 onChangePage={(_, page) => {

@@ -39,8 +39,7 @@ const nglPlaceholder = (
 
 const PCA = () => {
   const accession = useContext(AccessionCtx);
-
-  const { loading, payload } = useAPI(
+  const { loading, payload, error } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/analyses/pca/`,
   );
 
@@ -52,8 +51,12 @@ const PCA = () => {
     return processStats(payload, projections);
   }, [payload, projections]);
 
-  if (loading) return <Loading />;
-
+  if (loading) {
+    return <Loading />;
+  }
+  if (error) {
+    return error.toString();
+  }
   return (
     <>
       <Card className={style.card}>

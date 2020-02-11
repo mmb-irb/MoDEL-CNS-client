@@ -10,11 +10,20 @@ import { BASE_PATH_PROJECTS } from '../../../utils/constants';
 
 import style from './style.module.css';
 
+// Render the menu of the project (i.e. the inferior header)
+// It only appears when the user is inside a project
 const ProjectMenu = ({ params: { accession, subPage } }) => {
-  const { loading, payload } = useAPI(
+  // Request all the available analyses in this project to the API
+  // Then, this menu displays a tab for each analysis
+  const { loading, payload, error } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/analyses/`,
   );
 
+  if (error) {
+    return error.toString();
+  }
+
+  // Return each of the menu tabs
   return (
     <Tabs
       value={!loading && subPage}
@@ -37,9 +46,11 @@ const ProjectMenu = ({ params: { accession, subPage } }) => {
         value="trajectory"
         className={style['tab-link']}
       />
+
       {!loading &&
         payload &&
         payload.map(analysis => (
+          // Display a tab for each analysis
           <Tab
             key={analysis}
             component={Link}

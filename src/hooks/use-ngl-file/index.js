@@ -39,6 +39,7 @@ const useNGLFile = (url, { defaultRepresentation, ext }) => {
     let didCancel = false;
 
     // Load data from the URL
+    // 'autoLoad' is the built in function from NGL to load data
     autoLoad(url, { defaultRepresentation, ext })
       .then(file => !didCancel && dispatch({ type: 'SUCCESS', file }))
       .catch(error => !didCancel && dispatch({ type: 'ERROR', error }));

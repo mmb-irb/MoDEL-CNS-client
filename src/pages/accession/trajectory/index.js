@@ -261,6 +261,7 @@ const dbMap = new Map([
 
 const Analyses = memo(() => {
   // Load chains, accession and identifier from the project context
+  // 'chains' is undefined if no chains were loaded in this project
   const { chains, accession, identifier } = useContext(ProjectCtx);
   // Portals create a window where a web page is pre rendered without navigating to
   // You can navigate to this web page by clicking on the portal
@@ -397,96 +398,101 @@ const Analyses = memo(() => {
   }, []);
 
   // Render the functional analysis with a brief introduction
-  return (
-    <>
-      {/* Brief introduction */}
-      <Typography variant="h5">Protein functional analysis</Typography>
-      <br />
-      <Typography variant="subtitle2">
-        <strong>{chains.length}</strong> chains were analysed.
-      </Typography>
-      <Typography variant="body1">
-        Below you can see the families, domains, and sites, that an{' '}
-        <a
-          href="https://www.ebi.ac.uk/interpro/about/interproscan/"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          InterProScan
-        </a>{' '}
-        analysis revealed for each of the chain sequences. This is a prediction
-        that might be helpful to discover functions, or to find similar
-        structures for example.
-      </Typography>
-      <br />
-      <Typography variant="body1">
-        You can interact with this visualisation as such:
+  if (chains)
+    return (
+      <>
+        {/* Brief introduction */}
+        <Typography variant="h5">Protein functional analysis</Typography>
         <br />
-        <strong>Hover over their representation</strong> to see that some of
-        them will have a corresponding page on the{' '}
-        <a
-          href="https://www.ebi.ac.uk/interpro/"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          InterPro website
-        </a>{' '}
-        where you will be able to learn more about it.
+        <Typography variant="subtitle2">
+          <strong>{chains.length}</strong> chains were analysed.
+        </Typography>
+        <Typography variant="body1">
+          Below you can see the families, domains, and sites, that an{' '}
+          <a
+            href="https://www.ebi.ac.uk/interpro/about/interproscan/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            InterProScan
+          </a>{' '}
+          analysis revealed for each of the chain sequences. This is a
+          prediction that might be helpful to discover functions, or to find
+          similar structures for example.
+        </Typography>
         <br />
-        <strong>Click on them</strong> to see the corresponding sequence
-        highlighted in the interactive trajectory viewer above. Clicking on an
-        other entity within the same chain will change the highlight to that
-        other entity.
-        <br />
-        <strong>Click on an empty space</strong> in this visualisation to remove
-        the highlight for that chain.
-        <br />
-        <strong>Scroll over the visualisation</strong> to zoom in or out of the
-        chain sequence. Alternatively, you can also interact with the top
-        navigation part (at the top of each visualisation) to zoom in and out or
-        to move within the sequence.
-      </Typography>
-      <ul className={style['chain-analysis-list']}>
-        {/* Here, main data is displayed */}
-        {chains.map(chain => (
-          <li key={chain}>
-            <Typography variant="h6">
-              <FontAwesomeIcon icon={faAngleRight} /> Chain {chain}
-            </Typography>
-            {/* ChainAnalyses is the main visual asset */}
-            <ChainAnalyses chain={chain} accession={accession || identifier} />
-          </li>
-        ))}
-      </ul>
-      <Typography variant="body2">
-        Data generated using{' '}
-        <a
-          href="https://www.ebi.ac.uk/"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          EBI
-        </a>
-        's{' '}
-        <a
-          href="https://www.ebi.ac.uk/interpro/about/interproscan/"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          InterProScan service
-        </a>{' '}
-        and visualised using the{' '}
-        <a
-          href="https://ebi-webcomponents.github.io/nightingale/"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Nightingale visualisation library
-        </a>
-        .
-      </Typography>
-    </>
-  );
+        <Typography variant="body1">
+          You can interact with this visualisation as such:
+          <br />
+          <strong>Hover over their representation</strong> to see that some of
+          them will have a corresponding page on the{' '}
+          <a
+            href="https://www.ebi.ac.uk/interpro/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            InterPro website
+          </a>{' '}
+          where you will be able to learn more about it.
+          <br />
+          <strong>Click on them</strong> to see the corresponding sequence
+          highlighted in the interactive trajectory viewer above. Clicking on an
+          other entity within the same chain will change the highlight to that
+          other entity.
+          <br />
+          <strong>Click on an empty space</strong> in this visualisation to
+          remove the highlight for that chain.
+          <br />
+          <strong>Scroll over the visualisation</strong> to zoom in or out of
+          the chain sequence. Alternatively, you can also interact with the top
+          navigation part (at the top of each visualisation) to zoom in and out
+          or to move within the sequence.
+        </Typography>
+        <ul className={style['chain-analysis-list']}>
+          {/* Here, main data is displayed */}
+          {chains.map(chain => (
+            <li key={chain}>
+              <Typography variant="h6">
+                <FontAwesomeIcon icon={faAngleRight} /> Chain {chain}
+              </Typography>
+              {/* ChainAnalyses is the main visual asset */}
+              <ChainAnalyses
+                chain={chain}
+                accession={accession || identifier}
+              />
+            </li>
+          ))}
+        </ul>
+        <Typography variant="body2">
+          Data generated using{' '}
+          <a
+            href="https://www.ebi.ac.uk/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            EBI
+          </a>
+          's{' '}
+          <a
+            href="https://www.ebi.ac.uk/interpro/about/interproscan/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            InterProScan service
+          </a>{' '}
+          and visualised using the{' '}
+          <a
+            href="https://ebi-webcomponents.github.io/nightingale/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Nightingale visualisation library
+          </a>
+          .
+        </Typography>
+      </>
+    );
+  else return <Typography variant="h5">No chains were analyzed</Typography>;
 });
 
 // Define permanent options for the "useInView"

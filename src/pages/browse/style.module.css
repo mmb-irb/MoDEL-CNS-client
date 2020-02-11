@@ -26,8 +26,25 @@
   opacity: 0.6;
 }
 
-.loading {
-  opacity: 0.25;
+/* If we had no valid results we make the table with the results less visible */
+/* This table may contain results from a previous search which are not valid now */
+/* z-index prevents this element to overlap overlaping elements because of the opacity */
+.invalid-results {
+  opacity: 0.3;
+  z-index: 1;
+}
+
+/* If we had no valid results we render a 'no results' message inside a card */
+/* z-index prevents this element to be overlaped by overlaped elements because of the opacity */
+.no-results-card {
+  position: absolute;
+  z-index: 2;
+  margin: 1%;
+  width: 100%;
+}
+
+.no-results-text {
+  margin: 2ch;
 }
 
 .analysis {

@@ -45,22 +45,26 @@ const Error = ({ error }) => {
   return <>Something wrong happened</>;
 };
 
+// This function is explicity invoked only once but then it is runned several times
 const SummarySwitch = () => {
   // useContext is a React hook. Get the accession ID from the accession context
   const accession = useContext(AccessionCtx);
 
-  // Get data from the API. Payload contains the main data
+  // Get data from the API. 'payload' contains the main data.
   const { loading, payload, error } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/`,
   );
+
   // Load data form the provided URL in ".pdb" format
   const pdbData = useNGLFile(
     `${BASE_PATH_PROJECTS}${accession}/files/md.imaged.rot.dry.pdb`,
-    { ext: 'pdb' }, // This attribute was included before: defaultRepresentation: false
+    { defaultRepresentation: false, ext: 'pdb' }, // This attribute was included before: defaultRepresentation: false
   );
 
   // While loading
-  if (loading) return <Loading />;
+  if (loading) {
+    return <Loading />;
+  }
 
   if (payload && payload.accession && accession !== payload.accession) {
     // it means that the accession we extracted from the URL is not actually an
@@ -82,6 +86,8 @@ const SummarySwitch = () => {
   if (payload) {
     return (
       <ErrorBoundary>
+        {' '}
+        {/* Catch errors */}
         <ProjectCtx.Provider value={payload}>
           <PdbCtx.Provider value={pdbData}>
             <Switch>
@@ -118,6 +124,21 @@ const SummarySwitch = () => {
                 render={() => (
                   <Suspense fallback={<Loading />}>
                     <PCA />
+                  </Suspense>
+                )}
+              />
+              <Route
+                path="/browse/:accession/dist"
+                exact
+                render={() => (
+                  <Suspense fallback={<Loading />}>
+                    <GenericAnalysisPage
+                      analysis="dist"
+                      defaultPrecision={2 ** 6}
+                      xLabel="Time (ns)"
+                      xScaleFactor={0.001}
+                      yLabel="DIST (nm)"
+                    />
                   </Suspense>
                 )}
               />
@@ -166,7 +187,7 @@ const SummarySwitch = () => {
                   </Suspense>
                 )}
               />
-              <Route render={() => 404} />
+              <Route render={() => 'This route is not defined in the client'} />
             </Switch>
           </PdbCtx.Provider>
         </ProjectCtx.Provider>

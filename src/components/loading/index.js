@@ -16,7 +16,7 @@ const WAIT_DELAY = 750; // 750ms
 // In the best of cases this component will *never* even have to be displayed
 const Loading = () => {
   const [flag, toggleFlag] = useToggleState(false);
-
+  // This is a hook
   useLayoutEffect(() => {
     let mounted = true;
     sleep(WAIT_DELAY) // wait for a bit
@@ -24,7 +24,7 @@ const Loading = () => {
       .then(() => frame()) // Wait for the next animation frame
       // After waiting, check if mounted is still true
       .then(() => {
-        // If mounted is false it means that the loading was over beofre the wait ended
+        // If mounted is false it means that the loading was over before the wait ended
         if (mounted) toggleFlag(); // This toggleFlag changes the flag from false to true
       });
     // In a useEffect or similar hooks, "return" stands for an ending function

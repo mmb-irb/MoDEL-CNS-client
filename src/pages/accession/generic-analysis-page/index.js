@@ -32,26 +32,32 @@ const Analysis = ({
   graphType,
   startsAtOne,
 }) => {
+  // Get the accession
   const accession = useContext(AccessionCtx);
-
-  const { loading, payload } = useAPI(
+  // Send a request to the API with the url of the specific analysis
+  const { loading, payload, error } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/analyses/${analysis}/`,
   );
 
+  // React hooks
+  // Set when the mouse is over the graph
   const [hovered, setHovered] = useState(null);
+  // Set when one point in the graph is selected
   const [selected, setSelected] = useState(
     analysis === 'fluctuation' ? new Set() : null,
   );
-
+  // Render loading or error messages according with the API response
   if (loading) return <Loading />;
+  else if (error) return error.toString();
+  else if (!payload) return 'Something bad happened';
 
-  if (!payload) return 'Something bad happened';
-
+  // Check if there are selected
   const showDND = !!(
     (typeof selected === 'number' && Number.isFinite(selected)) ||
     (selected && selected.size)
   );
 
+  // Render
   return (
     <Suspense fallback={<Loading />}>
       <Card className={style.card}>

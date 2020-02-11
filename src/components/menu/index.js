@@ -13,7 +13,7 @@ const ProjectMenu = lazy(() =>
 
 const Search = lazy(() => import(/* webpackChunkName: 'search' */ './search'));
 
-// Render all buttons in the header and manage the user redirection when they are clicked
+// Render all buttons in the superior header and manage the user redirection when they are clicked
 export default () => (
   <menu className={style.menu}>
     <div className={style.main}>
