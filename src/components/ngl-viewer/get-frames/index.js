@@ -12,6 +12,8 @@ const getFrames = (
     return Array.from({ length: 20 }, (_, i) => i + 1).join(',');
   // multiple frames loaded, as a trajectory
   if (metadata && !noTrajectory) {
+    if (!metadata.frameCount)
+      return console.error('Metadata has no frameCount');
     const frameStep = Math.floor(metadata.frameCount / nFrames);
     return `${1}:${metadata.frameCount}:${frameStep}`;
   }

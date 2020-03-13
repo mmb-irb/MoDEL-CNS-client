@@ -19,9 +19,10 @@ const nglFileReducer = (state, action) => {
 };
 
 // Get data from a specific directory in the API
+// The difference between this hook and useAPI hook is the use of 'autoLoad' instead of 'axios'
+// 'autoLoad' is the built in function from NGL to load data
 const useNGLFile = (url, { defaultRepresentation, ext }) => {
-  // Execute the reducer and declare the variables we expect to recieve from it
-  // The dispatch is an output object whose attributes are declared inside the useReduce function call
+  // useReducer is a react hook
   const [state, dispatch] = useReducer(nglFileReducer, {
     loading: !!url,
     file: null,
@@ -38,8 +39,7 @@ const useNGLFile = (url, { defaultRepresentation, ext }) => {
 
     let didCancel = false;
 
-    // Load data from the URL
-    // 'autoLoad' is the built in function from NGL to load data
+    // Load data from the API
     autoLoad(url, { defaultRepresentation, ext })
       .then(file => !didCancel && dispatch({ type: 'SUCCESS', file }))
       .catch(error => !didCancel && dispatch({ type: 'ERROR', error }));

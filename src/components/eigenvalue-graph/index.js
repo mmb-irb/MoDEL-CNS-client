@@ -9,7 +9,7 @@ import {
   axisBottom,
   axisLeft,
   axisRight,
-  event,
+  //event, // This is used to know the mouse cursor position
   easeBackOut,
 } from 'd3';
 
@@ -220,12 +220,14 @@ const EigenvalueGraph = ({
               } available</p>
             </div>
           `;
-          tooltipRef.current.style.display = 'inline-block';
-          const { width, height } = tooltipRef.current.getBoundingClientRect();
-          tooltipRef.current.style.transform = `translate(${event.pageX -
-            width / 2}px, ${event.pageY - height - 5}px)`;
+          // Display the tooltip (this is internally softed)
+          tooltipRef.current.style.opacity = 1;
+          //const { width, height } = tooltipRef.current.getBoundingClientRect();
+          //tooltipRef.current.style.transform = `translate(${event.pageX -
+          //  width / 2}px, ${event.pageY - height - 5}px)`;
         })
-        .on('mouseout', () => (tooltipRef.current.style.display = 'none'))
+        // Hide the tooltip (this is internally softed)
+        .on('mouseout', () => (tooltipRef.current.style.opacity = 0))
         .merge(clickBars)
         .attr('class', ({ hasProjection }) =>
           hasProjection ? style['has-projection'] : '' || null,

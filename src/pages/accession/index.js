@@ -45,7 +45,7 @@ const Error = ({ error }) => {
   return <>Something wrong happened</>;
 };
 
-// This function is explicity invoked only once but then it is runned several times
+// Render the accession summary
 const SummarySwitch = () => {
   // useContext is a React hook. Get the accession ID from the accession context
   const accession = useContext(AccessionCtx);
@@ -55,10 +55,11 @@ const SummarySwitch = () => {
     `${BASE_PATH_PROJECTS}${accession}/`,
   );
 
-  // Load data form the provided URL in ".pdb" format
+  // Load the structure data form the API
   const pdbData = useNGLFile(
     `${BASE_PATH_PROJECTS}${accession}/files/md.imaged.rot.dry.pdb`,
-    { defaultRepresentation: false, ext: 'pdb' }, // This attribute was included before: defaultRepresentation: false
+    // This attribute was included before: defaultRepresentation: false
+    { defaultRepresentation: false, ext: 'pdb' },
   );
 
   // While loading

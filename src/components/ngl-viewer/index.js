@@ -101,7 +101,6 @@ const NGLViewer = memo(
             nFrames,
             requestedFrame,
           );
-
           // Set the url to ask the API
           const url = `${BASE_PATH_PROJECTS}${accession}/files/trajectory${
             isProjection ? `.pca-${projection + 1}.bin` : ''
@@ -295,7 +294,7 @@ const NGLViewer = memo(
 
         // main structure
         structureComponent.addRepresentation('cartoon', {
-          sele: CHAIN_SELECTION,
+          sele: CHAIN_SELECTION, // This may do nothing
           name: 'structure',
           opacity: 1,
         });
@@ -308,6 +307,7 @@ const NGLViewer = memo(
             name: 'membrane',
           },
         );
+        // Hide the membrane if this is a PCA projection
         if (isProjection) membraneRepresentation.setVisibility(false);
       }, [pdbFile, isProjection]);
 
