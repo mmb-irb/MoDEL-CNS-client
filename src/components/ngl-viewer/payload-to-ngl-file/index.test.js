@@ -3,7 +3,7 @@ import { Frames } from 'ngl';
 
 const pdbFile = {
   atomCount: 2,
-  getAtomProxy: i => ({ element: i % 2 ? 'C' : 'H' }),
+  getAtomProxy: i => ({ element: i % 2 ? 'C' : 'H', isProtein: () => true }),
 };
 
 const twoFrames = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -32,10 +32,10 @@ describe('payloadToNGLFile', () => {
 
   it('should work for projection trajectory', () => {
     const nAtoms = 1;
-    const nFrames = 21;
+    const nFrames = 20;
     const file = payloadToNGLFile(
       { ...pdbFile, atomCount: 3 },
-      // 21 frames * 1 atoms * 3 coordinates (0 -> 125)
+      // 20 frames * 1 atoms * 3 coordinates (0 -> 59)
       Array.from({ length: nFrames * nAtoms * 3 }, (_, i) => i),
       nAtoms,
       nFrames,

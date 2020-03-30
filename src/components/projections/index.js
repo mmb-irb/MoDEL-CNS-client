@@ -42,7 +42,7 @@ const [MIN_DURATION, MAX_DURATION] = [375, 625];
 const colorScale = scaleSequential(interpolateViridis);
 
 // This component renders a graph
-// This graph is displayed when user selects 2 projections
+// This graph is displayed when user selects 2 pca projections
 const Projections = ({ data, projections, step, setRequestedFrame }) => {
   const containerRef = useRef(null);
   const legendRef = useRef(null);
@@ -97,7 +97,9 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       refs.legendCursor.style('opacity', 0);
     };
 
+    // Select the frame to be displayed by the NGL
     const handleClick = ({ datumIndex } = {}) =>
+      // This function is a setter from a useState hook in the parent script (pca/index.js)
       setRequestedFrame(requestedFrame => {
         const target = datumIndex * step;
         return target === requestedFrame ? null : target;
@@ -109,7 +111,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
     } = {}) => {
       if (!processed) return;
       await frame();
-      if (!containerRef.current) return;
+      if (!containerRef.current.firstChild) return;
 
       // container size
       const { clientWidth: width, clientHeight: height } = containerRef.current;
@@ -254,6 +256,7 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
           };
         },
       );
+
       // same radius interpolation for all the points, so keep only one
       dataPointsRef.current.interpolateRadius = interpolate(
         currentRadius,
@@ -261,17 +264,18 @@ const Projections = ({ data, projections, step, setRequestedFrame }) => {
       );
 
       // will trigger a timer animate points
+      // Render the graph
       movePoints({
         context,
         dataPoints: dataPointsRef.current,
-        width,
-        height,
+        width: width * dPR,
+        height: height * dPR,
         maxTime,
         isFirstTime,
       });
 
       const handleHover = ({ datumIndex, datum } = {}) => {
-        if (!Number.isInteger(datumIndex)) return;
+        if (!Number.isInteger(datumIndex) || !datum) return;
         // bottom cursor
         refs.legendCursor.style(
           'left',

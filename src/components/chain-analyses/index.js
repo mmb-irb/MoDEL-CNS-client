@@ -59,16 +59,13 @@ const ChainAnalyses = memo(({ chain, accession }) => {
     `${BASE_PATH_PROJECTS}${accession}/chains/${chain}`,
   );
 
-  if (error) {
-    return error.toString();
-  }
-
   useEffect(() => {
     loadProtVista();
   }, []);
 
   if (loading) return <Loading />;
-  if (!payload) return null;
+  if (error) return error.toString();
+  if (!payload) return 'Chain analysis is not found';
 
   const {
     sequence,

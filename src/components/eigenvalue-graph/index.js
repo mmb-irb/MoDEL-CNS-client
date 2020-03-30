@@ -204,16 +204,18 @@ const EigenvalueGraph = ({
           tooltipRef.current.innerHTML = `
             <div>
               <p>Principal component ${i + 1}</p>
-              <p>Eigenvalue: ${d.eigenvalue}</p>
+              <p>Eigenvalue: ${(Math.round(d.eigenvalue * 100) / 100).toFixed(
+                2,
+              )}</p>
               <p>
-                Explained variance: ${Math.round(
-                  (d.eigenvalue / totalEigenvalue) * 1000,
-                ) / 10}%
+                Explained variance: ${(
+                  Math.round((d.eigenvalue / totalEigenvalue) * 1000) / 10
+                ).toFixed(1)}%
               </p>
               <p>
-                Cumulative explained variance: ${Math.round(
-                  d.cumulativeExplained * 1000,
-                ) / 10}%
+                Cumulative explained variance: ${(
+                  Math.round(d.cumulativeExplained * 1000) / 10
+                ).toFixed(1)}%
               </p>
               <p>Projection data is ${
                 d.hasProjection ? '' : 'not'

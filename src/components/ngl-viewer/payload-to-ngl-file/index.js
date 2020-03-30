@@ -49,7 +49,10 @@ const payloadToNGLFile = (
     else if (viewAtoms === heavyAtoms) format = 'heavy';
     else
       console.error(
-        'Number of atoms in PCA projection does not match any defined atoms selection',
+        `Number of atoms in PCA projection does not match any defined atoms selection
+        Number of atoms: ${viewAtoms}
+        Expected backbone atoms: ${backboneAtoms}
+        Expected heavy atoms: ${heavyAtoms}`,
       );
   } else if (isOneFrame) {
     length = 1;

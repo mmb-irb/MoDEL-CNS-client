@@ -1,3 +1,4 @@
+// Count trajectory frames and atoms
 const extractCounts = response => {
   if (!(response && response.headers)) return {};
   const contentRange = response.headers['content-range'] || '';

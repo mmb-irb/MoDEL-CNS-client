@@ -3,7 +3,7 @@ import React, { lazy, Suspense, useState, useContext } from 'react';
 import { CardContent, Typography } from '@material-ui/core';
 
 import Card from '../../../components/animated-card';
-import NGLViewerInDND from '../../../components/ngl-viewer-in-dnd';
+import NGLViewerSpawner from '../../../components/ngl-viewer-in-dnd';
 import Loading from '../../../components/loading';
 
 import useAPI from '../../../hooks/use-api';
@@ -86,12 +86,11 @@ const Analysis = ({
         </CardContent>
       </Card>
       {showDND && (
-        <NGLViewerInDND
+        <NGLViewerSpawner
           accession={accession}
           hovered={hovered}
           analysis={analysis}
           selected={selected}
-          setSelected={setSelected}
         />
       )}
     </Suspense>

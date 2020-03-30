@@ -41,6 +41,8 @@ import {
   faRunning,
   faBiking,
   faTimes,
+  faLock,
+  faUnlock,
 } from '@fortawesome/free-solid-svg-icons';
 
 import Slider from '../slider';
@@ -71,6 +73,7 @@ const NGLViewerWithControls = forwardRef(
       startsPlaying = defaultStartsPlaying,
       noTrajectory,
       close,
+      nail,
       projection,
       ...props
     },
@@ -81,6 +84,7 @@ const NGLViewerWithControls = forwardRef(
     const viewerRef = useRef(null);
 
     // toggle states
+    const [nailed, toggleNailed] = useToggleState(false);
     const [playing, togglePlaying] = useToggleState(startsPlaying);
     const [spinning, toggleSpinning] = useToggleState(false);
     const [smooth, toggleSmooth] = useToggleState(false);
@@ -203,6 +207,33 @@ const NGLViewerWithControls = forwardRef(
             {close && (
               <IconButton title="Close viewer" onClick={close}>
                 <FontAwesomeIcon icon={faTimes} />
+              </IconButton>
+            )}
+
+            {nail && (
+              <IconButton
+                title={nailed ? 'Unnail viewer' : 'Nail viewer'}
+                onClick={() => {
+                  nail(!nailed);
+                  toggleNailed();
+                }}
+              >
+                <div className={style['flip-container']}>
+                  <div
+                    className={cn(style['flip-card-container'], {
+                      [style.flipped]: nailed,
+                    })}
+                  >
+                    <FontAwesomeIcon
+                      className={cn(style['flip-card'], style.front)}
+                      icon={faUnlock}
+                    />
+                    <FontAwesomeIcon
+                      className={cn(style['flip-card'], style.back)}
+                      icon={faLock}
+                    />
+                  </div>
+                </div>
               </IconButton>
             )}
 

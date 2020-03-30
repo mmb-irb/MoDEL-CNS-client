@@ -51,9 +51,9 @@ const NGLViewer = memo(
         membraneOpacity,
         smooth,
         onProgress,
-        noTrajectory,
+        noTrajectory, // True when we just want to display a static structure
         projection,
-        nFrames = DEFAULT_NUMBER_OF_FRAMES,
+        nFrames = DEFAULT_NUMBER_OF_FRAMES, // Requeste number of frames to display
         hovered,
         selected,
         requestedFrame,
@@ -118,6 +118,7 @@ const NGLViewer = memo(
           // Set a cancel 'token'
           const source = axios.CancelToken.source();
           let didCancel = false;
+          dcdProgressRef.current = 0;
           // Set a function to track the download progress
           const onDownloadProgress = progressEvent => {
             // Check if progress is measurable. If so, mesure it.
@@ -136,6 +137,7 @@ const NGLViewer = memo(
             .then(response => {
               if (didCancel) return;
               dcdCountsRef.current = extractCounts(response);
+              dcdCountsRef.current.nFrames = parseInt(nFrames);
               dcdPayloadRef.current = response.data;
               dcdLoadingRef.current = false;
             })
@@ -385,7 +387,7 @@ const NGLViewer = memo(
           pdbFile,
           dcdPayload,
           dcdCounts.atoms,
-          nFrames,
+          dcdCounts.nFrames,
           isProjection,
           Number.isFinite(requestedFrame),
         );
@@ -411,7 +413,6 @@ const NGLViewer = memo(
         pdbFile,
         dcdPayload,
         handleFrameChange,
-        nFrames,
         dcdCounts,
         isProjection,
       ]);
@@ -604,6 +605,7 @@ const NGLViewer = memo(
         containerRef.current = node;
       };
 
+      // Finally, render the ngl window
       return (
         <div
           ref={handleRef}
@@ -612,14 +614,22 @@ const NGLViewer = memo(
             [style['loading-trajectory']]: !noTrajectory && dcdLoading,
             [style['light-theme']]: !darkBackground,
           })}
+          // Display loading status data in the upper left corner of the NGL window
           data-loading={
-            loadingPDB || (!noTrajectory && dcdLoading)
+            loadingPDB
+              ? `Loading structure`
+              : !pdbFile
+              ? `No structure available`
+              : dcdLoading
               ? `Loading ${
                   loadingPDB
                     ? 'structure'
                     : `trajectory (${Math.round(dcdProgress * 100)}%)`
                 }…`
-              : undefined
+              : !dcdPayload && !noTrajectory
+              ? `No trajectory available`
+              : // Show nothing when everything was finished and fine
+                undefined
           }
         />
       );

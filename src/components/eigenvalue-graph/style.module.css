@@ -4,7 +4,7 @@
 }
 
 .graph-container {
-  height: 25vh;
+  height: 10em;
 }
 
 .graph-container > svg {

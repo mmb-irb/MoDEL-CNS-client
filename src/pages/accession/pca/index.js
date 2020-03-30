@@ -4,7 +4,7 @@ import cn from 'classnames';
 import { CardContent, Typography } from '@material-ui/core';
 
 import Card from '../../../components/animated-card';
-import NGLViewerInDND from '../../../components/ngl-viewer-in-dnd';
+import NGLViewerSpawner from '../../../components/ngl-viewer-in-dnd';
 import EigenvalueGraph from '../../../components/eigenvalue-graph';
 import Loading from '../../../components/loading';
 
@@ -74,10 +74,11 @@ const PCA = () => {
       <Card className={style.card}>
         <CardContent>
           <Typography variant="h6">PCA projections</Typography>
+          {/* Show a brief explanation about selected projection and their explained variance accounting */}
           <p>{plainTextExplanation(projections, explanation)}</p>
+          {/* When only 1 frame is selected use the regula ngl viewer */}
           {projections.length === 1 && (
             <Suspense fallback={nglPlaceholder}>
-              {/* When only 1 frame is selected use the regula ngl viewer */}
               <NGLViewerWithControls
                 accession={accession}
                 className={style['ngl-viewer-with-controls']}
@@ -85,9 +86,9 @@ const PCA = () => {
               />
             </Suspense>
           )}
+          {/* When only 2 frames are selected use the projections graph */}
           {projections.length === 2 && (
             <Suspense fallback={projectionPlaceholder}>
-              {/* When only 2 frames are selected use the projections graph */}
               <Projections
                 step={payload.step}
                 data={payload.y}
@@ -96,15 +97,14 @@ const PCA = () => {
               />
             </Suspense>
           )}
-          {/* When more than 2 frames are selected display nothing */}
+          {/* When more than 2 frames are selected display nothing but the plain text explanation*/}
         </CardContent>
       </Card>
       {Number.isFinite(requestedFrame) && (
         // This small viewer is displayed when the user clicks in some point of the Projections graph
-        <NGLViewerInDND
+        <NGLViewerSpawner
           accession={accession}
           requestedFrame={requestedFrame}
-          setRequestedFrame={setRequestedFrame}
         />
       )}
     </>

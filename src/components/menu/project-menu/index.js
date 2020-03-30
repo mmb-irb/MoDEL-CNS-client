@@ -20,7 +20,7 @@ const ProjectMenu = ({ params: { accession, subPage } }) => {
   );
 
   if (error) {
-    return error.toString();
+    console.error(error.toString());
   }
 
   // Return each of the menu tabs

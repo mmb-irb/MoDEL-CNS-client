@@ -26,7 +26,7 @@
     "react-dom": "16.10.2",
     "react-intersection-observer": "8.24.2",
     "react-property-setter": "0.2.1",
-    "react-rnd": "10.1.1",
+    "react-rnd": "10.1.7",
     "react-router-dom": "5.1.2",
     "screenfull": "5.0.0",
     "timing-functions": "1.0.0",
@@ -53,7 +53,7 @@
     "lint-staged": "9.4.2",
     "prettier": "1.18.2",
     "prop-types": "15.7.2",
-    "react-scripts": "3.2.0",
+    "react-scripts": "^3.4.0",
     "typescript": "3.6.4",
     "workbox-build": "4.3.1"
   },
