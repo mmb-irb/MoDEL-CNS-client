@@ -188,6 +188,8 @@ const Browse = ({ location, history }) => {
   const ApiUrl = `${BASE_PATH_PROJECTS}?${searchString}`;
   const { loading, payload, error } = useAPI(ApiUrl);
 
+  console.log(payload);
+
   // While loading
   // Code above is runned multiple times (around 5) each time the browser is loaded
   if (loading && !previousPayload.current) return <Loading />;
@@ -200,12 +202,15 @@ const Browse = ({ location, history }) => {
 
   // Define the results for the final render since it won't support 'null's
   let results;
+  let matchCount = 0;
   if (payload) {
     results = payload.projects;
+    matchCount = payload.filteredCount;
     previousPayload.current = payload;
-  } else if (previousPayload.current)
+  } else if (previousPayload.current) {
     results = previousPayload.current.projects;
-  else results = [];
+    matchCount = previousPayload.current.filteredCount;
+  } else results = [];
 
   // When success
   return (
@@ -254,7 +259,7 @@ const Browse = ({ location, history }) => {
                 // Many of the following variables are methods from TablePagination (They are tagged as MTP). https://material-ui.com/api/table-pagination/
                 rowsPerPageOptions={rowsPerPageOptions} // (MTP) Optional numbers of rows displayed in each page. It can be modified by the user.
                 colSpan={6} // Set the anchor of columns which is taken as a reference for the horizontal position of the footer
-                count={results.length} // (MTP) Total number of rows
+                count={matchCount} // (MTP) Total number of rows
                 rowsPerPage={+search.limit || DEFAULT_LIMIT} // (MTP) The actual number of rows displayed
                 page={(+search.page || DEFAULT_PAGE) - 1} // (MTP) The actual page
                 onChangePage={(_, page) => {
