@@ -405,7 +405,6 @@ const Analyses = memo(() => {
 
   // Render the functional analysis with a brief introduction
   // Here 'chains' is just the chain letters. The main data is downloaded further at the ChainAnalyses component
-  console.log(chains);
   if (chains && chains.length > 0)
     return (
       <>
