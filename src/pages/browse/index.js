@@ -188,8 +188,6 @@ const Browse = ({ location, history }) => {
   const ApiUrl = `${BASE_PATH_PROJECTS}?${searchString}`;
   const { loading, payload, error } = useAPI(ApiUrl);
 
-  console.log(payload);
-
   // While loading
   // Code above is runned multiple times (around 5) each time the browser is loaded
   if (loading && !previousPayload.current) return <Loading />;
