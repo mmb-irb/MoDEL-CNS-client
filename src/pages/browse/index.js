@@ -129,21 +129,12 @@ const Row = ({
       </TableCell>
       {/* preview */}
       <TableCell>
-        {pdbInfo.identifier &&
-          console.log(
-            `cdn.rcsb.org/images/hd/${pdbInfo.identifier
-              .toLowerCase()
-              .substr(
-                1,
-                2,
-              )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`,
-          )}
         {(pdbInfo && pdbInfo.identifier && (
           <LazyImg
             width="150px"
             height="150px"
             // Take the image from a specific URL which is processed from the PDB identifier
-            src={`cdn.rcsb.org/images/hd/${pdbInfo.identifier
+            src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier
               .toLowerCase()
               .substr(
                 1,
