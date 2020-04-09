@@ -44,6 +44,7 @@ import reducedMotion from '../../utils/reduced-motion';
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
+const na = 'Not available';
 
 // Define non-changing props used by the table footer
 const rowsPerPageOptions = [5, 10, 25, 50];
@@ -68,6 +69,7 @@ const Row = ({
   accession,
   published,
   pdbInfo,
+  metadata,
   analyses,
   index,
 }) => {
@@ -108,22 +110,26 @@ const Row = ({
       {/* PDB accession */}
       <TableCell>
         <Highlight highlight={highlight}>
-          {pdbInfo && pdbInfo.identifier}
+          {(pdbInfo && pdbInfo.identifier) || '-'}
         </Highlight>
       </TableCell>
       {/* name */}
       <TableCell>
         <Highlight highlight={highlight}>
-          {pdbInfo && pdbInfo.compound}
+          {metadata && metadata.NAME
+            ? metadata.NAME
+            : pdbInfo && pdbInfo.compound
+            ? pdbInfo.compound
+            : na}
         </Highlight>
       </TableCell>
-      {/* membrane */}
+      {/* membrane (no comprueba nada, simplemente dice que si siempre)*/}
       <TableCell>
         <FontAwesomeIcon icon={faCheck} />
       </TableCell>
       {/* preview */}
       <TableCell>
-        {pdbInfo && pdbInfo.identifier && (
+        {(pdbInfo && pdbInfo.identifier && (
           <LazyImg
             width="150px"
             height="150px"
@@ -137,7 +143,8 @@ const Row = ({
             loading="lazy"
             alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
           />
-        )}
+        )) ||
+          na}
       </TableCell>
       {/* analyses */}
       <TableCell>
@@ -157,7 +164,7 @@ const Row = ({
                   variant="outlined"
                 />
               ))
-          : null}
+          : na}
       </TableCell>
     </TableRow>
   );
@@ -209,7 +216,7 @@ const Browse = ({ location, history }) => {
     results = previousPayload.current.projects;
     matchCount = previousPayload.current.filteredCount;
   } else results = [];
-
+  console.log(results);
   // When success
   return (
     <Card>

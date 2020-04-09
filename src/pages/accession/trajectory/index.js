@@ -23,6 +23,8 @@ import reducedMotion from '../../../utils/reduced-motion';
 
 import style from './style.module.css';
 
+const na = 'Not available';
+
 // This component displays the trajectory metadata and it is also called by other scripts
 export const TrajectoryMetadata = memo(() => {
   // Load metadata from the project context
@@ -40,43 +42,50 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="System atoms"
             title="Total number of atoms in the system"
-            value={metadata.SYSTATS}
+            value={metadata.SYSTATS === null ? na : metadata.SYSTATS}
+            disabled={metadata.SYSTATS === null}
           />
           <TextField
             className={style['text-field']}
             label="Proteins atoms"
             title="Number of protein atoms in the system"
-            value={metadata.PROTATS}
+            value={metadata.PROTATS === null ? na : metadata.PROTATS}
+            disabled={metadata.PROTATS === null}
           />
           <TextField
             className={style['text-field']}
             label="Proteins residues"
             title="Number of protein residues in the system"
-            value={metadata.PROT}
+            value={metadata.PROT === null ? na : metadata.PROT}
+            disabled={metadata.PROT === null}
           />
           <TextField
             className={style['text-field']}
             label="Phospholipids"
             title="Number of membrane molecules in the system"
-            value={metadata.DPPC}
+            value={metadata.DPPC === null ? na : metadata.DPPC}
+            disabled={metadata.DPPC === null}
           />
           <TextField
             className={style['text-field']}
             label="Solvent molecules"
             title="Number of solvent molecules in the system"
-            value={metadata.SOL}
+            value={metadata.SOL === null ? na : metadata.SOL}
+            disabled={metadata.SOL === null}
           />
           <TextField
             className={style['text-field']}
             label="Positive ions"
             title="Number of positively charged ions in the system"
-            value={metadata.NA}
+            value={metadata.NA === null ? na : metadata.NA}
+            disabled={metadata.NA === null}
           />
           <TextField
             className={style['text-field']}
             label="Negative ions"
             title="Number of negatively charged ions in the system"
-            value={metadata.CL}
+            value={metadata.CL === null ? na : metadata.CL}
+            disabled={metadata.CL === null}
           />
         </fieldset>
         <fieldset>
@@ -85,13 +94,15 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Type"
             title="Box type"
-            value={metadata.BOXTYPE}
+            value={metadata.BOXTYPE === null ? na : metadata.BOXTYPE}
+            disabled={metadata.BOXTYPE === null}
           />
           <TextField
             className={style['text-field']}
             label="Size X"
             title="Simulated system box X dimension"
-            value={metadata.BOXSIZEX}
+            value={metadata.BOXSIZEX === null ? na : metadata.BOXSIZEX}
+            disabled={metadata.BOXSIZEX === null}
             InputProps={{
               endAdornment: (
                 <InputAdornment variant="filled" position="end">
@@ -104,7 +115,8 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Size Y"
             title="Simulated system box Y dimension"
-            value={metadata.BOXSIZEY}
+            value={metadata.BOXSIZEY === null ? na : metadata.BOXSIZEY}
+            disabled={metadata.BOXSIZEY === null}
             InputProps={{
               endAdornment: (
                 <InputAdornment variant="filled" position="end">
@@ -117,7 +129,8 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Size Z"
             title="Simulated system box Z dimension"
-            value={metadata.BOXSIZEZ}
+            value={metadata.BOXSIZEZ === null ? na : metadata.BOXSIZEZ}
+            disabled={metadata.BOXSIZEZ === null}
             InputProps={{
               endAdornment: (
                 <InputAdornment variant="filled" position="end">
@@ -131,11 +144,19 @@ export const TrajectoryMetadata = memo(() => {
             label="Volume"
             title="Simulated system box volume"
             value={
-              metadata.BOXSIZEX &&
-              round(
-                +metadata.BOXSIZEX * +metadata.BOXSIZEY * +metadata.BOXSIZEZ,
-                5,
-              )
+              metadata.BOXSIZEX === null ||
+              metadata.BOXSIZEY === null ||
+              metadata.BOXSIZEZ === null
+                ? na
+                : round(
+                    +metadata.BOXSIZEX *
+                      +metadata.BOXSIZEY *
+                      +metadata.BOXSIZEZ,
+                    5,
+                  )
+            }
+            disabled={
+              !(metadata.BOXSIZEX && metadata.BOXSIZEY && metadata.BOXSIZEZ)
             }
             InputProps={{
               endAdornment: (
@@ -152,7 +173,8 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Length"
             title="Simulation length"
-            value={metadata.LENGTH}
+            value={metadata.LENGTH === null ? na : metadata.LENGTH}
+            disabled={metadata.LENGTH === null}
             InputProps={{
               endAdornment: (
                 <InputAdornment variant="filled" position="end">
@@ -165,7 +187,8 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Timestep"
             title="Simulation timestep"
-            value={metadata.TIMESTEP}
+            value={metadata.TIMESTEP === null ? na : metadata.TIMESTEP}
+            disabled={metadata.TIMESTEP === null}
             InputProps={{
               endAdornment: (
                 <InputAdornment variant="filled" position="end">
@@ -178,13 +201,15 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Snapshots"
             title="Number of snapshots"
-            value={metadata.SNAPSHOTS}
+            value={metadata.SNAPSHOTS === null ? na : metadata.SNAPSHOTS}
+            disabled={metadata.SNAPSHOTS === null}
           />
           <TextField
             className={style['text-field']}
             label="Frequency"
             title="Frequency of snapshots"
-            value={metadata.FREQUENCY}
+            value={metadata.FREQUENCY === null ? na : metadata.FREQUENCY}
+            disabled={metadata.FREQUENCY === null}
             InputProps={{
               endAdornment: (
                 <InputAdornment variant="filled" position="end">
@@ -197,13 +222,15 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Force field"
             title="Force field"
-            value={metadata.FF}
+            value={metadata.FF === null ? na : metadata.FF}
+            disabled={metadata.FF === null}
           />
           <TextField
             className={style['text-field']}
             label="Temperature"
             title="Temperature"
-            value={metadata.TEMP}
+            value={metadata.TEMP === null ? na : metadata.TEMP}
+            disabled={metadata.TEMP === null}
             InputProps={{
               endAdornment: (
                 <InputAdornment variant="filled" position="end">
@@ -216,25 +243,29 @@ export const TrajectoryMetadata = memo(() => {
             className={style['text-field']}
             label="Water type"
             title="Water type"
-            value={metadata.WAT}
+            value={metadata.WAT === null ? na : metadata.WAT}
+            disabled={metadata.WAT === null}
           />
           <TextField
             className={style['text-field']}
             label="Ensemble"
             title="Simulation ensemble"
-            value={metadata.ENSEMBLE}
+            value={metadata.ENSEMBLE === null ? na : metadata.ENSEMBLE}
+            disabled={metadata.ENSEMBLE === null}
           />
           <TextField
             className={style['text-field']}
             label="Pressure coupling"
             title="Pressure coupling method"
-            value={metadata.PCOUPLING}
+            value={metadata.PCOUPLING === null ? na : metadata.PCOUPLING}
+            disabled={metadata.PCOUPLING === null}
           />
           <TextField
             className={style['text-field']}
             label="Membrane"
             title="Membrane type"
-            value={metadata.MEMBRANE}
+            value={metadata.MEMBRANE === null ? na : metadata.MEMBRANE}
+            disabled={metadata.MEMBRANE === null}
           />
         </fieldset>
       </fieldset>
@@ -400,12 +431,11 @@ const Analyses = memo(() => {
     };
   }, []);
 
-  // Order the chains inexes by alphabetic number
-  chains.sort();
-
   // Render the functional analysis with a brief introduction
   // Here 'chains' is just the chain letters. The main data is downloaded further at the ChainAnalyses component
-  if (chains && chains.length > 0)
+  if (chains && chains.length > 0) {
+    // Order the chains inexes by alphabetic number
+    chains.sort();
     return (
       <>
         {/* Brief introduction */}
@@ -499,7 +529,7 @@ const Analyses = memo(() => {
         </Typography>
       </>
     );
-  else return 'No chain analyses available';
+  } else return 'No chain analyses available';
 });
 
 // Define permanent options for the "useInView"
