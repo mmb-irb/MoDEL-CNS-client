@@ -358,12 +358,18 @@ const NGLViewerWithControls = forwardRef(
             </IconButton>
 
             <Chains
+              title="Change displayed chains and membrane"
               className={style.slider}
               label="Chains display:"
-              title="Change displayed chains"
               chains={chains}
               bannedChains={bannedChains}
               chainBanner={chainBanner}
+              membraneLabel="Membrane opacity:"
+              membraneOpacity={membraneOpacity * 100}
+              handleChange={(_, value) => {
+                setMembraneOpacity(value / 100);
+                setAsync('membrane-opacity', value / 100);
+              }}
             >
               <FontAwesomeIcon icon={faPuzzlePiece} />
             </Chains>

@@ -4,5 +4,10 @@
 
 .popover-chains {
   display: block;
-  margin-top: 1.5em;
+  margin: 1em;
+}
+
+.popover-slider {
+  display: inline-block;
+  margin-top: 1em;
 }
