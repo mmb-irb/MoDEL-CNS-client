@@ -93,6 +93,7 @@ const NGLViewerInDND = props => {
     requestedFrame, // PCA projections
     nail, // Both
     close, // Both
+    showMembrane = true,
   } = props;
 
   const nglViewRef = useRef(null);
@@ -189,6 +190,7 @@ const NGLViewerInDND = props => {
                 setActive(false);
               }}
               nail={nail}
+              showMembrane={showMembrane}
             />
           </Suspense>
         </Card>

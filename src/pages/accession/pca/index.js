@@ -83,6 +83,7 @@ const PCA = () => {
                 accession={accession}
                 className={style['ngl-viewer-with-controls']}
                 projection={projections[0]}
+                showMembrane={false}
               />
             </Suspense>
           )}
@@ -105,6 +106,7 @@ const PCA = () => {
         <NGLViewerSpawner
           accession={accession}
           requestedFrame={requestedFrame}
+          showMembrane={false}
         />
       )}
     </>

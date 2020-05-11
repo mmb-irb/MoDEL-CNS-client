@@ -80,12 +80,14 @@ const NGLViewerWithControls = forwardRef(
       close,
       nail,
       projection,
+      showMembrane = true,
       ...props
     },
     ref,
   ) => {
     // Context
-    const { chains } = useContext(ProjectCtx) || [];
+    const { chains, metadata } = useContext(ProjectCtx) || [];
+    const thereisMembrane = metadata.membrane === 'No' ? false : true;
 
     // references
     const containerRef = useRef(null);
@@ -107,9 +109,7 @@ const NGLViewerWithControls = forwardRef(
     const [progress, setProgress] = useState(0);
     const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
     const [membraneOpacity, setMembraneOpacity] = useState(
-      Number.isFinite(projection)
-        ? 0
-        : useMemo(() => get('membrane-opacity', 0.5), []),
+      showMembrane ? useMemo(() => get('membrane-opacity', 0.5), []) : 0,
     );
     const [nFrames, setNFrames] = useState(
       useMemo(() => {
@@ -187,6 +187,7 @@ const NGLViewerWithControls = forwardRef(
           <NGLViewer
             playing={playing}
             spinning={spinning}
+            showMembrane={showMembrane}
             membraneOpacity={membraneOpacity}
             smooth={smooth}
             onProgress={setProgress}
@@ -364,6 +365,7 @@ const NGLViewerWithControls = forwardRef(
               chains={chains}
               bannedChains={bannedChains}
               chainBanner={chainBanner}
+              membrane={showMembrane && thereisMembrane}
               membraneLabel="Membrane opacity:"
               membraneOpacity={membraneOpacity * 100}
               handleChange={(_, value) => {
@@ -374,7 +376,7 @@ const NGLViewerWithControls = forwardRef(
               <FontAwesomeIcon icon={faPuzzlePiece} />
             </Chains>
 
-            {!Number.isFinite(projection) && (
+            {showMembrane && thereisMembrane && (
               <Slider
                 className={style.slider}
                 label="Membrane opacity:"
@@ -402,7 +404,7 @@ const NGLViewerWithControls = forwardRef(
               <FontAwesomeIcon icon={speedIcon} />
             </Slider>
 
-            {!Number.isFinite(projection) && !noTrajectory && (
+            {showMembrane && !noTrajectory && (
               <FormControl>
                 <InputLabel>frames</InputLabel>
                 <Select
