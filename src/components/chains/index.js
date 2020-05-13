@@ -17,8 +17,7 @@ const Chains = memo(({ // Array with all chain letters ("A","B","C"...)
   chains, // Hook string added to the NGL selection string to filter the displayed chains
   bannedChains, // 'bannedChains' setter
   chainBanner, // Label to display over the chain buttons
-  label,
-  children, // Boolean to show or not the membrane opacity slide
+  label, children, // Boolean to show or not the membrane opacity slide
   membrane, // Hook numeric value
   membraneOpacity, // Label to display over the membrane opacity slide
   membraneLabel, // 'membraneOpacity' setter
