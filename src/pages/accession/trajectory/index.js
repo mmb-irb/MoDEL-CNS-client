@@ -561,6 +561,8 @@ const Trajectory = () => {
       defaultOpacity: 0.5,
     });
 
+  const { accession } = useContext(ProjectCtx);
+
   return (
     <>
       <Card className={style.card}>
@@ -575,6 +577,8 @@ const Trajectory = () => {
           <NGLViewerWithControls
             className={style.container}
             chains={chainsNGL}
+            structureURL={`${process.env.REACT_APP_REST_ROOT +
+              'current/projects/'}${accession}/files/average.pdb`}
           />
         ) : (
           <div style={{ height: '50vh' }} />

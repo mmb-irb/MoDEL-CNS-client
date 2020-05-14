@@ -35,8 +35,7 @@ const CHAIN_SELECTION = 'polymer and not hydrogen ';
 const NGLViewer = memo(
   forwardRef(({ // URL to find the structure data in the API
     // If no URL is provided then use the context pdbData (the 'md.imaged.rot.dry.pdb' file)
-    structureURL, // If no URL is provided then use the main trajectory (the 'md.imaged.rot.xtc' file) // URL to find the trajectory data in the API
-    trajectoryURL, className, playing, spinning, smooth, onProgress, noTrajectory, projection, framesSelect, nFrames = DEFAULT_NUMBER_OF_FRAMES, hovered, selected, requestedFrame, darkBackground, perspective, speed, drawingMethods, coloringMethods, opacities, chains }, ref) => {
+    structureURL, trajectoryURL, className, playing, spinning, smooth, onProgress, noTrajectory, projection, framesSelect, nFrames = DEFAULT_NUMBER_OF_FRAMES, hovered, selected, requestedFrame, darkBackground, perspective, speed, drawingMethods, coloringMethods, opacities, chains }, ref) => { // If no URL is provided then use the main trajectory (the 'md.imaged.rot.xtc' file) // URL to find the trajectory data in the API
     // True when we just want to display a static structure // Requeste number of frames to display
     // data from context
     const accession = useContext(AccessionCtx);
@@ -65,19 +64,21 @@ const NGLViewer = memo(
 
     const isProjection = Number.isFinite(projection);
 
-    // Set stored variables
-    const dcdLoadingRef = useRef(null);
-    const dcdPayloadRef = useRef(null);
-    const dcdProgressRef = useRef(null);
-    const dcdCountsRef = useRef({});
+    // Set variable to store trajectory data and loading status
+    const trajectoryRef = useRef({});
 
     // Hook for the trajectory data (frames)
     useEffect(
       () => {
+        // Do not load anything if the 'noTrajectory' parameter is passed
+        if (noTrajectory) return;
         // Set the url to ask the API
         let url = trajectoryURL
           ? trajectoryURL
           : `${BASE_PATH_PROJECTS}${accession}/files/trajectory`;
+
+        // Save the number of frames asked when the load starts
+        const askedFrames = nFrames;
 
         // Get the frames to be loaded in a standarized string format for the API
         let frames;
@@ -86,7 +87,7 @@ const NGLViewer = memo(
             isProjection,
             metadata,
             noTrajectory,
-            nFrames,
+            askedFrames,
             requestedFrame,
           );
 
@@ -104,19 +105,20 @@ const NGLViewer = memo(
           */
 
         // Set the loading status as true
-        dcdLoadingRef.current = true;
+        trajectoryRef.current.loading = true;
 
         // Ask the API through axios (https://www.npmjs.com/package/axios)
         // Some extra load features are passed through axios
         // Set a cancel 'token'
         const source = axios.CancelToken.source();
         let didCancel = false;
-        dcdProgressRef.current = 0;
+        trajectoryRef.current.progress = 0;
         // Set a function to track the download progress
         const onDownloadProgress = progressEvent => {
           // Check if progress is measurable. If so, mesure it.
           if (progressEvent.lengthComputable)
-            dcdProgressRef.current = progressEvent.loaded / progressEvent.total;
+            trajectoryRef.current.progress =
+              progressEvent.loaded / progressEvent.total;
         };
 
         // Send a request to the API in a Promise/await manner
@@ -128,10 +130,12 @@ const NGLViewer = memo(
           // If the request has succeed
           .then(response => {
             if (didCancel) return;
-            dcdCountsRef.current = extractCounts(response);
-            dcdCountsRef.current.nFrames = parseInt(nFrames);
-            dcdPayloadRef.current = response.data;
-            dcdLoadingRef.current = false;
+            // 'counts' include the number of atoms and the real number of frames
+            trajectoryRef.current.counts = extractCounts(response);
+            // Save inside the ref
+            trajectoryRef.current.askedFrames = parseInt(askedFrames);
+            trajectoryRef.current.payload = response.data;
+            trajectoryRef.current.loading = false;
           })
           // Otherwise
           .catch(error => {
@@ -159,10 +163,13 @@ const NGLViewer = memo(
       ],
     );
 
-    const dcdLoading = dcdLoadingRef.current;
-    const dcdPayload = dcdPayloadRef.current;
-    const dcdProgress = dcdProgressRef.current;
-    const dcdCounts = dcdCountsRef.current;
+    const trajectoryLoadingStatus = trajectoryRef.current.loading;
+    const trajectoryPayload = trajectoryRef.current.payload;
+    const trajectoryProgress = trajectoryRef.current.progress;
+    const trajectoryFrames = trajectoryRef.current.askedFrames;
+    const trajectoryAtoms = trajectoryRef.current.counts
+      ? trajectoryRef.current.counts.atoms
+      : undefined;
 
     // Stage creation and removal on mounting and unmounting
     useEffect(() => {
@@ -396,24 +403,25 @@ const NGLViewer = memo(
     useEffect(() => {
       if (!(pdbFile && stageRef.current.compList[0].trajList[0])) return;
       stageRef.current.compList[0].trajList[0].trajectory.player.pause();
-    }, [pdbFile, dcdLoading]);
+    }, [pdbFile, trajectoryLoadingStatus]);
 
     // DCD file, trajectory
     // Once the trajectory is loaded, introduce it into the representation
     useEffect(() => {
       const file = payloadToNGLFile(
         pdbFile,
-        dcdPayload,
-        dcdCounts.atoms,
-        dcdCounts.nFrames,
+        trajectoryPayload,
+        trajectoryAtoms,
+        trajectoryFrames,
         isProjection,
         Number.isFinite(requestedFrame),
       );
 
+      if (!file) return;
+
       if (stageRef.current.compList[0]) {
         stageRef.current.compList[0].autoView(CHAIN_SELECTION, 0);
       }
-      if (!file) return;
 
       const component = stageRef.current.compList[0];
       // remove all possibly already existing trajectories
@@ -432,19 +440,20 @@ const NGLViewer = memo(
     }, [
       requestedFrame,
       pdbFile,
-      dcdPayload,
+      trajectoryPayload,
+      trajectoryAtoms,
+      trajectoryFrames,
       handleFrameChange,
-      dcdCounts,
       isProjection,
     ]);
 
     // play/pause
     useEffect(() => {
-      if (!(pdbFile && dcdPayload)) return;
+      if (!(pdbFile && trajectoryPayload)) return;
       const { player } = stageRef.current.compList[0].trajList[0].trajectory;
       player[playing && isInView ? 'play' : 'pause']();
       return () => player.pause();
-    }, [pdbFile, dcdPayload, playing, isInView]);
+    }, [pdbFile, trajectoryPayload, playing, isInView]);
 
     // speed
     useEffect(() => {
@@ -454,7 +463,7 @@ const NGLViewer = memo(
         stageRef.current.compList[0].trajList[0].trajectory.player.setParameters(
           { timeout: 500 / (Math.log2(speed + 1) + 1) },
         );
-    }, [speed, dcdLoading]);
+    }, [speed, trajectoryLoadingStatus]);
 
     // spinning
     useEffect(() => {
@@ -469,18 +478,18 @@ const NGLViewer = memo(
 
     // smoothing, player interpolation
     useEffect(() => {
-      if (!(pdbFile && dcdPayload)) return;
+      if (!(pdbFile && trajectoryPayload)) return;
       stageRef.current.compList[0].trajList[0].trajectory.player.parameters.interpolateType = smooth
         ? 'linear'
         : '';
-    }, [pdbFile, dcdPayload, smooth]);
+    }, [pdbFile, trajectoryPayload, smooth]);
 
     // to avoid sometimes when it's not rendering after loading
     useEffect(() => {
-      if (!(pdbFile && dcdPayload)) return;
+      if (!(pdbFile && trajectoryPayload)) return;
       handleResize();
       return handleResize.cancel;
-    }, [pdbFile, dcdPayload, handleResize]);
+    }, [pdbFile, trajectoryPayload, handleResize]);
 
     // listen to change event from nightingale component
     useEffect(() => {
@@ -569,7 +578,7 @@ const NGLViewer = memo(
           );
         },
         get currentFrame() {
-          if (!(pdbFile && dcdPayload)) return -1;
+          if (!(pdbFile && trajectoryPayload)) return -1;
           try {
             return stageRef.current.compList[0].trajList[0].trajectory
               .currentFrame;
@@ -578,7 +587,7 @@ const NGLViewer = memo(
           }
         },
         set currentFrame(value) {
-          if (!(pdbFile && dcdPayload)) return;
+          if (!(pdbFile && trajectoryPayload)) return;
           try {
             const total = this.totalFrames;
             let frame = value % total;
@@ -589,7 +598,7 @@ const NGLViewer = memo(
           }
         },
         get totalFrames() {
-          if (!(pdbFile && dcdPayload)) return 1;
+          if (!(pdbFile && trajectoryPayload)) return 1;
           try {
             return stageRef.current.compList[0].trajList[0].trajectory.frames
               .length;
@@ -598,7 +607,7 @@ const NGLViewer = memo(
           }
         },
       }),
-      [pdbFile, dcdPayload, handleResize],
+      [pdbFile, trajectoryPayload, handleResize],
     );
 
     // workaround to have multiple ref logic on one element
@@ -614,7 +623,8 @@ const NGLViewer = memo(
         ref={handleRef}
         className={cn(className, style.container, {
           [style['loading-pdb']]: loadingPDB,
-          [style['loading-trajectory']]: !noTrajectory && dcdLoading,
+          [style['loading-trajectory']]:
+            !noTrajectory && trajectoryLoadingStatus,
           [style['light-theme']]: !darkBackground,
         })}
         // Display loading status data in the upper left corner of the NGL window
@@ -623,13 +633,13 @@ const NGLViewer = memo(
             ? `Loading structure`
             : !pdbFile
             ? `No structure available`
-            : dcdLoading
+            : trajectoryLoadingStatus
             ? `Loading ${
                 loadingPDB
                   ? 'structure'
-                  : `trajectory (${Math.round(dcdProgress * 100)}%)`
+                  : `trajectory (${Math.round(trajectoryProgress * 100)}%)`
               }…`
-            : !dcdPayload && !noTrajectory
+            : !trajectoryPayload && !noTrajectory
             ? `No trajectory available`
             : // Show nothing when everything was finished and fine
               undefined
