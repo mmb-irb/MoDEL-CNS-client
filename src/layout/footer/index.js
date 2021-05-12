@@ -7,8 +7,10 @@ import style from './style.module.css';
 
 import logoHBP from '../../images/logo-hbp.png';
 import logoIRB from '../../images/logo-irb.png';
+import logoCECH from '../../images/logo-cech.png';
 import logoHBPWebP from '../../images/logo-hbp.webp';
 import logoIRBWebP from '../../images/logo-irb.webp';
+import logoCECHWebP from '../../images/logo-cech.webp';
 
 // for (const img of [logoHBP, logoIRB]) {
 //   const el = document.createElement('link');
@@ -50,6 +52,21 @@ const Footer = React.memo(() => (
               src={logoIRB}
               loading="lazy"
               alt="IRB Barcelona website"
+            />
+          </picture>
+        </a>
+        <a
+          href="https://www.upf.edu/web/cech"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <picture>
+            <source type="image/webp" srcSet={logoCECHWebP} />
+            <LazyImg
+              height="100px"
+              src={logoCECH}
+              loading="lazy"
+              alt="The emerging human brain cluster webpage"
             />
           </picture>
         </a>
