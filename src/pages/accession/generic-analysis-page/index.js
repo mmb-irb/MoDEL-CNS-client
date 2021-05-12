@@ -9,6 +9,7 @@ import Loading from '../../../components/loading';
 import useAPI from '../../../hooks/use-api';
 
 import { AccessionCtx } from '../../../contexts';
+import { ProjectCtx } from '../../../contexts';
 
 import { BASE_PATH_PROJECTS } from '../../../utils/constants';
 
@@ -34,6 +35,9 @@ const Analysis = ({
 }) => {
   // Get the accession
   const accession = useContext(AccessionCtx);
+  // Get the current project metadata and chains
+  const { metadata, chains } = useContext(ProjectCtx);
+
   // Send a request to the API with the url of the specific analysis
   const { loading, payload, error } = useAPI(
     `${BASE_PATH_PROJECTS}${accession}/analyses/${analysis}/`,
@@ -56,6 +60,22 @@ const Analysis = ({
     (typeof selected === 'number' && Number.isFinite(selected)) ||
     (selected && selected.size)
   );
+
+  // Set the chains to be represented in the NGL viewer
+  const chainsNGL = [];
+  for (const chain of chains) {
+    chainsNGL.push({
+      name: 'Chain ' + chain,
+      selection: ':' + chain,
+    });
+  }
+  if (metadata.MEMBRANE !== 'No')
+    chainsNGL.push({
+      selection: '(not polymer or hetero) and not (water or ion)',
+      name: metadata.MEMBRANE,
+      defaultDrawingMethod: 'licorice',
+      defaultOpacity: 0.5,
+    });
 
   // Render
   return (
@@ -91,6 +111,7 @@ const Analysis = ({
           hovered={hovered}
           analysis={analysis}
           selected={selected}
+          chains={chainsNGL}
         />
       )}
     </Suspense>
