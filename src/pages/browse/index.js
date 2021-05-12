@@ -91,6 +91,12 @@ const Row = ({
     return () => animation.cancel();
   }, [index]);
 
+  const pdbCode = pdbInfo.identifier.toLowerCase();
+  const imageURL = `//cdn.rcsb.org/images/structures/${pdbCode.substr(
+    1,
+    2,
+  )}/${pdbCode}/${pdbCode}_assembly-1.jpeg`;
+
   // Returns a table with multiple rows
   // The 3 first rows: accession, PDB accession and name are searchable. Search text is highlighted when found
   return (
@@ -134,14 +140,9 @@ const Row = ({
             width="150px"
             height="150px"
             // Take the image from a specific URL which is processed from the PDB identifier
-            src={`//cdn.rcsb.org/images/hd/${pdbInfo.identifier
-              .toLowerCase()
-              .substr(
-                1,
-                2,
-              )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`}
+            src={imageURL}
             loading="lazy"
-            alt={`3D view of the ${pdbInfo.identifier.toLowerCase()} structure`}
+            alt={`3D view of the ${pdbCode} structure`}
           />
         )) ||
           na}
