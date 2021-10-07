@@ -12,13 +12,8 @@ import logoHBPWebP from '../../images/logo-hbp.webp';
 import logoIRBWebP from '../../images/logo-irb.webp';
 import logoCECHWebP from '../../images/logo-cech.webp';
 
-// for (const img of [logoHBP, logoIRB]) {
-//   const el = document.createElement('link');
-//   el.rel = 'preload';
-//   el.as = 'image';
-//   el.href = img;
-//   document.head.appendChild(el);
-// }
+import logoEbrains from '../../images/logo-ebrains.png';
+import logoEbrainsWebP from '../../images/logo-ebrains.webp';
 
 // Show two images which are also links: Human Brain Project and IRB Barcelona
 const Footer = React.memo(() => (
@@ -67,6 +62,17 @@ const Footer = React.memo(() => (
               src={logoCECH}
               loading="lazy"
               alt="The emerging human brain cluster webpage"
+            />
+          </picture>
+        </a>
+        <a href="https://ebrains.eu/" target="_blank" rel="noreferrer noopener">
+          <picture>
+            <source type="image/webp" srcSet={logoEbrainsWebP} />
+            <LazyImg
+              height="70px"
+              src={logoEbrains}
+              loading="lazy"
+              alt="EBRAINS website"
             />
           </picture>
         </a>
