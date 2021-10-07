@@ -16,7 +16,7 @@ const HomeFAB = ({
   const [visible, setVisible] = useToggleState(true);
 
   useEffect(() => {
-    if (page === 'browse' || page === 'preview') {
+    if (page === 'browse') {
       setVisible(false);
     } else {
       setVisible(true);
