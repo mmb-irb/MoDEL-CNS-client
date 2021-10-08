@@ -108,6 +108,33 @@ exports[`<Home /> should render 1`] = `
       </strong>
        will contribute in the improvement of the understanding of neuronal signalling cascades by protein structure-based simulations, calculating molecular flexibility and dynamics, and guiding systems level modelling.
     </WithStyles(ForwardRef(Typography))>
+    <div
+      className="acknowledgements"
+    >
+      <div
+        className="acknowledgements-text"
+      >
+        <WithStyles(ForwardRef(Typography))
+          variant="h5"
+        >
+          <strong>
+            Acknowledgements
+          </strong>
+        </WithStyles(ForwardRef(Typography))>
+        <br />
+        This open source software code was developed in part in the Human Barin Project, funded from the European Union's Horizon 2020 Framework Programme for Research and Innovation under Specific Grant Agreements No. 720270 and No. 785907 (Human Brain Project SGA1 and SGA 2).
+      </div>
+      <div
+        className="acknowledgements-logo"
+      >
+        <LazyImg
+          alt=""
+          className="fill"
+          loading="lazy"
+          src="eu.png"
+        />
+      </div>
+    </div>
   </WithStyles(ForwardRef(CardContent))>
 </ForwardRef>
 `;
