@@ -64,21 +64,19 @@ const NGLViewer = memo(
 
     const isProjection = Number.isFinite(projection);
 
-    // Set variable to store trajectory data and loading status
-    const trajectoryRef = useRef({});
+    // Set stored variables
+    const dcdLoadingRef = useRef(null);
+    const dcdPayloadRef = useRef(null);
+    const dcdProgressRef = useRef(null);
+    const dcdCountsRef = useRef({});
 
     // Hook for the trajectory data (frames)
     useEffect(
       () => {
-        // Do not load anything if the 'noTrajectory' parameter is passed
-        if (noTrajectory) return;
         // Set the url to ask the API
         let url = trajectoryURL
           ? trajectoryURL
           : `${BASE_PATH_PROJECTS}${accession}/files/trajectory`;
-
-        // Save the number of frames asked when the load starts
-        const askedFrames = nFrames;
 
         // Get the frames to be loaded in a standarized string format for the API
         let frames;
@@ -87,7 +85,7 @@ const NGLViewer = memo(
             isProjection,
             metadata,
             noTrajectory,
-            askedFrames,
+            nFrames,
             requestedFrame,
           );
 
@@ -105,20 +103,19 @@ const NGLViewer = memo(
           */
 
         // Set the loading status as true
-        trajectoryRef.current.loading = true;
+        dcdLoadingRef.current = true;
 
         // Ask the API through axios (https://www.npmjs.com/package/axios)
         // Some extra load features are passed through axios
         // Set a cancel 'token'
         const source = axios.CancelToken.source();
         let didCancel = false;
-        trajectoryRef.current.progress = 0;
+        dcdProgressRef.current = 0;
         // Set a function to track the download progress
         const onDownloadProgress = progressEvent => {
           // Check if progress is measurable. If so, mesure it.
           if (progressEvent.lengthComputable)
-            trajectoryRef.current.progress =
-              progressEvent.loaded / progressEvent.total;
+            dcdProgressRef.current = progressEvent.loaded / progressEvent.total;
         };
 
         // Send a request to the API in a Promise/await manner
@@ -130,12 +127,10 @@ const NGLViewer = memo(
           // If the request has succeed
           .then(response => {
             if (didCancel) return;
-            // 'counts' include the number of atoms and the real number of frames
-            trajectoryRef.current.counts = extractCounts(response);
-            // Save inside the ref
-            trajectoryRef.current.askedFrames = parseInt(askedFrames);
-            trajectoryRef.current.payload = response.data;
-            trajectoryRef.current.loading = false;
+            dcdCountsRef.current = extractCounts(response);
+            dcdCountsRef.current.nFrames = parseInt(nFrames);
+            dcdPayloadRef.current = response.data;
+            dcdLoadingRef.current = false;
           })
           // Otherwise
           .catch(error => {
@@ -163,13 +158,10 @@ const NGLViewer = memo(
       ],
     );
 
-    const trajectoryLoadingStatus = trajectoryRef.current.loading;
-    const trajectoryPayload = trajectoryRef.current.payload;
-    const trajectoryProgress = trajectoryRef.current.progress;
-    const trajectoryFrames = trajectoryRef.current.askedFrames;
-    const trajectoryAtoms = trajectoryRef.current.counts
-      ? trajectoryRef.current.counts.atoms
-      : undefined;
+    const dcdLoading = dcdLoadingRef.current;
+    const dcdPayload = dcdPayloadRef.current;
+    const dcdProgress = dcdProgressRef.current;
+    const dcdCounts = dcdCountsRef.current;
 
     // Stage creation and removal on mounting and unmounting
     useEffect(() => {
@@ -403,25 +395,24 @@ const NGLViewer = memo(
     useEffect(() => {
       if (!(pdbFile && stageRef.current.compList[0].trajList[0])) return;
       stageRef.current.compList[0].trajList[0].trajectory.player.pause();
-    }, [pdbFile, trajectoryLoadingStatus]);
+    }, [pdbFile, dcdLoading]);
 
     // DCD file, trajectory
     // Once the trajectory is loaded, introduce it into the representation
     useEffect(() => {
       const file = payloadToNGLFile(
         pdbFile,
-        trajectoryPayload,
-        trajectoryAtoms,
-        trajectoryFrames,
+        dcdPayload,
+        dcdCounts.atoms,
+        dcdCounts.nFrames,
         isProjection,
         Number.isFinite(requestedFrame),
       );
 
-      if (!file) return;
-
       if (stageRef.current.compList[0]) {
         stageRef.current.compList[0].autoView(CHAIN_SELECTION, 0);
       }
+      if (!file) return;
 
       const component = stageRef.current.compList[0];
       // remove all possibly already existing trajectories
@@ -440,20 +431,19 @@ const NGLViewer = memo(
     }, [
       requestedFrame,
       pdbFile,
-      trajectoryPayload,
-      trajectoryAtoms,
-      trajectoryFrames,
+      dcdPayload,
       handleFrameChange,
+      dcdCounts,
       isProjection,
     ]);
 
     // play/pause
     useEffect(() => {
-      if (!(pdbFile && trajectoryPayload)) return;
+      if (!(pdbFile && dcdPayload)) return;
       const { player } = stageRef.current.compList[0].trajList[0].trajectory;
       player[playing && isInView ? 'play' : 'pause']();
       return () => player.pause();
-    }, [pdbFile, trajectoryPayload, playing, isInView]);
+    }, [pdbFile, dcdPayload, playing, isInView]);
 
     // speed
     useEffect(() => {
@@ -463,7 +453,7 @@ const NGLViewer = memo(
         stageRef.current.compList[0].trajList[0].trajectory.player.setParameters(
           { timeout: 500 / (Math.log2(speed + 1) + 1) },
         );
-    }, [speed, trajectoryLoadingStatus]);
+    }, [speed, dcdLoading]);
 
     // spinning
     useEffect(() => {
@@ -478,18 +468,18 @@ const NGLViewer = memo(
 
     // smoothing, player interpolation
     useEffect(() => {
-      if (!(pdbFile && trajectoryPayload)) return;
+      if (!(pdbFile && dcdPayload)) return;
       stageRef.current.compList[0].trajList[0].trajectory.player.parameters.interpolateType = smooth
         ? 'linear'
         : '';
-    }, [pdbFile, trajectoryPayload, smooth]);
+    }, [pdbFile, dcdPayload, smooth]);
 
     // to avoid sometimes when it's not rendering after loading
     useEffect(() => {
-      if (!(pdbFile && trajectoryPayload)) return;
+      if (!(pdbFile && dcdPayload)) return;
       handleResize();
       return handleResize.cancel;
-    }, [pdbFile, trajectoryPayload, handleResize]);
+    }, [pdbFile, dcdPayload, handleResize]);
 
     // listen to change event from nightingale component
     useEffect(() => {
@@ -578,7 +568,7 @@ const NGLViewer = memo(
           );
         },
         get currentFrame() {
-          if (!(pdbFile && trajectoryPayload)) return -1;
+          if (!(pdbFile && dcdPayload)) return -1;
           try {
             return stageRef.current.compList[0].trajList[0].trajectory
               .currentFrame;
@@ -587,7 +577,7 @@ const NGLViewer = memo(
           }
         },
         set currentFrame(value) {
-          if (!(pdbFile && trajectoryPayload)) return;
+          if (!(pdbFile && dcdPayload)) return;
           try {
             const total = this.totalFrames;
             let frame = value % total;
@@ -598,7 +588,7 @@ const NGLViewer = memo(
           }
         },
         get totalFrames() {
-          if (!(pdbFile && trajectoryPayload)) return 1;
+          if (!(pdbFile && dcdPayload)) return 1;
           try {
             return stageRef.current.compList[0].trajList[0].trajectory.frames
               .length;
@@ -607,7 +597,7 @@ const NGLViewer = memo(
           }
         },
       }),
-      [pdbFile, trajectoryPayload, handleResize],
+      [pdbFile, dcdPayload, handleResize],
     );
 
     // workaround to have multiple ref logic on one element
@@ -623,8 +613,7 @@ const NGLViewer = memo(
         ref={handleRef}
         className={cn(className, style.container, {
           [style['loading-pdb']]: loadingPDB,
-          [style['loading-trajectory']]:
-            !noTrajectory && trajectoryLoadingStatus,
+          [style['loading-trajectory']]: !noTrajectory && dcdLoading,
           [style['light-theme']]: !darkBackground,
         })}
         // Display loading status data in the upper left corner of the NGL window
@@ -633,13 +622,13 @@ const NGLViewer = memo(
             ? `Loading structure`
             : !pdbFile
             ? `No structure available`
-            : trajectoryLoadingStatus
+            : dcdLoading
             ? `Loading ${
                 loadingPDB
                   ? 'structure'
-                  : `trajectory (${Math.round(trajectoryProgress * 100)}%)`
+                  : `trajectory (${Math.round(dcdProgress * 100)}%)`
               }…`
-            : !trajectoryPayload && !noTrajectory
+            : !dcdPayload && !noTrajectory
             ? `No trajectory available`
             : // Show nothing when everything was finished and fine
               undefined

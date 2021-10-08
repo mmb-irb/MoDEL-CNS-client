@@ -67,7 +67,7 @@ const NGLViewerSpawner = inputs => {
   // This function removes props from this viewer from the nailed list if it is nailed
   // This function adds the current id to the used ids list
   // (this way, if the current last window is closed we open a new one instead of reusing it)
-  props.setClosed = () => {
+  props.close = () => {
     nailed.current.splice(nailed.current.indexOf(props.id), 0);
     usedIds.current.push(props.id);
   };
@@ -86,10 +86,14 @@ const NGLViewerSpawner = inputs => {
 const NGLViewerInDND = props => {
   const {
     // The following arguments are only available when the component is called from...
+    accession, // Both
+    hovered, // Generic analysis page
     analysis, // Generic analysis page
     selected, // Generic analysis page
     requestedFrame, // PCA projections
-    setClosed, // Both
+    nail, // Both
+    close, // Both
+    chains, // Both
   } = props;
 
   const nglViewRef = useRef(null);
@@ -167,10 +171,13 @@ const NGLViewerInDND = props => {
         <Card className={style['floating-card']} elevation={4}>
           <Suspense fallback={null}>
             <NGLViewerWithControls
+              accession={accession}
+              hovered={hovered}
               selected={selected}
               ref={nglViewRef}
               className={style['ngl-viewer-with-controls']}
               startsPlaying={false}
+              noTrajectory={!analysis || analysis !== 'fluctuation'}
               requestedFrame={
                 Number.isFinite(requestedFrame)
                   ? requestedFrame
@@ -178,11 +185,12 @@ const NGLViewerInDND = props => {
               }
               close={() => {
                 // Remove it from the nailed list if its nailed and add its id to the used ids list
-                setClosed();
+                close();
                 // Disable the render of this component
                 setActive(false);
               }}
-              {...props}
+              nail={nail}
+              chains={chains}
             />
           </Suspense>
         </Card>
