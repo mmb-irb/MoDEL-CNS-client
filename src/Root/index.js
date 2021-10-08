@@ -11,7 +11,6 @@ import {
 import Body from '../layout/body';
 import Main from '../layout/main';
 import Header from '../layout/header';
-import HomeFAB from '../components/home-fab';
 
 import ErrorBoundary from '../components/error-boundary';
 
@@ -120,7 +119,6 @@ const Root = () => (
             />
             <Route render={() => 404} />
           </Switch>
-          <Route path={['/:page', '/']} component={HomeFAB} />
         </ErrorBoundary>
       </Main>
       <Suspense fallback={null}>
