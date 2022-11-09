@@ -21,15 +21,14 @@ const COMMA_SEPARATOR = /\s*,\s*/;
 export default React.memo(() => {
   const { pdbInfo, accession, identifier, published } = useContext(ProjectCtx);
 
+  const lowerPdb = pdbInfo.identifier.toLowerCase();
   const imgSrc =
     pdbInfo &&
     pdbInfo.identifier &&
-    `//cdn.rcsb.org/images/hd/${pdbInfo.identifier
-      .toLowerCase()
-      .substr(
-        1,
-        2,
-      )}/${pdbInfo.identifier.toLowerCase()}/${pdbInfo.identifier.toLowerCase()}.0_chimera_tm_350_350.png`;
+    `https://cdn.rcsb.org/images/structures/${lowerPdb.substr(
+      1,
+      2,
+    )}/${lowerPdb}/${lowerPdb}_assembly-1.jpeg`;
   let organisms;
   let keywords;
   let publishDate;
